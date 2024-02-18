@@ -1,0 +1,7 @@
+"militaryrp"
+{
+	"base"		"sandbox"
+	"title"		"MilitaryRP"
+	"category"	"rp"
+	"menusystem"	"1"
+}

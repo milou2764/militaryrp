@@ -1,0 +1,1 @@
+ENT.Base = "mrp_base_entity"

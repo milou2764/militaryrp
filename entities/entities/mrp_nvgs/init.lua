@@ -1,0 +1,17 @@
+AddCSLuaFile("shared.lua")
+AddCSLuaFile("cl_init.lua")
+include("shared.lua")
+
+function ENT:Initialize()
+    baseclass.Get("mrp_base_gear").Initialize(self)
+    self:SetBodygroup(0,1)
+end
+
+function ENT:canBeEquipped(ply)
+    local ret = baseclass.Get("mrp_base_gear").canBeEquipped(self, ply)
+    if not ply:Has("Helmet") then
+        ply:ChatPrint("Il faut un casque pour équiper les LVN.")
+        return false
+    end
+    return ret
+end
