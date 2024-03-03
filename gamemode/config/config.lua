@@ -39,6 +39,8 @@ MRP.idClass = MRP.idClass or {}
 MRP.mountedGear = MRP.mountedGear or {}
 MRP.mountedWeps = MRP.mountedWeps or {}
 
+MRP.TABLE_CHAR = 'mrp_characters'
+
 --[[
     Returns the class name associated with the given ID
     @param MRPID Unique ID

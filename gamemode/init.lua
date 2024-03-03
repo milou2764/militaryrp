@@ -61,11 +61,11 @@ local TAG = 'mrpinit'
 local existingTable =
     sql.QueryValue(
         'SELECT sql FROM sqlite_master ' ..
-        'WHERE name = \'mrp_characters\';'
+        'WHERE name = ' .. SQLStr(MRP.TABLE_CHAR)
     )
 --print(existingTable.sql)
 local request =
-    'CREATE TABLE mrp_characters(' ..
+    'CREATE TABLE ' .. SQLStr(MRP.TABLE_CHAR) .. '(' ..
     'UID INTEGER PRIMARY KEY autoincrement,' ..
     'SteamID64 BIGINT NOT NULL,' ..
     'Faction INT,' ..
@@ -100,7 +100,7 @@ if existingTable ~= request then
     Log.e(TAG, existingTable)
     Log.e(TAG, request)
     Log.e(TAG, 'DELETING ...')
-    sql.Query('DROP TABLE mrp_characters;')
+    sql.Query('DROP TABLE ' .. SQLStr(MRP.TABLE_CHAR))
     sql.Query(request)
 else
     Log.d(TAG, 'TABLE DID NOT CHANGED')
@@ -139,7 +139,8 @@ end
 local function CheckData(ply)
     local data =
         sql.Query(
-            'SELECT * FROM mrp_characters WHERE SteamID64 = ' .. ply:SteamID64() .. ';'
+            'SELECT * FROM ' .. SQLStr(MRP.TABLE_CHAR) .. ' ' ..
+            'WHERE SteamID64 = ' .. ply:SteamID64() .. ';'
         )
 
     --PrintTable(data)
@@ -214,20 +215,6 @@ local function RunEquipment(ply)
             ply:Give(MRP.getMRPEnt(ply:GetNWInt('Inventory' .. k)).wepClass)
         end
     end
-end
-
-function MRP.SaveInventoryData(ply)
-    local Inventory = {}
-
-    for k = 1, 20 do
-        Inventory[k] = ply:GetNWInt('Inventory' .. k)
-    end
-
-    Inventory = table.concat(Inventory, ',')
-    sql.Query(
-        'UPDATE mrp_characters SET Inventory = ' .. SQLStr(Inventory) .. ' ' ..
-        'WHERE UID = ' .. ply:MRPCharacterID() .. ';'
-    )
 end
 
 function MRP.SaveBodyGroupsData(ply)
