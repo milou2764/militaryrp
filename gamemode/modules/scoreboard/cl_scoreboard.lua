@@ -10,6 +10,7 @@ surface.CreateFont( "ScoreboardDefaultTitle", {
     size    = 32,
     weight    = 800
 } )
+
 local scoreboard
 local Menu
 --
@@ -124,6 +125,8 @@ local PLAYER_LINE = {
         self:SetHeight( 40 + 3 * 2 )
         self:DockMargin( 2, 0, 2, 2 )
 
+        self.Name:SetText( self.Player:RPName() )
+
     end,
 
     Setup = function( self, pl )
@@ -150,17 +153,13 @@ local PLAYER_LINE = {
             return
         end
 
-        if ( self.PName == nil or self.PName ~= self.Player:GetNWString("RPName") ) then
-            self.PName = self.Player:GetNWString("RPName")
-            self.Name:SetText( self.PName )
-        end
-
         if player_manager.GetPlayerClass(self.Player) ~= "spectator" then
             self.faction = self.Player:GetNWInt("Faction")
             self.regiment = self.Player:GetNWInt("Regiment")
-            self.Regiment:SetSize( MRP.Regiments[self.faction][self.regiment]["whratio"] * 40, 40 )
+            local width = MRP.Regiments[self.faction][self.regiment]["whratio"] * 40
+            self.Regiment:SetSize( width, 40 )
             self.Regiment:SetImage(MRP.Regiments[self.faction][self.regiment]["insignia"])
-            self.Rank:SetImage(MRP.Ranks[self.faction][self.regiment][self.Player:GetNWInt("Rank")]["shoulderrank"])
+            self.Rank:SetImage(MRP.Ranks[self.faction][self.regiment][self.Player:MRPRankID()]["shoulderrank"])
         end
 
         if ( self.NumKills == nil or self.NumKills ~= self.Player:Frags() ) then
@@ -190,9 +189,12 @@ local PLAYER_LINE = {
                 self.Mute:SetImage( "icon32/unmuted.png" )
             end
 
-            self.Mute.DoClick = function( s ) self.Player:SetMuted( not self.Muted ) end
+            self.Mute.DoClick = function( _ )
+                self.Player:SetMuted( not self.Muted )
+            end
             self.Mute.OnMouseWheeled = function( s, delta )
-                self.Player:SetVoiceVolumeScale( self.Player:GetVoiceVolumeScale() + ( delta / 100 * 5 ) )
+                local vol = self.Player:GetVoiceVolumeScale() + ( delta / 100 * 5 )
+                self.Player:SetVoiceVolumeScale( vol )
                 s.LastTick = CurTime()
             end
 

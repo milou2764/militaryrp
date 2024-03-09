@@ -4,11 +4,15 @@ local function drawSlot(self, w, h)
     gwenFunc1(0, 0, w, h, Color(78, 78, 78, 169))
 end
 
+function Rect(_x, _y, _w, _h)
+    return { x = _x, y = _y, w = _w, h = _h }
+end
+
 function MRP.selectContainer(entPanel)
     if not entPanel.owner:IsPlayer() then return end
     local panel = entPanel:GetParent():GetParent()
 
-    if panel.SelectedContainer:IsVisible() and panel.SelectedContainer.gear.Capacity and panel.SelectedContainer.gear.Capacity > 0 then
+    if panel.SelectedContainer:IsVisible() and panel.SelectedContainer.gear.Capacity > 0 then
         for k = 0, panel.SelectedContainer.gear.Capacity - 1 do
             panel.InvSlot[k]:Remove()
         end
@@ -28,7 +32,9 @@ function MRP.drawSlotWithIcon(self, w, h)
     drawSlot(self, w, h)
     surface.SetDrawColor(255, 255, 255, 255)
     surface.SetTexture(self.iconID)
-    surface.DrawTexturedRect(self.leftBorderW * self.ss, self.topBorderW * self.ss, self.iconW, self.iconH)
+    surface.DrawTexturedRect(self.leftBorderW * self.ss,
+                             self.topBorderW * self.ss,
+                             self.iconW, self.iconH)
 end
 
 function MRP.screenScale()
@@ -71,7 +77,7 @@ function MRPAdjustableModelPanel:Init()
     self.vCamPos = Vector(33.666279, 23.161373, 37.288376)
 end
 
-function MRPAdjustableModelPanel:LayoutEntity(Entity)
+function MRPAdjustableModelPanel:LayoutEntity(_)
     return
 end
 
@@ -148,9 +154,9 @@ function MRPDragBase:Init()
     self.topBorderW = 18 * self.ss
 end
 
-local function MRPDragnDrop(dest, panels, bDoDrop, Command, x, y)
+local function MRPDragnDrop(dest, panels, bDoDrop, _, _, _)
     if bDoDrop then
-        for k, v in pairs(panels) do
+        for _, v in pairs(panels) do
             local origin = v:GetParent()
 
             if origin.owner ~= dest.owner then
@@ -185,7 +191,7 @@ local function MRPDragnDrop(dest, panels, bDoDrop, Command, x, y)
     end
 end
 
-function MRPDragBase:MakeDroppable(name, allowCopy)
+function MRPDragBase:MakeDroppable(name, _)
     self:Receiver(name, MRPDragnDrop)
 end
 
@@ -194,7 +200,7 @@ local MRPProgress = {}
 MRPProgress.fraction = 0
 MRPProgress.color = Color(255, 255, 255, 100)
 
-MRPProgress.getFraction = function(self)
+MRPProgress.getFraction = function()
     return 0
 end
 
@@ -205,7 +211,7 @@ function MRPProgress:Init()
     self.ss = MRP.screenScale()
 end
 
-MRPProgress.Paint = function(self, w, h)
+MRPProgress.Paint = function(self, _, _)
     local fraction = self.getFraction()
     surface.SetDrawColor(self.color)
     surface.DrawRect(0, (100 - 100 * fraction) * self.ss, 10 * self.ss, 100 * fraction * self.ss)

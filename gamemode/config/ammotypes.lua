@@ -4,7 +4,7 @@ hook.Add("Initialize", "InitializeAmmo", function()
 	MRP.GasDamage:SetDamage( 1 )
 	MRP.GasDamage:SetDamageType( DMG_NERVEGAS )
 
-	game.CleanUpMap()
+	--game.CleanUpMap()
 	game.AddAmmoType( {
 		name = "5.56x45mm NATO",
 		dmgtype = DMG_BULLET,

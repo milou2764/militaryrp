@@ -14,17 +14,25 @@ local function LoadModules()
     local root = GM.FolderName .. "/gamemode/modules/"
     local _, folders = file.Find(root .. "*", "LUA")
 
-    for _, folder in SortedPairs(folders, true) do
-        if MRP.disabledDefaults["modules"][folder] then continue end
+    local activatedMods = {}
 
+    for k, folder in pairs(folders) do
+        if not MRP.disabledDefaults.modules[folder] then
+            activatedMods[k] = folder
+        end
+    end
+
+    for _, folder in pairs(activatedMods) do
         for _, File in SortedPairs(file.Find(root .. folder .. "/sh_*.lua", "LUA"), true) do
-            if File == "sh_interface.lua" then continue end
-            include(root .. folder .. "/" .. File)
+            if File ~= "sh_interface.lua" then
+                include(root .. folder .. "/" .. File)
+            end
         end
 
         for _, File in SortedPairs(file.Find(root .. folder .. "/cl_*.lua", "LUA"), true) do
-            if File == "cl_interface.lua" then continue end
-            include(root .. folder .. "/" .. File)
+            if File ~= "cl_interface.lua" then
+                include(root .. folder .. "/" .. File)
+            end
         end
     end
 end
@@ -68,7 +76,8 @@ hook.Add("InitPostEntity", "MRPInitPostEntity", function()
         local label = vgui.Create("DLabel", panel)
         label:SetFont("DermaLarge")
         label:SetTextColor(Color(255, 255, 255, 255))
-        label:SetText("C'est la première fois que vous lancez une partie en militaryRP, nous allons configurer vos touches s'il vous plaît.")
+        label:SetText("C'est la première fois que vous lancez une partie en militaryRP," ..
+                      " nous allons configurer vos touches s'il vous plaît.")
         label:SizeToContents()
         label:Center()
         local button = vgui.Create("DButton", panel)
@@ -90,7 +99,7 @@ hook.Add("InitPostEntity", "MRPInitPostEntity", function()
             key:SetSize(200, 50)
             key:SetValue(MRP.keybinds.inventory)
 
-            key.OnChange = function(self, value)
+            key.OnChange = function(_, value)
                 MRP.keybinds.inventory = value
                 file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
             end
@@ -106,7 +115,7 @@ hook.Add("InitPostEntity", "MRPInitPostEntity", function()
             gasmaskKey:SetSize(200, 50)
             gasmaskKey:SetValue(MRP.keybinds.gasmask)
 
-            gasmaskKey.OnChange = function(self, value)
+            gasmaskKey.OnChange = function(_, value)
                 MRP.keybinds.gasmask = value
                 file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
             end
@@ -122,7 +131,7 @@ hook.Add("InitPostEntity", "MRPInitPostEntity", function()
             nvgsKey:SetSize(200, 50)
             nvgsKey:SetValue(MRP.keybinds.nvgs)
 
-            nvgsKey.OnChange = function(self, value)
+            nvgsKey.OnChange = function(_, value)
                 MRP.keybinds.nvgs = value
                 file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
             end

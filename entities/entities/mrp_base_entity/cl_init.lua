@@ -13,7 +13,7 @@ ENT.droppable = "nil"
 
 function ENT:dropFromInventoryPanel(entPanel)
     net.Start("MRPDrop")
-    net.WriteUInt(self.MRPID,7)
+    net.WriteUInt(self.MRPID, 7)
     net.WriteEntity(entPanel.owner)
     net.WriteString(entPanel:GetName())
     net.SendToServer()
@@ -24,12 +24,12 @@ function ENT:makeDroppable(slotPanel, slotName)
     slotPanel:MakeDroppable(slotName)
 end
 
-function ENT:createSlotPanel(parentPanel, target, x, y, w, h, context, slotName, leftBorderW, iconW)
+function ENT:createSlotPanel(parentPanel, target, rect, context, slotName, leftBorderW, iconW)
     local slotPanel = vgui.Create("MRPDragBase", parentPanel)
     slotPanel:SetName(slotName)
     slotPanel:SetDropPos("5")
-    slotPanel:SetPos(x,y)
-    slotPanel:SetSize(w,h)
+    slotPanel:SetPos(rect.x, rect.y)
+    slotPanel:SetSize(rect.w, rect.h)
     slotPanel.leftBorderW = leftBorderW or slotPanel.leftBorderW
     slotPanel.iconW = leftBorderW or slotPanel.iconW
     slotPanel.owner = target
