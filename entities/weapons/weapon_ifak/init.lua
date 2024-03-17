@@ -85,7 +85,12 @@ function SWEP:SecondaryAttack()
 end
 
 function SWEP:SetUpBodygroups()
-    self:GetOwner():GetViewModel():SetBodygroup(2, math.Clamp(self:GetOwner():GetAmmoCount("Bandages"), 0, 2))
+    self:GetOwner():GetViewModel():SetBodygroup(
+        2,
+        math.Clamp(self:GetOwner():GetAmmoCount("Bandages"),
+        0,
+        2)
+    )
     am = self:GetOwner():GetAmmoCount("Hemostats")
 
     if am > 0 then

@@ -37,7 +37,7 @@ if SERVER then
         self:GetPhysicsObject():EnableMotion(false)
     end
 
-    function ENT:Use(activator, caller)
+    function ENT:Use(_, _)
         -- check if there is an item on top of the crate
         local items = ents.FindInSphere(self:GetPos() + Vector(0, 0, 30), 5)
 
@@ -65,12 +65,12 @@ properties.Add("classe d'items", {
     MenuLabel = "Classe d'items",
     Order = 601,
     MenuIcon = "icon16/application_form_edit.png",
-    Filter = function(self, ent, ply)
+    Filter = function(_, ent, _)
         if ent:GetClass() == "mrp_infinite_supply_crate" then return true end
 
         return false
     end,
-    MenuOpen = function(self, option, ent, tr)
+    MenuOpen = function(self, option, ent, _)
         --
         -- Add a submenu to our automatically created menu option
         --
@@ -97,7 +97,7 @@ properties.Add("classe d'items", {
         net.WriteString(itemClass)
         self:MsgEnd()
     end,
-    Receive = function(self, length, ply)
+    Receive = function(_, _, _)
         local ent = net.ReadEntity()
         local itemClass = net.ReadString()
         if not IsValid(ent) then return end

@@ -2,7 +2,7 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 include("shared.lua")
 
-function ENT:Use(activator, caller, useType, value)
+function ENT:Use(activator, _, _, _)
     if activator:GetNWInt(self.MRPCategory) < 2 then
         MRP.PickupWep(activator, self)
     else

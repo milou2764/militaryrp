@@ -11,7 +11,7 @@ ENT.Slot10 = 1
 
 function ENT:Initialize()
     baseclass.Get("mrp_base_gear").Initialize(self)
-    self:SetBodygroup(1,self.pocketID)
+    self:SetBodygroup(1, self.pocketID)
 end
 
 function ENT:equip(ply)

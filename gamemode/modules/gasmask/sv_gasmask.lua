@@ -3,7 +3,7 @@ util.AddNetworkString("GASMASK_RequestToggle")
 
 concommand.Add("gasmask_toggle", function(ply)
     if ply:GetNWInt("Gasmask") > 1 then
-        if not ply:GetNWInt("GASMASK_SpamDelay") or ply:GetNWInt("GASMASK_SpamDelay") < CurTime() then
+        if ply:GetNWInt("GASMASK_SpamDelay") < CurTime() then
             ply:SetNWInt("GASMASK_SpamDelay", math.Round(CurTime()) + 4)
             ply.GASMASK_LastWeapon = ply:GetActiveWeapon()
             ply:SetSuppressPickupNotices(true)
@@ -30,7 +30,11 @@ concommand.Add("gasmask_toggle", function(ply)
             end
 
             timer.Simple(1.8, function()
-                if ply.GASMASK_LastWeapon:IsValid() then ply:SelectWeapon(ply.GASMASK_LastWeapon) end -- eliminate the case where the player do not hold a weapon
+                -- eliminate the case where the player do not hold a weapon
+                if ply.GASMASK_LastWeapon:IsValid() then
+                    ply:SelectWeapon(ply.GASMASK_LastWeapon)
+                end
+
                 ply:StripWeapon("weapon_gasmask")
                 ply:SetSuppressPickupNotices(false)
             end)

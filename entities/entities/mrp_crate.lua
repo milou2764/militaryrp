@@ -21,7 +21,7 @@ if SERVER then
         return ent
     end
 
-    function ENT:PhysicsCollide(data, collider)
+    function ENT:PhysicsCollide(data, _)
         if not IsFirstTimePredicted() then return end
         local item = data.HitEntity
 
@@ -50,7 +50,9 @@ else
             local ent = ply:GetEyeTrace().Entity
             if not ent or not IsValid(ent) then return end
 
-            if ent:GetClass() == "mrp_crate" and (not MRP.chestPanel or not IsValid(MRP.chestPanel)) and ply:GetPos():Distance(ent:GetPos()) < 100 then
+            local goodDistance = ply:GetPos():Distance(ent:GetPos()) < 100
+            local chestOpen = MRP.chestPanel and IsValid(MRP.chestPanel)
+            if ent:GetClass() == "mrp_crate" and not chestOpen and goodDistance then
                 if not MRP.plyInvPanel or not IsValid(MRP.plyInvPanel) then
                     MRP.createDropZone()
                     MRP.OpenPlyInvPanel(ply)

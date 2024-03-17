@@ -3,7 +3,7 @@ include("shared.lua")
 function ENT:dropFromInventoryPanel(entPanel)
     if entPanel:GetName() == self.MRPCategory then
         net.Start("PlayerDropGear")
-        net.WriteUInt(self.MRPID,7)
+        net.WriteUInt(self.MRPID, 7)
         net.WriteEntity(entPanel.owner)
         net.WriteString(entPanel:GetName())
         net.SendToServer()
@@ -45,10 +45,10 @@ function ENT:unmount(target)
 end
 
 function ENT:makeDroppable(slotPanel, slotName)
-    slotPanel:Receiver(slotName, function(dest, panels, bDoDrop, Command, x, y)
+    slotPanel:Receiver(slotName, function(dest, panels, bDoDrop, _, _, _)
         if bDoDrop and not dest.entPanel then
             gear = self
-            for k, v in pairs(panels) do
+            for _, v in pairs(panels) do
                 local origin = v:GetParent()
                 if origin.owner ~= dest.owner then
                     net.Start("ItemSwitchOwner")

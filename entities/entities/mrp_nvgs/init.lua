@@ -4,7 +4,7 @@ include("shared.lua")
 
 function ENT:Initialize()
     baseclass.Get("mrp_base_gear").Initialize(self)
-    self:SetBodygroup(0,1)
+    self:SetBodygroup(0, 1)
 end
 
 function ENT:canBeEquipped(ply)

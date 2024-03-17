@@ -2,7 +2,7 @@ util.AddNetworkString("MRPSaveHolster")
 util.AddNetworkString("MRPUpdateHolsters")
 util.AddNetworkString("MRPRequestHolsters")
 
-net.Receive("MRPSaveHolster", function(len,ply)
+net.Receive("MRPSaveHolster", function(_, ply)
     if not ply:IsAdmin() then return end
     local wepClass = net.ReadString()
     local data = net.ReadTable()

@@ -17,12 +17,14 @@ ENT.Slot20 = 1
 function ENT:drop(slotName, target, activator)
     local ent = baseclass.Get("mrp_base_gear").drop(self, slotName, target, activator)
     if target:IsPlayer() then
-        for k = ent.StartingIndex,ent.StartingIndex + ent.Capacity - 1 do
+        for k = ent.StartingIndex, ent.StartingIndex + ent.Capacity - 1 do
             ent["Slot" .. k] = target:GetNWInt("Inventory" .. k)
             ent["Slot" .. k .. "Armor"] = target:GetNWInt("Inventory" .. k .. "Armor")
             ent["Slot" .. k .. "Ammo"] = target:GetNWInt("Inventory" .. k .. "Ammo")
             if MRP.getMRPEnt(target:GetNWInt("Inventory" .. k)).ammoName then
-                target:RemoveAmmo(target:GetNWInt("Inventory" .. k .. "Ammo"), MRP.getMRPEnt(target:GetNWInt("Inventory" .. k)).ammoName)
+                local ammo = target:GetNWInt("Inventory" .. k .. "Ammo")
+                local ammoType = MRP.getMRPEnt(target:GetNWInt("Inventory" .. k)).ammoName
+                target:RemoveAmmo(ammo, ammoType)
             else
                 target:SetNWInt("Inventory" .. k, 1)
             end
@@ -37,14 +39,16 @@ function ENT:equip(ply)
         ply:SetNWInt("Inventory" .. k, self["Slot" .. k])
         ply:SetNWInt("Inventory" .. k .. "Armor", self["Slot" .. k .. "Armor"])
         if MRP.getMRPEnt(self["Slot" .. k]).ammoName then
-            ply:GiveAmmo(self["Slot" .. k .. "Ammo"], MRP.getMRPEnt(self["Slot" .. k]).ammoName)
+            local ammo = self["Slot" .. k .. "Ammo"]
+            local ammoType = MRP.getMRPEnt(self["Slot" .. k]).ammoName
+            ply:GiveAmmo(ammo, ammoType)
             ply:SetNWInt("Inventory" .. k .. "Ammo", self["Slot" .. k .. "Ammo"])
         end
     end
     baseclass.Get("mrp_base_gear").equip(self, ply)
 end
 
-function ENT:Use(activator, caller, useType, value)
+function ENT:Use(activator, _, _, _)
     if CurTime() > activator:GetNWInt("pickupTime") then
         activator:SetNWInt("pickupTime", CurTime() + 1)
         if self:canBeEquipped(activator) then

@@ -32,7 +32,7 @@ SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "none"
 SWEP.Secondary.Ammo = "none"
 
-function SWEP:DoDrawCrosshair(x, y)
+function SWEP:DoDrawCrosshair(_, _)
     return true
 end
 

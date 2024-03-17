@@ -24,7 +24,7 @@ function ENT:makeDroppable(slotPanel, slotName)
     slotPanel:MakeDroppable(slotName)
 end
 
-function ENT:createSlotPanel(parentPanel, target, rect, context, slotName, leftBorderW, iconW)
+function ENT:createSlotPanel(parentPanel, target, rect, context, slotName, leftBorderW, _)
     local slotPanel = vgui.Create("MRPDragBase", parentPanel)
     slotPanel:SetName(slotName)
     slotPanel:SetDropPos("5")

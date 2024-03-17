@@ -27,7 +27,7 @@ hook.Add("PopulateToolMenu", "CustomMenuSettings", function()
     local gasmaskKeyBinder = vgui.Create("MRPBinder")
     gasmaskKeyBinder:SetValue(MRP.keybinds.gasmask)
 
-    gasmaskKeyBinder.OnChange = function(self, val)
+    gasmaskKeyBinder.OnChange = function(_, val)
         MRP.keybinds.gasmask = val
         file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
     end
@@ -36,7 +36,7 @@ hook.Add("PopulateToolMenu", "CustomMenuSettings", function()
     local nvgsKeyBinder = vgui.Create("MRPBinder")
     nvgsKeyBinder:SetValue(MRP.keybinds.nvgs)
 
-    nvgsKeyBinder.OnChange = function(self, val)
+    nvgsKeyBinder.OnChange = function(_, val)
         MRP.keybinds.nvgs = val
         file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
     end
@@ -45,29 +45,45 @@ hook.Add("PopulateToolMenu", "CustomMenuSettings", function()
     local inventoryKeyBinder = vgui.Create("MRPBinder")
     inventoryKeyBinder:SetValue(MRP.keybinds.inventory)
 
-    inventoryKeyBinder.OnChange = function(self, val)
+    inventoryKeyBinder.OnChange = function(_, val)
         MRP.keybinds.inventory = val
         file.Write("mrp/keybinds.txt", util.TableToJSON(MRP.keybinds))
     end
 
     inventoryKeyBinder:Hide()
 
-    spawnmenu.AddToolMenuOption("Utilities", "Stuff", "Custom_Menu", "#My Custom Menu", "", "", function(panel)
-        panel:ClearControls()
-        panel:NumSlider("Gravity", "sv_gravity", 0, 600)
-    end)
+    spawnmenu.AddToolMenuOption(
+        "Utilities",
+        "Stuff",
+        "Custom_Menu",
+        "#My Custom Menu",
+        "",
+        "",
+        function(panel)
+            panel:ClearControls()
+            panel:NumSlider("Gravity", "sv_gravity", 0, 600)
+        end
+    )
 
     -- Add stuff here
-    spawnmenu.AddToolMenuOption("Options", "MilitaryRP", "MilitaryRP_keybinds", "#Bind keys", "", "", function(panel)
-        panel:ClearControls()
-        panel:Help("Gasmask")
-        panel:AddItem(gasmaskKeyBinder)
-        gasmaskKeyBinder:Show()
-        panel:Help("NVGs")
-        panel:AddItem(nvgsKeyBinder)
-        nvgsKeyBinder:Show()
-        panel:Help("Inventory")
-        panel:AddItem(inventoryKeyBinder)
-        inventoryKeyBinder:Show()
-    end)
+    spawnmenu.AddToolMenuOption(
+        "Options",
+        "MilitaryRP",
+        "MilitaryRP_keybinds",
+        "#Bind keys",
+        "",
+        "",
+        function(panel)
+            panel:ClearControls()
+            panel:Help("Gasmask")
+            panel:AddItem(gasmaskKeyBinder)
+            gasmaskKeyBinder:Show()
+            panel:Help("NVGs")
+            panel:AddItem(nvgsKeyBinder)
+            nvgsKeyBinder:Show()
+            panel:Help("Inventory")
+            panel:AddItem(inventoryKeyBinder)
+            inventoryKeyBinder:Show()
+        end
+    )
 end)

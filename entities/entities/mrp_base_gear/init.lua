@@ -19,7 +19,7 @@ function ENT:equip(ply)
     self:Remove()
 end
 
-function ENT:Use(activator, caller, useType, value)
+function ENT:Use(activator, _, _, _)
     if self:canBeEquipped(activator) then
         self:equip(activator)
     else

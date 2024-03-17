@@ -13,7 +13,7 @@ end
 function ENT:drop(slotName, target, activator)
     target:SetNWInt(slotName, 1)
     local ent = ents.Create(self.ClassName)
-    ent:SetPos(activator:GetPos() + Vector(0,0,10))
+    ent:SetPos(activator:GetPos() + Vector(0, 0, 10))
     ent:Spawn()
     return ent
 end

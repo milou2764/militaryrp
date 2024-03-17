@@ -14,7 +14,7 @@ function ENT:Initialize()
     self:SetCustomCollisionCheck(true)
 end
 
-function ENT:Use(activator, caller, useType, value)
+function ENT:Use(activator, _, _, _)
     MRP.PickupAmmoBox(activator, self)
 end
 
