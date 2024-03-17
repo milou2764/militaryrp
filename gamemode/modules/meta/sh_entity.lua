@@ -4,29 +4,26 @@ function meta:MRPHas(category)
     return self:GetNWInt(category) > 1
 end
 
-function meta:GetRLAmmo()
-    return self:GetNWInt('RocketLauncherAmmo')
-end
-
-function meta:GetRLauncher()
+function meta:MRPRLauncher()
     return MRP.getMRPEnt(self:GetNWInt('RocketLauncher'))
 end
 
-function meta:GetPrimaryWep()
-    return MPR.getMRPEnt(self:GetNWInt('PrimaryWep'))
+function meta:MRPRLAmmo()
+    return self:GetNWInt('RocketLauncherAmmo')
 end
 
---[[
-    Get primary weapon ammo
---]]
-function meta:GetPWepAmmo()
+function meta:MRPPWep()
+    return MRP.getMRPEnt(self:GetNWInt('PrimaryWep'))
+end
+
+function meta:MRPPWepAmmo()
     return self:GetNWInt('PrimaryWepAmmo')
 end
 
-function meta:GetSecWep()
-    return MPR.getMRPEnt(self:GetNWInt('SecondaryWep'))
+function meta:MRPSecWep()
+    return MRP.getMRPEnt(self:GetNWInt('SecondaryWep'))
 end
 
-function meta:GetPrimaryWep()
-    return MPR.getMRPEnt(self:GetNWInt('PrimaryWep'))
+function meta:MRPSecWepAmmo()
+    return self:GetNWInt('SecondaryWepAmmo')
 end

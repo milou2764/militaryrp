@@ -1,5 +1,5 @@
-local Faction
-local Regiment = 0
+local Faction = 1
+local Regiment = 1
 local CharacPanel
 local BodygroupSlider
 
@@ -79,9 +79,9 @@ local function character_creation( ply )
 
         function Model:LayoutEntity( _ ) return end	-- Disable cam rotation
 
-        local headpos =
-            Model.Entity:GetBonePosition(Model.Entity:LookupBone("ValveBiped.Bip01_Head1"))
-        Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
+        --local headpos =
+         --   Model.Entity:GetBonePosition(Model.Entity:LookupBone("ValveBiped.Bip01_Head1"))
+        --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
         SpecPanel = vgui.Create( "EditablePanel", CharacPanel )
         SpecPanel:SetPos( ScrW() / 2, 4 * ScrH() / 10 )
@@ -183,7 +183,7 @@ local function character_creation( ply )
 
             Model:SetModel(MRP.PlayerModels[Faction][ModelIndex].model)
             Model.Entity:SetModelScale(Size / 180)
-            Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
+            --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
             LoadBodygroup()
         end
@@ -227,9 +227,9 @@ local function character_creation( ply )
         scrollPanel:SetSize(ScrW(), h)
         scrollPanel:SetOverlap( -40 )
 
-        for i = 0, #MRP.Regiments[0] do
+        for i = 1, #MRP.Regiments[1] do
             local Reg = vgui.Create("DImageButton")
-            Reg:SetImage(MRP.Regiments[0][i]["insignia"])
+            Reg:SetImage(MRP.Regiments[1][i]["insignia"])
             Reg:SizeToContents()
             local ratio = Reg:GetWide() / Reg:GetTall()
             Reg:SetWide(h * ratio)
@@ -244,7 +244,7 @@ local function character_creation( ply )
     end
 
     FranceButton.DoClick = function()
-        Faction = 0
+        Faction = 1
         ChooseLabel:SetText("Choisissez votre régiment")
         ChooseLabel:SizeToContents()
         ChooseLabel:SetPos( ScrW() / 2 - ChooseLabel:GetWide() / 2, 200 )
@@ -256,7 +256,7 @@ local function character_creation( ply )
     RebelButton.DoClick = function()
         -- dire que ça n'est pas encore implémenté
         LocalPlayer():ChatPrint("Cette faction n'est pas encore implémentée")
-        -- Faction = 1
+        -- Faction = 2
         -- ChooseLabel:Remove()
         -- FranceButton:Remove()
         -- RebelButton:Remove()

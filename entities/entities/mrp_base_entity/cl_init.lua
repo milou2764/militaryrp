@@ -24,14 +24,12 @@ function ENT:makeDroppable(slotPanel, slotName)
     slotPanel:MakeDroppable(slotName)
 end
 
-function ENT:createSlotPanel(parentPanel, target, rect, context, slotName, leftBorderW, _)
+function ENT:createSlotPanel(parentPanel, target, rect, context, slotName)
     local slotPanel = vgui.Create("MRPDragBase", parentPanel)
     slotPanel:SetName(slotName)
     slotPanel:SetDropPos("5")
     slotPanel:SetPos(rect.x, rect.y)
     slotPanel:SetSize(rect.w, rect.h)
-    slotPanel.leftBorderW = leftBorderW or slotPanel.leftBorderW
-    slotPanel.iconW = leftBorderW or slotPanel.iconW
     slotPanel.owner = target
     slotPanel.context = context
     local iconName = MRP.icons[slotPanel:GetName()]

@@ -4,6 +4,10 @@ function meta:MRPGetID(cat)
     return meta:GetNWInt(cat)
 end
 
+function meta:MRPCharacterID()
+    return self:GetNWInt('CharacterID')
+end
+
 function meta:RPName()
     return self:GetNWString('RPName')
 end
@@ -35,8 +39,9 @@ end
 function meta:GetRPName()
     return self:GetNWString('RPName')
 end
-function meta:GetCharacterID()
-    return self:GetNWInt('CharacterID')
+
+function meta:MRPSecondaryWep()
+    return self:GetNWInt('SecondaryWep')
 end
 
 function meta:MRPHas(category)

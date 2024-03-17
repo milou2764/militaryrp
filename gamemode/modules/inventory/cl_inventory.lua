@@ -3,6 +3,10 @@ MRP.plyInvPanel = nil
 MRP.ragdollInvPanel = nil
 MRP.chestPanel = nil
 
+local function Rect(x, y, w, h)
+    return { x = x, y = y, w = w, h = h }
+end
+
 -- inventory columns
 local inv_columns = 5
 
@@ -118,7 +122,7 @@ function MRP.OpenRagdollInvPanel(target)
         PrimaryWep.progressBar:SetX(340)
         PrimaryWep.progressBar:SetSize(10, 100)
         PrimaryWep.progressBar.getFraction = function()
-            return target:GetPrimaryWepAmmo() / target:GetPrimaryWep().clipSize
+            return target:MRPWepAmmo() / target:MRPPWep().clipSize
         end
     end
     if target:GetNWInt('SecondaryWep') > 1 then
@@ -127,7 +131,7 @@ function MRP.OpenRagdollInvPanel(target)
         SecondaryWep.progressBar:SetX(215)
         SecondaryWep.progressBar:SetSize(10, 100)
         SecondaryWep.progressBar.getFraction = function()
-            return target:GetSecondaryWepAmmo() / target:GetSecondaryWep().clipSize
+            return target:MRPSecWepAmmo() / target:MRPSecWep().clipSize
         end
     end
     if target:MRPHas('RocketLauncher') then
@@ -136,7 +140,7 @@ function MRP.OpenRagdollInvPanel(target)
         RocketLauncher.progressBar:SetX(590)
         RocketLauncher.progressBar:SetSize(10, 100)
         RocketLauncher.progressBar.getFraction = function()
-            return target:GetRLAmmo() / target:GetRLauncher().clipSize
+            return target:MRPRLAmmo() / target:MRPRLauncher().clipSize
         end
     end
 
@@ -177,7 +181,7 @@ function MRP.OpenPlyInvPanel(ply)
         PrimaryWep.progressBar = vgui.Create('MRPProgress',  PrimaryWep)
         PrimaryWep.progressBar:SetX(340)
         PrimaryWep.progressBar:SetSize(10, 100)
-        local swep = ply:GetWeapon(ply:GetPrimaryWep().wepClass)
+        local swep = ply:GetWeapon(ply:MRPPWep().wepClass)
         PrimaryWep.progressBar.getFraction = function()
             if IsValid(swep) then
                 return swep:Clip1() / swep.Primary.ClipSize
@@ -191,7 +195,7 @@ function MRP.OpenPlyInvPanel(ply)
         SecondaryWep.progressBar = vgui.Create('MRPProgress',  SecondaryWep)
         SecondaryWep.progressBar:SetX(215)
         SecondaryWep.progressBar:SetSize(10, 100)
-        local sswep = ply:GetWeapon(ply:GetSecondaryWep().wepClass)
+        local sswep = ply:GetWeapon(ply:MRPSecWep().wepClass)
         SecondaryWep.progressBar.getFraction = function()
             if IsValid(sswep) then
                 return sswep:Clip1() / sswep.Primary.ClipSize
@@ -205,7 +209,7 @@ function MRP.OpenPlyInvPanel(ply)
         RocketLauncher.progressBar = vgui.Create('MRPProgress',  RocketLauncher)
         RocketLauncher.progressBar:SetX(590)
         RocketLauncher.progressBar:SetSize(10, 100)
-        local rlauncher = ply:GetWeapon(ply:GetRLauncher().wepClass)
+        local rlauncher = ply:GetWeapon(ply:MRPRLauncher().wepClass)
         RocketLauncher.progressBar.getFraction = function()
             if IsValid(rlauncher) then
                 return rlauncher:Clip1() / rlauncher.Primary.ClipSize
@@ -290,9 +294,10 @@ function CreateInventoryPanel(target, context)
     end
 
     local _baseclass = baseclass.Get('mrp_base_helmet')
+    local rect = Rect( 500, 25, 100, 100 )
     panel.Helmet = _baseclass:createSlotPanel( panel,
                                                target,
-                                               Rect( 500, 25, 100, 100 ),
+                                               rect,
                                                context,
                                                'Helmet').entPanel or {} -- INDEX 2
     if IsValid(panel.Helmet) then
@@ -358,29 +363,38 @@ function CreateInventoryPanel(target, context)
     end
     panel.Uniform.fullness.getFraction = calcFilledUniformSlotCount
 
-    local targetPrimaryWep = target:GetPrimaryWep()
-    panel.PrimaryWep = targetPrimaryWep:createSlotPanel( panel,
-                                                         target,
-                                                         Rect( 25, 580, 350, 100 ),
-                                                         context,
-                                                         'PrimaryWep',
-                                                         100,
-                                                         128).entPanel
+    local targetPrimaryWep = target:MRPPWep()
+    panel.PrimaryWep =
+        targetPrimaryWep:createSlotPanel(
+            panel,
+            target,
+            Rect( 25, 580, 350, 100 ),
+            context,
+            'PrimaryWep',
+            100,
+            128
+        ).entPanel
 
-    panel.SecWep = target:GetSecWep():createSlotPanel( panel,
-                                                       target,
-                                                       Rect( 25 + 350 + 25, 580, 225, 100 ),
-                                                       context,
-                                                       'SecondaryWep',
-                                                       80).entPanel
+    panel.SecWep =
+        target:MRPSecWep():createSlotPanel(
+            panel,
+            target,
+            Rect( 25 + 350 + 25, 580, 225, 100 ),
+            context,
+            'SecondaryWep',
+            80
+        ).entPanel
 
-    panel.RLauncher = target:GetRLauncher():createSlotPanel(panel,
-                                                            target,
-                                                            Rect( 25, 705, 600, 100 ),
-                                                            context,
-                                                            'RocketLauncher',
-                                                            170,
-                                                            256).entPanel
+    panel.RLauncher =
+        target:MRPRLauncher():createSlotPanel(
+            panel,
+            target,
+            Rect( 25, 705, 600, 100 ),
+            context,
+            'RocketLauncher',
+            170,
+            256
+        ).entPanel
 
     if IsValid(panel.Rucksack) then
         panel.Rucksack.OverlayFade = 255
@@ -414,7 +428,7 @@ hook.Add('Tick', 'InventoryOpening', function()
         keyReleased = true
     end
 end)
-net.Receive('MRPPlayerNVGsToggle', function()
+net.Receive('MRPPlayerNVGsToggle', function(_, ply)
     local bodyId
     if ply:GetNWBool('NVGsOn') then
         bodyId = 1

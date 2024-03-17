@@ -1,13 +1,18 @@
 file.CreateDir('mrp') -- garrysmod/data/mrp
 
+local function RegisterModel(ent)
+    MRP.entityModels[ent.ClassName] = ent.model
+end
+
 --[[
     Assign a unique and immutable ID to a scripted entity
     @param class The class name of the scripted entity
 --]]
-local function RegisterEntity(class)
+function MRPRegisterEntity(class)
+    print('### INITIALIZING ' .. class)
     local ent = scripted_ents.Get(class) -- get sent
     ent.MRPID = table.insert(MRP.ents, class)
-    ent:MRPRegisterModel()
+    RegisterModel(ent)
     scripted_ents.Register(ent, class) -- save changes
 end
 
@@ -18,33 +23,23 @@ local function MRPInitEntities()
     }
     MRP.entityModels = {}
     MRP.weaponClasses = {}
-    RegisterEntity('mrp_nvgs')
-    RegisterEntity('mrp_helmet1')
-    RegisterEntity('mrp_helmet2')
-    RegisterEntity('mrp_helmet3')
-    RegisterEntity('mrp_ent_gasmask')
-    RegisterEntity('mrp_rucksack1')
-    RegisterEntity('mrp_rucksack2')
-    RegisterEntity('mrp_vest1')
-    RegisterEntity('mrp_vest2')
-    RegisterEntity('mrp_vest3')
-    RegisterEntity('mrp_vest4')
-    RegisterEntity('mrp_vest5')
-    RegisterEntity('mrp_vest6')
-    RegisterEntity('mrp_vest7')
-    RegisterEntity('mrp_vest8')
-    RegisterEntity('mrp_ammobox_9mm')
-    RegisterEntity('mrp_ammobox_12gauge')
-    RegisterEntity('mrp_ammobox_45acp')
-    RegisterEntity('mrp_ammobox_50bmg')
-    RegisterEntity('mrp_ammobox_357magnum')
-    RegisterEntity('mrp_ammobox_545mm')
-    RegisterEntity('mrp_ammobox_556mm')
-    RegisterEntity('mrp_ammobox_762_m43')
-    RegisterEntity('mrp_ammobox_762_nato')
-    RegisterEntity('mrp_ammobox_762_r')
-    RegisterEntity('mrp_m92beretta')
-    RegisterEntity('mrp_matador')
+    MRPRegisterEntity('mrp_nvgs')
+    MRPRegisterEntity('mrp_helmet1')
+    MRPRegisterEntity('mrp_helmet2')
+    MRPRegisterEntity('mrp_helmet3')
+    MRPRegisterEntity('mrp_ent_gasmask')
+    MRPRegisterEntity('mrp_rucksack1')
+    MRPRegisterEntity('mrp_rucksack2')
+    MRPRegisterEntity('mrp_vest1')
+    MRPRegisterEntity('mrp_vest2')
+    MRPRegisterEntity('mrp_vest3')
+    MRPRegisterEntity('mrp_vest4')
+    MRPRegisterEntity('mrp_vest5')
+    MRPRegisterEntity('mrp_vest6')
+    MRPRegisterEntity('mrp_vest7')
+    MRPRegisterEntity('mrp_vest8')
+    MRPRegisterEntity('mrp_m92beretta')
+    MRPRegisterEntity('mrp_matador')
     hook.Call('MRPInitEntities')
     hook.Call('MRPEntitiesInitialized')
     MRP.EntitiesInitialized = true
@@ -79,6 +74,7 @@ MRP.disabledDefaults.modules = {
     npcspawn = false,
     interactivemap = true,
 }
+
 MRP.Factions = {
     [0] = {
         name = 'France'

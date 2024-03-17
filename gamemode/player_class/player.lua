@@ -60,6 +60,16 @@ function PLAYER:Loadout()
 	self.Player:Give("re_hands")
 end
 
+function PLAYER:ViewModelChanged() end
+function PLAYER:StartMove() end
+function PLAYER:Move() end
+function PLAYER:FinishMove() end
+function PLAYER:CreateMove() end
+function PLAYER:CalcView() end
+function PLAYER:ShouldDrawLocal() end
+function PLAYER:PreDrawViewModel() end
+function PLAYER:PostDrawViewModel() end
+
 function PLAYER:SetModel()
 
 	local cl_playermodel = self.Player:GetInfo( "cl_playermodel" )

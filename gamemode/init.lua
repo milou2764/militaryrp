@@ -56,7 +56,7 @@ util.AddNetworkString("MRPCreateRagdollCS")
 util.AddNetworkString("MRPPlayerSpawn")
 local existingTable =
     sql.QueryValue(
-        "SELECT sql FROM sqlite_master" ..
+        "SELECT sql FROM sqlite_master " ..
         "WHERE name = 'mrp_characters';"
     )
 --print(existingTable.sql)
@@ -64,7 +64,7 @@ local request =
     "CREATE TABLE mrp_characters(" ..
     "UID INTEGER PRIMARY KEY autoincrement," ..
     "SteamID64 BIGINT NOT NULL," ..
-    "Faction BOOL," ..
+    "Faction TINYINT," ..
     "Regiment TINYINT," ..
     "Rank TINYINT DEFAULT '0'," ..
     "RPName VARCHAR(45)," ..
@@ -93,8 +93,14 @@ local request =
 
 if existingTable ~= request then
     --print(request)
+    print("########## MRP TABLE CHANGED SINCE LAST TIME")
+    print(existingTable)
+    print(request)
+    print("DELETING ...")
     sql.Query("DROP TABLE mrp_characters;")
     sql.Query(request)
+else
+    print("TABLE DID NOT CHANGED")
 end
 
 local fol = GM.FolderName .. "/gamemode/modules/"
@@ -130,11 +136,14 @@ end
 local function CheckData(ply)
     local data =
         sql.Query(
-            "SELECT * FROM mrp_characters WHERE SteamID64 = " .. ply:SteamID64()
+            "SELECT * FROM mrp_characters WHERE SteamID64 = " .. ply:SteamID64() .. ";"
         )
 
     --PrintTable(data)
-    if not data then
+    if data == false then
+        print("### MRP error selecting characters")
+        print(sql.LastError())
+    elseif data == nil then
         net.Start("CharacterCreation")
         net.Send(ply)
     else
@@ -211,8 +220,8 @@ function MRP.SaveInventoryData(ply)
 
     Inventory = table.concat(Inventory, ",")
     sql.Query(
-        "UPDATE mrp_characters SET Inventory = '" .. Inventory .. "' " ..
-            "WHERE UID = " .. ply:GetCharacterID()
+        "UPDATE mrp_characters SET Inventory = " .. SQLStr(Inventory) .. " " ..
+        "WHERE UID = " .. ply:MRPCharacterID() .. ";"
     )
 end
 
@@ -224,8 +233,8 @@ function MRP.SaveBodyGroupsData(ply)
     end
 
     sql.Query(
-        "UPDATE mrp_characters SET BodyGroups = '" .. BodyGroups .. "' " ..
-            "WHERE UID = " .. ply:GetCharacterID()
+        "UPDATE mrp_characters SET BodyGroups = " .. SQLStr(BodyGroups) .. " " ..
+        "WHERE UID = " .. ply:MRPCharacterID()
     )
 end
 
@@ -271,8 +280,8 @@ end
 function MRP.PickupRucksack(ply, ent)
     ply:SetNWInt("Rucksack", ent.MRPID)
     sql.Query(
-        "UPDATE mrp_characters SET Rucksack = " .. tostring(ent.MRPID) ..
-        " WHERE UID = " .. tostring(ply:GetCharacterID())
+        "UPDATE mrp_characters SET Rucksack = " .. ent.MRPID .. " " ..
+        "WHERE UID = " .. ply:MRPCharacterID() .. ";"
     )
     local faction = ply:MRPFaction()
     local bodyGroup = ent.BodyGroup[faction][ply:GetNWInt("ModelIndex")][1]
@@ -300,8 +309,8 @@ function MRP.PickupRucksack(ply, ent)
     Inventory = table.concat(Inventory, ",")
     sql.Query(
         "UPDATE mrp_characters" ..
-        "SET Inventory = '" .. Inventory .. "' " ..
-        "WHERE UID = " .. tostring(ply:GetCharacterID()))
+        "SET Inventory = " .. SQLStr(Inventory) .. " " ..
+        "WHERE UID = " .. ply:MRPCharacterID())
     ent:Remove()
 end
 
@@ -351,22 +360,46 @@ net.Receive("CharacterInformation", function(_, ply)
     end
 
     request =
-        "INSERT INTO mrp_characters VALUES( " ..
-        ply:SteamID64() .. ", " ..
-        tostring(ply:GetNWInt("Faction")) .. ", " ..
-        tostring(ply:GetNWInt("Regiment")) .. ", " ..
-        SQLStr(ply:GetNWString("RPName")) .. ", " ..
-        tostring(ply:GetNWInt("ModelIndex")) .. ", " ..
-        tostring(ply:GetNWInt("Size")) .. ", " ..
-        tostring(ply:GetNWInt("Skin")) .. ", '" ..
-        ply.BodyGroups .. "') "
-    sql.Query(request)
-    local sqlret =
+        "INSERT INTO mrp_characters (" ..
+            "SteamID64, " ..
+            "Faction, " ..
+            "Regiment, " ..
+            "RPName, " ..
+            "ModelIndex, " ..
+            "Size, " ..
+            "Skin, " ..
+            "BodyGroups)\n" ..
+        "VALUES\n(" ..
+            ply:SteamID64() .. ", " ..
+            ply:GetNWInt("Faction") .. ", " ..
+            ply:GetNWInt("Regiment") .. ", " ..
+            SQLStr(ply:GetNWString("RPName")) .. ", " ..
+            ply:GetNWInt("ModelIndex") .. ", " ..
+            ply:GetNWInt("Size") .. ", " ..
+            ply:GetNWInt("Skin") .. ", " ..
+            SQLStr(ply.BodyGroups) .. ");"
+    print(request)
+    local sqlret = sql.Query(request)
+    if sqlret == false then
+        print("### MRP error in character insertion")
+        print(sql.LastError())
+    else
+        print("### MRP character insertion succeed")
+    end
+    sqlret =
         sql.Query(
             "SELECT * " ..
             "FROM mrp_characters " ..
             "WHERE SteamID64 = " .. ply:SteamID64() .. " " ..
             "AND RPName = " .. SQLStr(ply:GetNWString("RPName")) .. ";")
+    if sqlret == false then
+        print("### MRP SQL error could not get character UID")
+        print(sql.LastError())
+    elseif sqlret == nil then
+        print("### MRP could not get character UID")
+    else
+        print("### MRP successfully got the character UID")
+    end
     ply:SetNWInt("CharacterID", tonumber(sqlret[#sqlret]["UID"]))
     ply.BodyGroups = string.Split(ply.BodyGroups, ",")
     RunEquipment(ply)
@@ -374,7 +407,7 @@ end)
 
 net.Receive("DeleteCharacter", function(_, _)
     local uid = net.ReadUInt(32)
-    sql.Query("DELETE FROM mrp_characters WHERE UID = " .. tostring(uid))
+    sql.Query("DELETE FROM mrp_characters WHERE UID = " .. uid)
 end)
 
 net.Receive("CharacterSelected", function(_, ply)
@@ -558,7 +591,7 @@ function MRP.SaveProgress(ply)
                 sql.Query(
                     "UPDATE mrp_characters " ..
                     "SET " .. cat .. "Ammo = " .. wep:Clip1() .. " " ..
-                    "WHERE UID = " .. ply:GetCharacterID()
+                    "WHERE UID = " .. ply:MRPCharacterID()
                 )
             end
         end
@@ -600,7 +633,7 @@ function MRP.SaveProgress(ply)
                 "Inventory = '" .. Inventory .. "'," ..
                 "InventoryAmmo = '" .. InventoryAmmo .. "'," ..
                 "InventoryArmor = '" .. InventoryArmor .. "' " ..
-            "WHERE UID = " .. ply:GetCharacterID() .. ";"
+            "WHERE UID = " .. ply:MRPCharacterID() .. ";"
         )
     end
 end
@@ -659,12 +692,12 @@ function GM:InitPostEntity()
         end
 
         function self:PlayerSelectSpawn(ply, _)
-            if ply:GetNWInt("Faction") == 0 then
+            if ply:GetNWInt("Faction") == 1 then
                 local army_spawns = ents.FindByClass("info_player_army")
                 local random_entry = math.random(#army_spawns)
 
                 return army_spawns[random_entry]
-            elseif ply:GetNWInt("Faction") == 1 then
+            elseif ply:GetNWInt("Faction") == 2 then
                 local rebel_spawns = ents.FindByClass("info_player_rebel")
                 local random_entry = math.random(#rebel_spawns)
 
@@ -732,7 +765,7 @@ end
 
 MRP.removeCharacterFromDatabase = function(ply)
     if player_manager.GetPlayerClass(ply) ~= "spectator" then
-        sql.Query("DELETE FROM mrp_characters WHERE UID = " .. tostring(ply:GetCharacterID()))
+        sql.Query("DELETE FROM mrp_characters WHERE UID = " .. tostring(ply:MRPCharacterID()))
         player_manager.SetPlayerClass(ply, "spectator")
     end
 end
