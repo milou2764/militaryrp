@@ -68,7 +68,8 @@ end)
 -- calculates the camera FOV depending on viewmodel FOV
 local function GASMASK_CalcHorizontalFromVerticalFOV(num)
     local r = ScrW() / ScrH() -- our resolution
-    r = r / (4 / 3) -- 4/3 is base Source resolution, so we have do divide our resolution by that
+    -- 4/3 is base Source resolution, so we have do divide our resolution by that
+    r = r / (4 / 3)
     local tan, atan, deg, rad = math.tan, math.atan, math.deg, math.rad
     local vFoV = rad(num)
     local hFoV = deg(2 * atan(tan(vFoV / 2) * r)) -- this was a bitch
@@ -78,7 +79,9 @@ end
 
 local function GASMASK_GetPlayerColor()
     local owner = LocalPlayer()
-    if owner:IsValid() and owner:IsPlayer() and owner.GetPlayerColor then return owner:GetPlayerColor() end
+    if owner:IsValid() and owner:IsPlayer() and owner.GetPlayerColor then
+            return owner:GetPlayerColor()
+    end
 
     return Vector(1, 1, 1)
 end
@@ -94,7 +97,8 @@ local function GASMASK_DrawInHud()
     local ply = LocalPlayer()
 
     if not ply.GASMASK_HudModel or not IsValid(ply.GASMASK_HudModel) then
-        ply.GASMASK_HudModel = ClientsideModel("models/gmod4phun/c_contagion_gasmask.mdl", RENDERGROUP_BOTH)
+        local modelName = "models/gmod4phun/c_contagion_gasmask.mdl"
+        ply.GASMASK_HudModel = ClientsideModel(modelName, RENDERGROUP_BOTH)
         ply.GASMASK_HudModel:SetNoDraw(true)
         ply:GASMASK_PlayAnim("idle_holstered")
     end
@@ -188,7 +192,8 @@ end
 local keyReleased = true
 hook.Add("Tick", "GasMaskHandle", function()
     GASMASK_BreathThink()
-    if input.IsKeyDown(MRP.keybinds.gasmask) and keyReleased and (not vgui.CursorVisible() or IsValid(MRP.plyInvPanel)) then
+    local notInMenus = not vgui.CursorVisible() or IsValid(MRP.plyInvPanel)
+    if input.IsKeyDown(MRP.keybinds.gasmask) and keyReleased and notInMenus then
         keyReleased = false
         LocalPlayer():ConCommand("gasmask_toggle")
     elseif not input.IsKeyDown(MRP.keybinds.gasmask) then

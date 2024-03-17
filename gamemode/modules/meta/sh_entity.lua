@@ -1,6 +1,6 @@
 local meta = FindMetaTable('Entity')
 
-function meta:Has(category)
+function meta:MRPHas(category)
     return self:GetNWInt(category) > 1
 end
 

@@ -174,7 +174,11 @@ local function MRPDragnDrop(dest, panels, bDoDrop, _, _, _)
                 net.SendToServer()
             end
 
-            if v.gear and scripted_ents.IsBasedOn(v.gear.ClassName, "mrp_base_gear") and origin:GetName() == v.gear.MRPCategory and origin.owner:IsPlayer() then
+            local isMRPGear =
+                v.gear and scripted_ents.IsBasedOn(v.gear.ClassName, "mrp_base_gear")
+            local fromGearSlot = v.gear and origin:GetName() == v.gear.MRPCategory
+
+            if isMRPGear and fromGearSlot and  origin.owner:IsPlayer() then
                 net.Start("PlayerUnmountGearWithDragnDrop")
                 net.WriteUInt(v.gear.MRPID, 7)
                 net.WriteEntity(origin.owner)
@@ -214,7 +218,10 @@ end
 MRPProgress.Paint = function(self, _, _)
     local fraction = self.getFraction()
     surface.SetDrawColor(self.color)
-    surface.DrawRect(0, (100 - 100 * fraction) * self.ss, 10 * self.ss, 100 * fraction * self.ss)
+    local y = (100 - 100 * fraction) * self.ss
+    local w = 10 * self.ss
+    local h = 100 * fraction * self.ss
+    surface.DrawRect(0, y, w, h)
 end
 
 vgui.Register("MRPProgress", MRPProgress, "Panel")

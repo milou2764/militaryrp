@@ -7,12 +7,14 @@ vehiclespawn.vehicleLimit = 20
 local function vehicleSpawnSystem()
     if vehiclespawn.SpawnDelay < CurTime() then
         vehiclespawn.SpawnDelay = CurTime() + 20
-        for i, platform in pairs( MRP.spawns[game.GetMap()].vehicles ) do
+        for _, platform in pairs( MRP.spawns[game.GetMap()].vehicles ) do
             if not platform.vehicle or not platform.vehicle:IsValid() then
                 local canSpawn = true
                 for _, p in pairs( player.GetAll() ) do
                     local distance = p:GetPos():Distance( platform.pos )
-                    if distance < vehiclespawn.MinSpawnDistance or vehiclespawn.vehicleCount >= vehiclespawn.vehicleLimit then
+                    local incorrectDistance = distance < vehiclespawn.MinSpawnDistance
+                    local limitReached = vehiclespawn.vehicleCount >= vehiclespawn.vehicleLimit
+                    if incorrectDistance or limitReached then
                         canSpawn = false
                         break
                     end
@@ -20,7 +22,16 @@ local function vehicleSpawnSystem()
                 if canSpawn then
                     local vname = platform.class
                     local vehicle = list.Get( "simfphys_vehicles" )[vname]
-                    platform.vehicle = simfphys.SpawnVehicle( nil, platform.pos, platform.ang, vehicle.Model, vehicle.Class, vname, vehicle )
+                    platform.vehicle =
+                        simfphys.SpawnVehicle(
+                            nil,
+                            platform.pos,
+                            platform.ang,
+                            vehicle.Model,
+                            vehicle.Class,
+                            vname,
+                            vehicle
+                        )
                     platform.vehicle.isMRPVehicle = true
                     vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
                 end

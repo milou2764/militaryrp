@@ -9,7 +9,7 @@ end
 
 function ENT:canBeEquipped(ply)
     local ret = baseclass.Get("mrp_base_gear").canBeEquipped(self, ply)
-    if not ply:Has("Helmet") then
+    if not ply:MRPHas("Helmet") then
         ply:ChatPrint("Il faut un casque pour équiper les LVN.")
         return false
     end

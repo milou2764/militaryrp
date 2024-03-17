@@ -1,4 +1,4 @@
-concommand.Add("mrp_iconeditor", function(ply,cmd,args,argStr)
+concommand.Add("mrp_iconeditor", function(_, _, _, _)
     local frame = vgui.Create( "DFrame" ) -- Container for the SpawnIcon
     frame:SetPos( 200, 200 )
     frame:SetSize( 1000, 1000 )
@@ -9,7 +9,7 @@ concommand.Add("mrp_iconeditor", function(ply,cmd,args,argStr)
     modelPathSelect:SetPos(10, 30)
     modelPathSelect:SetSize(200, 20)
     modelPathSelect:SetValue("Select a model path")
-    for k,v in pairs(MRP.entityModels) do
+    for k, _ in pairs(MRP.entityModels) do
         modelPathSelect:AddChoice(k)
     end
 
@@ -29,21 +29,22 @@ concommand.Add("mrp_iconeditor", function(ply,cmd,args,argStr)
     selectButton:SetSize(200, 20)
     selectButton:SetText("Select")
     selectButton.DoClick = function()
-        local icon = vgui.Create( "SpawnIcon" , frame ) -- SpawnIcon, with blue barrel model
+        local icon = vgui.Create( "SpawnIcon", frame ) -- SpawnIcon, with blue barrel model
         icon:Center()
-        -- It is important below to include the SkinID (0 = default skin); the IconEditor will not work otherwise
+        -- It is important below to include the SkinID (0 = default skin); the IconEditor
+        -- will not work otherwise
         icon:SetModel(MRP.entityModels[modelPathSelect:GetValue()], 0 )
         local iconType = iconTypeSelect:GetValue()
         if iconType == "PrimaryWep" then
-            icon:SetSize(350,100)
+            icon:SetSize(350, 100)
         elseif iconType == "SecondaryWep" then
-            icon:SetSize(225,100)
+            icon:SetSize(225, 100)
         elseif iconType == "RocketLauncher" then
-            icon:SetSize(600,100)
+            icon:SetSize(600, 100)
         elseif iconType == "spawnmenu" then
-            icon:SetSize(100,100)
+            icon:SetSize(100, 100)
         elseif iconType == "weaponwheel" then
-            icon:SetSize(256,128)
+            icon:SetSize(256, 128)
         end
 
         local editor = vgui.Create( "IconEditor" ) -- Create IconEditor

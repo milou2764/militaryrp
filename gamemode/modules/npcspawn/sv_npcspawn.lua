@@ -5,17 +5,26 @@ npcspawn.MaxSpawnDistance = 20000
 npcspawn.NPCCount = 0
 npcspawn.NPCLimit = 20
 
-local npcWep = {"weapon_vj_sentercarbine","weapon_vj_sentercarbine","weapon_vj_senterrifle","weapon_vj_senterassault"}
+local npcWep =
+    {
+        "weapon_vj_sentercarbine",
+        "weapon_vj_sentercarbine",
+        "weapon_vj_senterrifle",
+        "weapon_vj_senterassault"
+    }
 
 local function NPCSpawnSystem()
     if npcspawn.SpawnDelay < CurTime() then
         npcspawn.SpawnDelay = CurTime() + 20
-        for i, platform in pairs( MRP.spawns[game.GetMap()].npcs ) do
+        for _, platform in pairs( MRP.spawns[game.GetMap()].npcs ) do
             if not platform.npc or not IsValid(platform.npc) then
                 local canSpawn = true
                 for _, p in pairs( player.GetAll() ) do
                     local distance = p:GetPos():Distance( platform.pos )
-                    if distance < npcspawn.MinSpawnDistance or distance > npcspawn.MaxSpawnDistance or npcspawn.NPCCount >= npcspawn.NPCLimit then
+                    local tooClose = distance < npcspawn.MinSpawnDistance
+                    local tooFar = distance > npcspawn.MaxSpawnDistance
+                    local limitReached = npcspawn.NPCCount >= npcspawn.NPCLimit
+                    if tooClose or tooFar or limitReached then
                         canSpawn = false
                         break
                     end

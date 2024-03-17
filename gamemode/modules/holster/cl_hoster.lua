@@ -4,9 +4,11 @@ local function TableToLua(tbl, indent)
 
     for k, v in pairs(tbl) do
         if type(v) == "table" then
-            str = str .. string.rep(" ", indent) .. tostring(k) .. " = " .. TableToLua(v, indent + 4) .. ",\n"
+            str =
+                str ..
+                string.rep(" ", indent) .. k .. " = " .. TableToLua(v, indent + 4) .. ",\n"
         else
-            str = str .. string.rep(" ", indent) .. tostring(k) .. " = " .. tostring(v) .. ",\n"
+            str = str .. string.rep(" ", indent) .. k .. " = " .. v .. ",\n"
         end
     end
 
@@ -80,7 +82,13 @@ local function updateModelPos(model, ply, wepClass)
         return
     end
 
-    local newpos, newang = LocalToWorld(MRP.holsters[wepClass].offsetvec, MRP.holsters[wepClass].offsetang, matrix:GetTranslation(), matrix:GetAngles())
+    local newpos, newang =
+        LocalToWorld(
+            MRP.holsters[wepClass].offsetvec,
+            MRP.holsters[wepClass].offsetang,
+            matrix:GetTranslation(),
+            matrix:GetAngles()
+        )
     model:SetPos(newpos)
     model:SetAngles(newang)
 end
@@ -92,7 +100,13 @@ hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
             local boneID = MRP.holsters[wepClass].boneID
             local matrix = ply:GetBoneMatrix(boneID)
             if not matrix then return end
-            local newpos, newang = LocalToWorld(MRP.holsters[wepClass].offsetvec, MRP.holsters[wepClass].offsetang, matrix:GetTranslation(), matrix:GetAngles())
+            local newpos, newang =
+                LocalToWorld(
+                    MRP.holsters[wepClass].offsetvec,
+                    MRP.holsters[wepClass].offsetang,
+                    matrix:GetTranslation(),
+                    matrix:GetAngles()
+                )
             model:SetPos(newpos)
             model:SetAngles(newang)
         end
@@ -114,7 +128,11 @@ net.Receive("MRPRequestHolsters", function()
             oldModel:SetNoDraw(false)
         else
             -- s'il n'y a pas de holster existant, on en crée un nouveau et on le montre
-            local model = ClientsideModel(MRP.holsters[old.ClassName].model, RENDERGROUP_OPAQUE)
+            local model =
+                ClientsideModel(
+                    MRP.holsters[old.ClassName].model,
+                    RENDERGROUP_OPAQUE
+                )
             MRP.mountedWeps[ply:UserID()][oldMRPCategory] = model
             model.wepClass = old.ClassName
             updateModelPos(model, ply, old.ClassName)
@@ -143,10 +161,6 @@ local function setupEditor(ply, wepClass)
     editMenu:SetTitle("Edit Holster")
     editMenu:MakePopup()
 
-    editMenu.OnClose = function(menu)
-        model:Remove()
-    end
-
     local xPos = vgui.Create("DNumSlider", editMenu)
     xPos:SetPos(5, 30)
     xPos:SetSize(ScrW() * 0.4 - 10, 20)
@@ -156,7 +170,7 @@ local function setupEditor(ply, wepClass)
     xPos:SetDecimals(2)
     xPos:SetValue(MRP.holsters[wepClass].offsetvec.x)
 
-    xPos.OnValueChanged = function(self, val)
+    xPos.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetvec.x = val
         updateModelPos(model, ply, wepClass)
     end
@@ -170,7 +184,7 @@ local function setupEditor(ply, wepClass)
     yPos:SetDecimals(2)
     yPos:SetValue(MRP.holsters[wepClass].offsetvec.y)
 
-    yPos.OnValueChanged = function(self, val)
+    yPos.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetvec.y = val
         updateModelPos(model, ply, wepClass)
     end
@@ -184,7 +198,7 @@ local function setupEditor(ply, wepClass)
     zPos:SetDecimals(2)
     zPos:SetValue(MRP.holsters[wepClass].offsetvec.z)
 
-    zPos.OnValueChanged = function(self, val)
+    zPos.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetvec.z = val
         updateModelPos(model, ply, wepClass)
     end
@@ -198,7 +212,7 @@ local function setupEditor(ply, wepClass)
     xAng:SetDecimals(2)
     xAng:SetValue(MRP.holsters[wepClass].offsetang.p)
 
-    xAng.OnValueChanged = function(self, val)
+    xAng.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetang.p = val
         updateModelPos(model, ply, wepClass)
     end
@@ -212,7 +226,7 @@ local function setupEditor(ply, wepClass)
     yAng:SetDecimals(2)
     yAng:SetValue(MRP.holsters[wepClass].offsetang.y)
 
-    yAng.OnValueChanged = function(self, val)
+    yAng.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetang.y = val
         updateModelPos(model, ply, wepClass)
     end
@@ -226,7 +240,7 @@ local function setupEditor(ply, wepClass)
     zAng:SetDecimals(2)
     zAng:SetValue(MRP.holsters[wepClass].offsetang.r)
 
-    zAng.OnValueChanged = function(self, val)
+    zAng.OnValueChanged = function(_, val)
         MRP.holsters[wepClass].offsetang.r = val
         updateModelPos(model, ply, wepClass)
     end
@@ -241,7 +255,7 @@ local function setupEditor(ply, wepClass)
         boneName:AddChoice(boneNames[i])
     end
 
-    boneName.OnSelect = function(self, index, value)
+    boneName.OnSelect = function(_, _, value)
         LocalPlayer():SetupBones()
         MRP.holsters[wepClass].boneID = LocalPlayer():LookupBone(value)
         updateModelPos(model, ply, wepClass)
@@ -262,17 +276,30 @@ local function setupEditor(ply, wepClass)
     save.DoClick = function()
         model:Remove()
         MRP.holsters[wepClass].mrpcategory = mrpcategory:GetValue()
-        local currentModel = MRP.mountedWeps[LocalPlayer():UserID()][MRP.holsters[wepClass].mrpcategory]
+        local uid = LocalPlayer():UserID()
+        local wepCat = MRP.holsters[wepClass].mrpcategory
+        local currentModel = MRP.mountedWeps[uid][wepCat]
 
         if currentModel then
             currentModel:Remove()
-            MRP.mountedWeps[LocalPlayer():UserID()][MRP.holsters[wepClass].mrpcategory] = ClientsideModel(MRP.holsters[wepClass].model, RENDERGROUP_OPAQUE)
-            MRP.mountedWeps[LocalPlayer():UserID()][MRP.holsters[wepClass].mrpcategory].wepClass = wepClass
+            MRP.mountedWeps[uid][MRP.holsters[wepClass].mrpcategory] =
+                ClientsideModel(MRP.holsters[wepClass].model, RENDERGROUP_OPAQUE)
+            MRP.mountedWeps[uid][MRP.holsters[wepClass].mrpcategory].wepClass = wepClass
         end
 
         print("[\"" .. wepClass .. "\"] = {")
-        print("    offsetvec = Vector(" .. MRP.holsters[wepClass].offsetvec.x .. ", " .. MRP.holsters[wepClass].offsetvec.y .. ", " .. MRP.holsters[wepClass].offsetvec.z .. "),")
-        print("    offsetang = Angle(" .. MRP.holsters[wepClass].offsetang.x .. ", " .. MRP.holsters[wepClass].offsetang.y .. ", " .. MRP.holsters[wepClass].offsetang.z .. "),")
+        print(
+            "    offsetvec = Vector(" ..
+            MRP.holsters[wepClass].offsetvec.x .. ", " ..
+            MRP.holsters[wepClass].offsetvec.y .. ", " ..
+            MRP.holsters[wepClass].offsetvec.z .. "),"
+        )
+        print(
+            "    offsetang = Angle(" ..
+            MRP.holsters[wepClass].offsetang.x .. ", " ..
+            MRP.holsters[wepClass].offsetang.y .. ", " ..
+            MRP.holsters[wepClass].offsetang.z .. "),"
+        )
         print("    boneID = " .. MRP.holsters[wepClass].boneID)
         print("},")
         datafile = file.Open("mrp_holsters.txt", "w", "DATA")
@@ -289,7 +316,7 @@ local function setupEditor(ply, wepClass)
     end
 end
 
-concommand.Add("mrp_editholster", function(ply, cmd, args)
+concommand.Add("mrp_editholster", function(ply, _, _)
     if not ply:IsAdmin() then return end
     local wepClass = ""
     local wepClassSelect = vgui.Create("DFrame")
@@ -332,7 +359,7 @@ concommand.Add("mrp_editholster", function(ply, cmd, args)
         modelList:AddColumn("Model")
         modelList:AddColumn("Path")
 
-        modelList.OnRowSelected = function(self, index, line)
+        modelList.OnRowSelected = function(_, _, line)
             newWepModel:SetText(line:GetValue(2))
         end
 
@@ -345,11 +372,11 @@ concommand.Add("mrp_editholster", function(ply, cmd, args)
             local search = modelSearch:GetValue()
             modelList:Clear()
 
-            for k, v in pairs(file.Find("models/weapons/w_*.mdl", "GAME")) do
+            for _, v in pairs(file.Find("models/weapons/w_*.mdl", "GAME")) do
                 if string.find(v, search) then
                     local line = modelList:AddLine(v, "models/weapons/" .. v)
 
-                    line.OnRowSelected = function(self, index, row)
+                    line.OnRowSelected = function(_, _, row)
                         newWepModel:SetText(row:GetValue(2))
                     end
                 end
@@ -392,11 +419,11 @@ concommand.Add("mrp_editholster", function(ply, cmd, args)
     wepClassList:SetSize(ScrW() * 0.4 - 10, ScrH() * 0.4 - 155)
     wepClassList:AddColumn("Weapon Class")
 
-    for k, v in pairs(MRP.holsters) do
+    for k, _ in pairs(MRP.holsters) do
         wepClassList:AddLine(k)
     end
 
-    wepClassList.OnRowSelected = function(self, lineID, line)
+    wepClassList.OnRowSelected = function(_, _, line)
         wepClass = line:GetValue(1)
         wepClassSelect:Close()
         setupEditor(ply, wepClass)

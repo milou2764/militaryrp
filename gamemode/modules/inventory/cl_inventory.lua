@@ -130,7 +130,7 @@ function MRP.OpenRagdollInvPanel(target)
             return target:GetSecondaryWepAmmo() / target:GetSecondaryWep().clipSize
         end
     end
-    if target:Has('RocketLauncher') then
+    if target:MRPHas('RocketLauncher') then
         RocketLauncher:SetTooltip('Lance-roquettes')
         RocketLauncher.progressBar = vgui.Create('MRPProgress',  RocketLauncher)
         RocketLauncher.progressBar:SetX(590)
@@ -172,7 +172,7 @@ function MRP.OpenPlyInvPanel(ply)
     local SecondaryWep   = MRP.plyInvPanel.SecWep
     local RocketLauncher = MRP.plyInvPanel.RLauncher
 
-    if ply:Has('PrimaryWep') then
+    if ply:MRPHas('PrimaryWep') then
         PrimaryWep:SetTooltip('Arme principale')
         PrimaryWep.progressBar = vgui.Create('MRPProgress',  PrimaryWep)
         PrimaryWep.progressBar:SetX(340)
@@ -186,7 +186,7 @@ function MRP.OpenPlyInvPanel(ply)
         end
     end
 
-    if ply:Has('SecondaryWep') then
+    if ply:MRPHas('SecondaryWep') then
         SecondaryWep:SetTooltip('Arme secondaire')
         SecondaryWep.progressBar = vgui.Create('MRPProgress',  SecondaryWep)
         SecondaryWep.progressBar:SetX(215)
@@ -200,7 +200,7 @@ function MRP.OpenPlyInvPanel(ply)
         end
     end
 
-    if ply:Has('RocketLauncher') then
+    if ply:MRPHas('RocketLauncher') then
         RocketLauncher:SetTooltip('Lance-roquettes')
         RocketLauncher.progressBar = vgui.Create('MRPProgress',  RocketLauncher)
         RocketLauncher.progressBar:SetX(590)
@@ -414,15 +414,16 @@ hook.Add('Tick', 'InventoryOpening', function()
         keyReleased = true
     end
 end)
-net.Receive('MRPPlayerTakeOnNVGs', function()
+net.Receive('MRPPlayerNVGsToggle', function()
+    local bodyId
+    if ply:GetNWBool('NVGsOn') then
+        bodyId = 1
+    else
+        bodyId = 0
+    end
     local userid = net.ReadUInt(16)
-    MRP.mountedGear[userid].NVGs:SetBodygroup(1, 1)
-    if IsValid(MRP.plyInvPanel) then MRP.plyInvPanel.NVGs.model:SetBodygroup(1, 1) end
-end)
-net.Receive('MRPPlayerTakeOffNVGs', function()
-    local userid = net.ReadUInt(16)
-    MRP.mountedGear[userid].NVGs:SetBodygroup(1, 0)
-    if IsValid(MRP.plyInvPanel) then MRP.plyInvPanel.NVGs.model:SetBodygroup(1, 0) end
+    MRP.mountedGear[userid].NVGs:SetBodygroup(1, bodyId)
+    if IsValid(MRP.plyInvPanel) then MRP.plyInvPanel.NVGs.model:SetBodygroup(1, bodyId) end
 end)
 net.Receive('MRPPlayerTakeOnGasmask', function()
     local userid = net.ReadUInt(16)

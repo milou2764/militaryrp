@@ -1,7 +1,7 @@
 NV_Status = false
 local NV_Vector = 0
 local NV_TimeToVector = 0
-local ISIBIntensity = 1
+local ISIBIntens = 1
 local reg = debug.getregistry()
 local Length = reg.Vector.Length
 CreateClientConVar("nv_toggspeed", 0.09, true, false)
@@ -27,9 +27,9 @@ CreateClientConVar("nv_fx_goggle_status", 0, true, false)
 CreateClientConVar("nv_fx_noise_status", 0, true, false)
 CreateClientConVar("nv_fx_noise_variety", 20, true, false)
 CreateClientConVar("nv_type", 1, true, false)
---local IsBrighter = false
---local IsMade = false
-local Brightness, IlluminationArea, ISIBSensitivity, dlight, trace, BlurIntensity, GenInProgress
+local IsBrighter = false
+local IsMade = false
+local Brightness, IllumArea, ISIBSensitivity, dlight, trace, BlurIntensity, GenInProgress
 local tr = {}
 local Color_Brightness = 0.8
 local Color_Contrast = 1.1
@@ -111,7 +111,7 @@ function NV_GenerateGrainTextures()
 
         for j = 1, h / 4 do
             -- 40 grains per every Y pixel
-            for i2 = 1, 40 do
+            for _ = 1, 40 do
                 SetViewPort(rand(0, w / 4), j * 2, 1, 1)
                 Clear(0, 0, 0, rand(100, 150))
             end
@@ -125,7 +125,8 @@ function NV_GenerateGrainTextures()
 
     SetViewPort(0, 0, w, h)
     render.SetRenderTarget(OldRT)
-    MsgN("NVScript: Generation finished! Time taken: " .. math.Round(SysTime() - CT, 2) .. " second(s).")
+    local ttaken = math.Round(SysTime() - CT, 2)
+    MsgN("NVScript: Generation finished! Time taken: " .. ttaken .. " second(s).")
 end
 
 function NV_GenerateLineTexture()
@@ -149,7 +150,8 @@ function NV_GenerateLineTexture()
     render.SetRenderTarget(OldRT)
     Output = GetRenderTarget("NVLine", w, h, true)
     LineMat:SetTexture("$basetexture", Output)
-    MsgN("NVScript: Generation finished! Time taken: " .. math.Round(SysTime() - CT, 2) .. " second(s).")
+    local ttaken = math.Round(SysTime() - CT, 2)
+    MsgN("NVScript: Generation finished! Time taken: " ..  ttaken .. " second(s).")
 end
 
 local function NV_InitPostEntity()
@@ -177,7 +179,7 @@ local function NV_FX()
             surface.SetDrawColor(255, 255, 255, 255)
             surface.SetTexture(AlphaPass)
 
-            for i = 1, GetConVar("nv_fx_alphapass"):GetInt() do
+            for _ = 1, GetConVar("nv_fx_alphapass"):GetInt() do
                 surface.DrawTexturedRect(0, 0, w, h)
             end
 
@@ -208,7 +210,11 @@ local function NV_FX()
             BlurIntensity = GetConVar("nv_fx_blur_intensity"):GetFloat()
 
             if GetConVar("nv_fx_blur_status"):GetInt() > 0 then
-                DrawMotionBlur(0.05 * BlurIntensity, 0.2 * BlurIntensity, 0.023 * BlurIntensity)
+                DrawMotionBlur(
+                    0.05 * BlurIntensity,
+                    0.2 * BlurIntensity,
+                    0.023 * BlurIntensity
+                )
             end
 
             if GetConVar("nv_fx_colormod_status"):GetInt() > 0 then
@@ -232,14 +238,14 @@ local function NV_ToggleNightVision(ply)
 
     if NV_Status == true then
         NV_Status = false
-        net.Start("MRPClientPutNVGsOff")
+        net.Start("MRPClientNVGsToggle")
         net.SendToServer()
 
         surface.PlaySound(sndOff)
         hook.Remove("RenderScreenspaceEffects", "NV_FX")
     elseif NV_Status == false and ply:GetNWInt("NVGs") > 0 then
         NV_Status = true
-        net.Start("MRPClientPutNVGsOn")
+        net.Start("MRPClientNVGsToggle")
         net.SendToServer()
 
         CurScale = 0.2
@@ -250,7 +256,8 @@ end
 
 local keyReleased = true
 hook.Add("Tick", "NVGsToggle", function()
-    if input.IsKeyDown(MRP.keybinds.nvgs) and keyReleased and (not vgui.CursorVisible() or IsValid(MRP.plyInvPanel)) then
+    local inMenu = vgui.CursorVisible() or IsValid(MRP.plyInvPanel)
+    if input.IsKeyDown(MRP.keybinds.nvgs) and keyReleased and not inMenu then
         keyReleased = false
         NV_ToggleNightVision(LocalPlayer())
     elseif not input.IsKeyDown(MRP.keybinds.nvgs) then
@@ -258,14 +265,22 @@ hook.Add("Tick", "NVGsToggle", function()
     end
 end)
 
-local function NV_RegenerateGrainTextures(ply)
+local function NV_RegenerateGrainTextures(_)
     if GenInProgress then return end
-    notification.AddLegacy("NVScript: Grain texture generation starting in 2 seconds...", NOTIFY_GENERIC, 7)
+    notification.AddLegacy(
+        "NVScript: Grain texture generation starting in 2 seconds...",
+        NOTIFY_GENERIC,
+        7
+    )
     GenInProgress = true
 
     timer.Simple(2, function()
         NV_GenerateGrainTextures()
-        notification.AddLegacy("NVScript: Grain texture generation finished. Check console for details.", NOTIFY_HINT, 7)
+        notification.AddLegacy(
+            "NVScript: Grain texture generation finished. Check console for details.",
+            NOTIFY_HINT,
+            7
+        )
         GenInProgress = false
     end)
 end
@@ -286,7 +301,8 @@ hook.Add("PostDrawOpaqueRenderables", "FLIRFX", function()
 
     for _, ent in pairs(ents.GetAll()) do
         if ent:IsNPC() or ent:IsPlayer() then
-            -- since there is no proper way to check if the NPC is dead, we just check if the NPC has a nodraw effect on him
+            -- since there is no proper way to check if the NPC is dead, we just check if the
+            -- NPC has a nodraw effect on him
             if not ent:IsEffectActive(EF_NODRAW) then
                 render.SuppressEngineLighting(true)
                 ent:DrawModel()
@@ -394,17 +410,68 @@ local function setVectors()
     end
 end
 
+local function AutoSwitch(ply)
+    if not IsBrighter then
+        if clr < GetConVar("nv_id_sens_darkness"):GetFloat() and not IsMade then
+            timer.Create(
+                "MonitorIllumTimer",
+                GetConVar("nv_id_reaction_time"):GetInt(),
+                1,
+                function()
+                    if clr < GetConVar("nv_id_sens_darkness"):GetInt() and not NV_Status then
+                        RunConsoleCommand("nvg_toggle")
+                    elseif NV_Status then
+                        RunConsoleCommand("nvg_toggle")
+                    end
+
+                    IsMade = false
+                end
+            )
+
+            IsMade = true
+        else
+            timer.Start("MonitorIllumMeter")
+        end
+    end
+
+    if GetConVar("nv_etisd_status"):GetInt() > 0 then
+        tr.start = EP
+        tr.endpos = tr.start + EA * GetConVar("nv_etisd_sensitivity_range"):GetInt()
+        tr.filter = ply
+        trace = ute(tr)
+        local lighting = render.ComputeLighting(trace.HitPos, Vec001)
+        local dynamicLighting = render.ComputeDynamicLighting(trace.HitPos, Vec001)
+        clr = Length(lighting - dynamicLighting) * 33
+
+        -- If we're looking from darkness into somewhere bright
+        if clr > GetConVar("nv_id_sens_darkness"):GetInt() then
+            if not IsBrighter then
+                if NV_Status then
+                    RunConsoleCommand("nvg_toggle") -- turn off our night vision
+                end
+
+                IsBrighter = true
+                timer.Stop("MonitorIllumTimer")
+            else
+                timer.Start("MonitorIllumTimer")
+            end
+        else
+            IsBrighter = false
+        end
+    end
+end
+
 local function NV_MonitorIllumination()
     local ply = LocalPlayer()
 
     if ply:Alive() then
         EP, EA = ply:EyePos(), ply:EyeAngles():Forward()
         CT = CurTime()
-        clr = Length(render.ComputeLighting(EP, Vec001) - render.ComputeDynamicLighting(EP, Vec001)) * 33
+
 
         if NV_Status then
             Brightness = GetConVar("nv_illum_bright"):GetFloat()
-            IlluminationArea = GetConVar("nv_illum_area"):GetInt()
+            IllumArea = GetConVar("nv_illum_area"):GetInt()
             ISIBSensitivity = GetConVar("nv_isib_sensitivity"):GetInt()
             dlight = DynamicLight(ply:EntIndex())
 
@@ -437,69 +504,34 @@ local function NV_MonitorIllumination()
                 dlight.Brightness = 1
 
                 if GetConVar("nv_isib_status"):GetInt() < 1 then
-                    dlight.Size = IlluminationArea * CurScale
-                    dlight.Decay = IlluminationArea * CurScale
+                    dlight.Size = IllumArea * CurScale
+                    dlight.Decay = IllumArea * CurScale
                 else
+                    local lighting, dynamicLighting
                     if aim > 0 then
-                        clr = Length(render.ComputeLighting(trace.HitPos, Vec001) - render.ComputeDynamicLighting(trace.HitPos, Vec001)) * 33
-                        ISIBIntensity = Lerp(FT * 10, ISIBIntensity, clr * ISIBSensitivity)
+                        local hitpos = trace.Hitpos
+                        lighting = render.ComputeLighting(hitpos, Vec001)
+                        dynamicLighting = render.ComputeDynamicLighting(hitpos, Vec001)
                     else
-                        ISIBIntensity = Lerp(FT * 10, ISIBIntensity, clr * ISIBSensitivity)
+                        lighting = render.ComputeLighting(EP, Vec001)
+                        dynamicLighting = render.ComputeDynamicLighting(EP, Vec001)
                     end
-
-                    dlight.Size = math.Clamp((IlluminationArea * CurScale) / ISIBIntensity, 0, IlluminationArea)
-                    dlight.Decay = math.Clamp((IlluminationArea * CurScale) / ISIBIntensity, 0, IlluminationArea)
+                    clr = Length(lighting - dynamicLighting) * 33
+                    ISIBIntens = Lerp(FT * 10, ISIBIntens, clr * ISIBSensitivity)
+                    dlight.Size = math.Clamp(IllumArea * CurScale / ISIBIntens, 0, IllumArea)
+                    dlight.Decay = math.Clamp(IllumArea * CurScale / ISIBIntens, 0, IllumArea)
                 end
 
                 dlight.DieTime = CT + FT * 3
             end
         end
 
-        -- if GetConVar("nv_id_status"):GetInt() > 0 then
-        --     if not IsBrighter then
-        --         if clr < GetConVar("nv_id_sens_darkness"):GetFloat() and not IsMade then
-        --             timer.Create("MonitorIllumTimer", GetConVar("nv_id_reaction_time"):GetInt(), 1, function()
-        --                 if clr < GetConVar("nv_id_sens_darkness"):GetInt() and not NV_Status then
-        --                     RunConsoleCommand("nvg_toggle")
-        --                 elseif NV_Status then
-        --                     RunConsoleCommand("nvg_toggle")
-        --                 end
-
-        --                 IsMade = false
-        --             end)
-
-        --             IsMade = true
-        --         else
-        --             timer.Start("MonitorIllumMeter")
-        --         end
-        --     end
-
-        --     if GetConVar("nv_etisd_status"):GetInt() > 0 then
-        --         tr.start = EP
-        --         tr.endpos = tr.start + EA * GetConVar("nv_etisd_sensitivity_range"):GetInt()
-        --         tr.filter = ply
-        --         trace = utrace(tr)
-        --         clr = Length(render.ComputeLighting(trace.HitPos, Vec001) - render.ComputeDynamicLighting(trace.HitPos, Vec001)) * 33
-
-        --         -- If we're looking from darkness into somewhere bright
-        --         if clr > GetConVar("nv_id_sens_darkness"):GetInt() then
-        --             if not IsBrighter then
-        --                 if NV_Status then
-        --                     RunConsoleCommand("nvg_toggle") -- turn off our night vision
-        --                 end
-
-        --                 IsBrighter = true
-        --                 timer.Stop("MonitorIllumTimer")
-        --             else
-        --                 timer.Start("MonitorIllumTimer")
-        --             end
-        --         else
-        --             IsBrighter = false
-        --         end
-        --     end
-        -- end
+        if GetConVar("nv_id_status"):GetInt() > 0 then
+           AutoSwitch(ply)
+        end
     end
 end
+
 
 hook.Add("Think", "NV_MonitorIllumination", NV_MonitorIllumination)
 

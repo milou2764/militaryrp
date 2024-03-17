@@ -159,7 +159,10 @@ local PLAYER_LINE = {
             local width = MRP.Regiments[self.faction][self.regiment]["whratio"] * 40
             self.Regiment:SetSize( width, 40 )
             self.Regiment:SetImage(MRP.Regiments[self.faction][self.regiment]["insignia"])
-            self.Rank:SetImage(MRP.Ranks[self.faction][self.regiment][self.Player:MRPRankID()]["shoulderrank"])
+            local rankId = self.Player:MRPRank()
+            self.Rank:SetImage(
+                MRP.Ranks[self.faction][self.regiment][rankId]["shoulderrank"]
+            )
         end
 
         if ( self.NumKills == nil or self.NumKills ~= self.Player:Frags() ) then
@@ -205,7 +208,11 @@ local PLAYER_LINE = {
                 if ( a <= 0 ) then return end
 
                 draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, a * 0.75 ) )
-                draw.SimpleText( math.ceil( self.Player:GetVoiceVolumeScale() * 100 ) .. "%", "DermaDefaultBold", w / 2, h / 2, Color( 255, 255, 255, a ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+                draw.SimpleText(
+                    math.ceil( self.Player:GetVoiceVolumeScale() * 100 ) .. "%",
+                    "DermaDefaultBold", w / 2, h / 2, Color( 255, 255, 255, a ),
+                    TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER
+                )
             end
 
         end
@@ -221,7 +228,8 @@ local PLAYER_LINE = {
         --
         -- This is what sorts the list. The panels are docked in the z order,
         -- so if we set the z order according to kills they'll be ordered that way!
-        -- Careful though, it's a signed short internally, so needs to range between -32,768k and +32,767
+        -- Careful though, it's a signed short internally, so needs to range between 
+        -- -32,768k and +32,767
         --
         self:SetZPos( ( self.NumKills * -50 ) + self.NumDeaths + self.Player:EntIndex() )
 
@@ -302,13 +310,15 @@ local SCORE_BOARD = {
 
     end,
 
-    Paint = function( self, w, h )
+    -- self, w, h
+    --Paint = function( self, w, h )
 
         --draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
 
-    end,
+    --end,
 
-    Think = function( self, w, h )
+    -- self, w, h
+    Think = function( self, _, _ )
 
         self.Name:SetText( "BraverySoldiers" )
 
@@ -316,15 +326,14 @@ local SCORE_BOARD = {
         -- Loop through each player, and if one doesn't have a score entry - create it.
         --
         local plyrs = player.GetAll()
-        for id, pl in pairs( plyrs ) do
+        for _, pl in pairs( plyrs ) do
 
-            if ( IsValid( pl.ScoreEntry ) ) then continue end
+            if not IsValid( pl.ScoreEntry ) then
+                pl.ScoreEntry = vgui.CreateFromTable( PLAYER_LINE, pl.ScoreEntry )
+                pl.ScoreEntry:Setup( pl )
 
-            pl.ScoreEntry = vgui.CreateFromTable( PLAYER_LINE, pl.ScoreEntry )
-            pl.ScoreEntry:Setup( pl )
-
-            self.Scores:AddItem( pl.ScoreEntry )
-
+                self.Scores:AddItem( pl.ScoreEntry )
+            end
         end
 
     end

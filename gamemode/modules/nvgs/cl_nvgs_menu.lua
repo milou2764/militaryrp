@@ -51,7 +51,11 @@ function nvspanel.NVSPanelA(panel)
     Type:AddChoice("Night Vision")
     Type:AddChoice("FLIR (Thermal)")
 
-    Type.OnSelect = function(otherPanel, index, value, data)
+    -- param1: otherPanel
+    -- param2: index
+    -- param3: value
+    -- param4: data
+    Type.OnSelect = function(_, index, _, _)
         RunConsoleCommand("nv_type", tonumber(index))
     end
 
@@ -231,11 +235,20 @@ end
 hook.Add("SpawnMenuOpen", "nvspanel.OpenMySpawnMenu", nvspanel.OpenMySpawnMenu)
 
 local function PopulateMyMenu_NVS()
-    spawnmenu.AddToolMenuOption("Options", "NVScript", "Night Vision Script", "Client", "", "", nvspanel.NVSPanelA)
+    spawnmenu.AddToolMenuOption(
+        "Options",
+        "NVScript",
+        "Night Vision Script",
+        "Client",
+        "",
+        "",
+        nvspanel.NVSPanelA
+    )
 end
 
 hook.Add("PopulateToolMenu", "PopulateMyMenu_NVS", PopulateMyMenu_NVS)
-local clr, rect, orect = surface.SetDrawColor, surface.DrawRect, surface.DrawOutlinedRect -- localizing functions that are within tables increases speed
+-- localizing functions that are within tables increases speed
+local clr, rect, orect = surface.SetDrawColor, surface.DrawRect, surface.DrawOutlinedRect
 local vcret = vgui.Create
 local W, H
 local PANEL = {}
@@ -294,11 +307,11 @@ function NV_CretMultiChoice(p, x, y, w, h, t, cv, ch)
     MC:SetText(t)
     MC.ConVar = cv
 
-    for k, v in pairs(ch) do
+    for _, v in pairs(ch) do
         MC:AddChoice(v)
     end
 
-    MC.OnSelect = function(panel, index, value, data)
+    MC.OnSelect = function(_, index, _, _)
         RunConsoleCommand(MC.ConVar, tonumber(index))
     end
 end
@@ -314,7 +327,8 @@ function NV_CretOutline(p, x, y, w, h)
     O:SetPos(x, y)
     O:SetSize(w, h)
 end
--- menu back from 2011 version of this, needs revamping, will be (hopefully) revamped post-release
+-- menu back from 2011 version of this, needs revamping, will be (hopefully) revamped
+-- post-release
 --[[local function NV_OpenMenu()
 	local Frame = vcret("NV_Frame")
 	Frame:SetSize(440, 540)
@@ -326,7 +340,16 @@ end
 	NV_CretSlider(Frame, 10, 50, 250, "NV: Toggle Speed", "nv_toggspeed", 2, 0.02, 1)
 	NV_CretSlider(Frame, 10, 70, 250, "NV: Illumination Radius", "nv_illum_area", 0, 64, 2048)
 	NV_CretSlider(Frame, 10, 90, 250, "NV: Brightness", "nv_illum_bright", 2, 0.2, 1)
-	NV_CretMultiChoice(Frame, 10, 120, 200, 20, "NV: Vision Type", "nv_type", {"Night Vision", "FLIR Thermal Vision"})
+	NV_CretMultiChoice(
+        Frame,
+        10,
+        120,
+        200,
+        20,
+        "NV: Vision Type",
+        "nv_type",
+        {"Night Vision", "FLIR Thermal Vision"}
+    )
 	
 	NV_CretText(Frame, 262, 30, "Effect Settings", "Default12")
 	

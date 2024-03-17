@@ -8,20 +8,28 @@ function meta:RPName()
     return self:GetNWString('RPName')
 end
 
-function meta:MRPRankID()
+function meta:MRPRank()
     return self:GetNWInt('Rank')
 end
 
-function meta:MRPRegimentID()
+function meta:MRPRegiment()
     return self:GetNWInt('Regiment')
 end
 
-function meta:MRPFactionID()
+function meta:MRPFaction()
     return self:GetNWInt('Faction')
 end
 
+function meta:MRPGasmask()
+    return self:GetNWInt('Gasmask')
+end
+
+function meta:MRPModel()
+    return self:GetNWInt('ModelIndex')
+end
+
 function meta:GetRegiment()
-    return MRP.Regiments[self:MRPFactionID()][self:MRPRegimentID()]['name']
+    return MRP.Regiments[self:MRPFaction()][self:MRPRegiment()]['name']
 end
 
 function meta:GetRPName()
@@ -31,8 +39,7 @@ function meta:GetCharacterID()
     return self:GetNWInt('CharacterID')
 end
 
-
-function meta:Has(category)
+function meta:MRPHas(category)
     return self:GetNWInt(category) > 1
 end
 

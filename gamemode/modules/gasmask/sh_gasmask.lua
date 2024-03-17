@@ -33,8 +33,13 @@ sound.Add({
     channel = CHAN_WEAPON,
     volume = 1,
     level = 120,
-    pitch = {98, 102},
-    sound = {sndpath .. "focus_inhale_01.wav", sndpath .. "focus_inhale_02.wav", sndpath .. "focus_inhale_03.wav", sndpath .. "focus_inhale_04.wav"}
+    pitch = { 98, 102 },
+    sound = {
+        sndpath .. "focus_inhale_01.wav",
+        sndpath .. "focus_inhale_02.wav",
+        sndpath .. "focus_inhale_03.wav",
+        sndpath .. "focus_inhale_04.wav"
+    }
 })
 
 sound.Add({
@@ -42,8 +47,17 @@ sound.Add({
     channel = CHAN_WEAPON,
     volume = 1,
     level = 120,
-    pitch = {98, 102},
-    sound = {sndpath .. "focus_exhale_01.wav", sndpath .. "focus_exhale_02.wav", sndpath .. "focus_exhale_03.wav", sndpath .. "focus_exhale_04.wav", sndpath .. "focus_exhale_05.wav"}
+    pitch = {
+        98,
+        102
+    },
+    sound = {
+        sndpath .. "focus_exhale_01.wav",
+        sndpath .. "focus_exhale_02.wav",
+        sndpath .. "focus_exhale_03.wav",
+        sndpath .. "focus_exhale_04.wav",
+        sndpath .. "focus_exhale_05.wav"
+    }
 })
 
 sound.Add({

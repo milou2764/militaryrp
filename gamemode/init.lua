@@ -47,18 +47,49 @@ util.AddNetworkString("PlayerEquipRagdollRucksack")
 util.AddNetworkString("ItemSwitchSlot")
 util.AddNetworkString("ItemSwitchOwner")
 util.AddNetworkString("Use")
-util.AddNetworkString("MRPClientPutNVGsOn")
-util.AddNetworkString("MRPClientPutNVGsOff")
-util.AddNetworkString("MRPPlayerTakeOnNVGs")
-util.AddNetworkString("MRPPlayerTakeOffNVGs")
+util.AddNetworkString("MRPClientNVGsToggle")
+util.AddNetworkString("MRPPlayerNVGsToggle")
 util.AddNetworkString("MRPPlayerTakeOnGasmask")
 util.AddNetworkString("MRPPlayerTakeOffGasmask")
 util.AddNetworkString("MRPPlayerDeath")
 util.AddNetworkString("MRPCreateRagdollCS")
 util.AddNetworkString("MRPPlayerSpawn")
-local existingTable = sql.QueryValue("SELECT sql FROM sqlite_master WHERE name = 'mrp_characters';")
+local existingTable =
+    sql.QueryValue(
+        "SELECT sql FROM sqlite_master" ..
+        "WHERE name = 'mrp_characters';"
+    )
 --print(existingTable.sql)
-local request = "CREATE TABLE mrp_characters( UID INTEGER PRIMARY KEY autoincrement," .. "SteamID64 BIGINT NOT NULL," .. "Faction BOOL," .. "Regiment TINYINT," .. "Rank TINYINT DEFAULT '0'," .. "RPName VARCHAR(45)," .. "ModelIndex TINYINT," .. "Size SMALLINT NOT NULL," .. "Skin TINYINT," .. "BodyGroups VARCHAR(60)," .. "PrimaryWep TINYINT DEFAULT '1'," .. "PrimaryWepAmmo TINYINT DEFAULT '0'," .. "SecondaryWep TINYINT DEFAULT '1'," .. "SecondaryWepAmmo TINYINT DEFAULT '0'," .. "RocketLauncher TINYINT DEFAULT '1'," .. "RocketLauncherAmmo TINYINT DEFAULT '0'," .. "Vest TINYINT DEFAULT '1'," .. "VestArmor TINYINT DEFAULT '0'," .. "Rucksack TINYINT DEFAULT '1'," .. "Radio TINYINT DEFAULT '1'," .. "Gasmask TINYINT DEFAULT '1'," .. "Helmet TINYINT DEFAULT '1'," .. "HelmetArmor TINYINT DEFAULT '0'," .. "NVGs TINYINT DEFAULT '1'," .. "Inventory VARCHAR(60) DEFAULT '1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," .. "InventoryAmmo VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," .. "InventoryArmor VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'" .. ")"
+local request =
+    "CREATE TABLE mrp_characters(" ..
+    "UID INTEGER PRIMARY KEY autoincrement," ..
+    "SteamID64 BIGINT NOT NULL," ..
+    "Faction BOOL," ..
+    "Regiment TINYINT," ..
+    "Rank TINYINT DEFAULT '0'," ..
+    "RPName VARCHAR(45)," ..
+    "ModelIndex TINYINT," ..
+    "Size SMALLINT NOT NULL," ..
+    "Skin TINYINT," ..
+    "BodyGroups VARCHAR(60)," ..
+    "PrimaryWep TINYINT DEFAULT '1'," ..
+    "PrimaryWepAmmo TINYINT DEFAULT '0'," ..
+    "SecondaryWep TINYINT DEFAULT '1'," ..
+    "SecondaryWepAmmo TINYINT DEFAULT '0'," ..
+    "RocketLauncher TINYINT DEFAULT '1'," ..
+    "RocketLauncherAmmo TINYINT DEFAULT '0'," ..
+    "Vest TINYINT DEFAULT '1'," ..
+    "VestArmor TINYINT DEFAULT '0'," ..
+    "Rucksack TINYINT DEFAULT '1'," ..
+    "Radio TINYINT DEFAULT '1'," ..
+    "Gasmask TINYINT DEFAULT '1'," ..
+    "Helmet TINYINT DEFAULT '1'," ..
+    "HelmetArmor TINYINT DEFAULT '0'," ..
+    "NVGs TINYINT DEFAULT '1'," ..
+    "Inventory VARCHAR(60) DEFAULT '1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," ..
+    "InventoryAmmo VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," ..
+    "InventoryArmor VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'" ..
+    ")"
 
 if existingTable ~= request then
     --print(request)
@@ -71,33 +102,36 @@ local files, folders = file.Find(fol .. "*", "LUA")
 local SortedPairs = SortedPairs
 
 for _, v in ipairs(files) do
-    if MRP.disabledDefaults["modules"][v:Left(-5)] then continue end
-    if string.GetExtensionFromFilename(v) ~= "lua" then continue end
-    include(fol .. v)
+    isDisabled = MRP.disabledDefaults["modules"][v:Left(-5)]
+    isLuaFile = string.GetExtensionFromFilename(v) == "lua"
+    if not isDisabled and isLuaFile then
+        include(fol .. v)
+    end
 end
 
 for _, folder in SortedPairs(folders, true) do
-    if folder == "." or folder == ".." or MRP.disabledDefaults["modules"][folder] then continue end
+    isDisabled = MRP.disabledDefaults["modules"][folder]
+    if folder ~= "." and folder ~= ".." and not isDisabled then
+        for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
+            AddCSLuaFile(fol .. folder .. "/" .. File)
+            include(fol .. folder .. "/" .. File)
+        end
 
-    for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
-        if File == "sh_interface.lua" then continue end
-        AddCSLuaFile(fol .. folder .. "/" .. File)
-        include(fol .. folder .. "/" .. File)
-    end
+        for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
+            include(fol .. folder .. "/" .. File)
+        end
 
-    for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
-        if File == "sv_interface.lua" then continue end
-        include(fol .. folder .. "/" .. File)
-    end
-
-    for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
-        if File == "cl_interface.lua" then continue end
-        AddCSLuaFile(fol .. folder .. "/" .. File)
+        for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
+            AddCSLuaFile(fol .. folder .. "/" .. File)
+        end
     end
 end
 
 local function CheckData(ply)
-    local data = sql.Query(" SELECT * FROM mrp_characters WHERE SteamID64 = " .. tostring(ply:SteamID64()))
+    local data =
+        sql.Query(
+            "SELECT * FROM mrp_characters WHERE SteamID64 = " .. ply:SteamID64()
+        )
 
     --PrintTable(data)
     if not data then
@@ -107,7 +141,7 @@ local function CheckData(ply)
         net.Start("CharacterSelection")
         net.WriteUInt(#data, 5)
 
-        for k, v in pairs(data) do
+        for _, v in pairs(data) do
             net.WriteUInt(tonumber(v["UID"]), 32)
             net.WriteUInt(tonumber(v["Faction"]), 1)
             net.WriteUInt(tonumber(v["Regiment"]), 4)
@@ -158,10 +192,12 @@ local function RunEquipment(ply)
     end
 
     for k = 1, 20 do
-        if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).ammoName then
-            ply:GiveAmmo(ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo"), MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).ammoName, true)
-        elseif MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).wepClass then
-            ply:Give(MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).wepClass)
+        if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).ammoName then
+            local ammo = ply:GetNWInt("Inventory" .. k .. "Ammo")
+            local ammoType = MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).ammoName
+            ply:GiveAmmo(ammo, ammoType, true)
+        elseif MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).wepClass then
+            ply:Give(MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).wepClass)
         end
     end
 end
@@ -170,44 +206,54 @@ function MRP.SaveInventoryData(ply)
     local Inventory = {}
 
     for k = 1, 20 do
-        Inventory[k] = ply:GetNWInt("Inventory" .. tostring(k))
+        Inventory[k] = ply:GetNWInt("Inventory" .. k)
     end
 
     Inventory = table.concat(Inventory, ",")
-    sql.Query("UPDATE mrp_characters SET Inventory = '" .. Inventory .. "' WHERE UID = " .. tostring(ply:GetCharacterID()))
+    sql.Query(
+        "UPDATE mrp_characters SET Inventory = '" .. Inventory .. "' " ..
+            "WHERE UID = " .. ply:GetCharacterID()
+    )
 end
 
 function MRP.SaveBodyGroupsData(ply)
-    local BodyGroups = tostring(ply:GetBodygroup(0))
+    local BodyGroups = ply:GetBodygroup(0)
 
     for k = 1, ply:GetNumBodyGroups() - 1 do
-        BodyGroups = BodyGroups .. "," .. tostring(ply:GetBodygroup(k))
+        BodyGroups = BodyGroups .. "," .. ply:GetBodygroup(k)
     end
 
-    sql.Query("UPDATE mrp_characters SET BodyGroups = '" .. BodyGroups .. "' WHERE UID = " .. tostring(ply:GetCharacterID()))
+    sql.Query(
+        "UPDATE mrp_characters SET BodyGroups = '" .. BodyGroups .. "' " ..
+            "WHERE UID = " .. ply:GetCharacterID()
+    )
 end
 
 function MRP.PickupAmmoBox(ply, ent)
     local taken = false
 
     for k = 1, 20 do
-        if ply:GetNWInt("Inventory" .. tostring(k)) == ent.MRPID and ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo") < MRP.getMRPEnt(ent.MRPID).capacity and ent.ammoCount > 0 then
-            local temp = MRP.getMRPEnt(ent.MRPID).capacity - ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo")
-            ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo") + ent.ammoCount)
+        local slotContainsSameAmmo = ply:GetNWInt("Inventory" .. k) == ent.MRPID
+        local slotAmmo = ply:GetNWInt("Inventory" .. k .. "Ammo")
+        local boxCap = MRP.getMRPEnt(ent.MRPID).capacity
+        local slotAmmoBoxNotFull = slotAmmo < boxCap
+        if slotContainsSameAmmo and slotAmmoBoxNotFull and ent.ammoCount > 0 then
+            local ammoTillFull = boxCap - slotAmmo
 
-            if ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo") > MRP.getMRPEnt(ent.MRPID).capacity then
-                ply:GiveAmmo(temp, ent.ammoName)
-                ent.ammoCount = ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo") - MRP.getMRPEnt(ent.MRPID).capacity
-                ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", MRP.getMRPEnt(ent.MRPID).capacity)
+            if ammoTillFull < ent.ammoCount then
+                ply:GiveAmmo(ammoTillFull, ent.ammoName)
+                ent.ammoCount = ent.ammoCount - ammoTillFull
+                ply:SetNWInt("Inventory" .. k .. "Ammo", boxCap)
             else
+                ply:SetNWInt("Inventory" .. k .. "Ammo", slotAmmo + ent.ammoCount)
                 ply:GiveAmmo(ent.ammoCount, ent.ammoName)
             end
         end
 
-        if ply:GetNWInt("Inventory" .. tostring(k)) == 1 and ent.ammoCount > 0 then
+        if ply:GetNWInt("Inventory" .. k) == 1 and ent.ammoCount > 0 then
             ply:GiveAmmo(ent.ammoCount, ent.ammoName)
-            ply:SetNWInt("Inventory" .. tostring(k), ent.MRPID)
-            ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", ent.ammoCount)
+            ply:SetNWInt("Inventory" .. k, ent.MRPID)
+            ply:SetNWInt("Inventory" .. k .. "Ammo", ent.ammoCount)
             taken = true
             break
         end
@@ -224,27 +270,38 @@ end
 
 function MRP.PickupRucksack(ply, ent)
     ply:SetNWInt("Rucksack", ent.MRPID)
-    sql.Query("UPDATE mrp_characters SET Rucksack = " .. tostring(ent.MRPID) .. " WHERE UID = " .. tostring(ply:GetCharacterID()))
-    ply:SetBodygroup(ent.BodyGroup[ply:GetNWInt("Faction")][ply:GetNWInt("ModelIndex")][1], ent.BodyGroup[ply:GetNWInt("Faction")][ply:GetNWInt("ModelIndex")][2])
+    sql.Query(
+        "UPDATE mrp_characters SET Rucksack = " .. tostring(ent.MRPID) ..
+        " WHERE UID = " .. tostring(ply:GetCharacterID())
+    )
+    local faction = ply:MRPFaction()
+    local bodyGroup = ent.BodyGroup[faction][ply:GetNWInt("ModelIndex")][1]
+    local bodyId = ent.BodyGroup[faction][ply:GetNWInt("ModelIndex")][2]
+    ply:SetBodygroup(bodyGroup, bodyId)
     MRP.SaveBodyGroupsData(ply)
     local Inventory = {}
 
     for k = 1, 20 do
-        Inventory[k] = ply:GetNWInt("Inventory" .. tostring(k))
+        Inventory[k] = ply:GetNWInt("Inventory" .. k)
     end
 
     for k = ent.StartingIndex, ent.StartingIndex + ent.Capacity - 1 do
-        Inventory[k] = ent["Slot" .. tostring(k)]
-        ply:SetNWInt("Inventory" .. tostring(k), ent["Slot" .. tostring(k)])
+        Inventory[k] = ent["Slot" .. k]
+        ply:SetNWInt("Inventory" .. k, ent["Slot" .. tostring(k)])
 
-        if MRP.getMRPEnt(ent["Slot" .. tostring(k)]).ammoName then
-            ply:GiveAmmo(ent["Slot" .. tostring(k) .. "ammoCount"], MRP.getMRPEnt(ent["Slot" .. tostring(k)]).ammoName)
-            ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", ent["Slot" .. tostring(k) .. "ammoCount"])
+        if MRP.getMRPEnt(ent["Slot" .. k]).ammoName then
+            local slotAmmo = ent["Slot" .. k .. "ammoCount"]
+            local ammoType = MRP.getMRPEnt(ent["Slot" .. k]).ammoName
+            ply:GiveAmmo(slotAmmo, ammoType)
+            ply:SetNWInt("Inventory" .. k .. "Ammo", slotAmmo)
         end
     end
 
     Inventory = table.concat(Inventory, ",")
-    sql.Query("UPDATE mrp_characters SET Inventory = '" .. Inventory .. "' WHERE UID = " .. tostring(ply:GetCharacterID()))
+    sql.Query(
+        "UPDATE mrp_characters" ..
+        "SET Inventory = '" .. Inventory .. "' " ..
+        "WHERE UID = " .. tostring(ply:GetCharacterID()))
     ent:Remove()
 end
 
@@ -259,7 +316,7 @@ function MRP.PickupWep(ply, ent)
     ent:Remove()
 end
 
-net.Receive("CharacterInformation", function(len, ply)
+net.Receive("CharacterInformation", function(_, ply)
     ply:SetNWInt("Faction", net.ReadBit())
     ply:SetNWInt("Regiment", net.ReadUInt(4))
     ply:SetNWInt("Rank", 0)
@@ -284,32 +341,46 @@ net.Receive("CharacterInformation", function(len, ply)
     hook.Run("CharacterRegistration", ply)
 
     for k = 1, 5 do
-        ply:SetNWInt("Inventory" .. tostring(k), 1)
-        ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", 0)
+        ply:SetNWInt("Inventory" .. k, 1)
+        ply:SetNWInt("Inventory" .. k .. "Ammo", 0)
     end
 
     for k = 6, 20 do
-        ply:SetNWInt("Inventory" .. tostring(k), 0)
-        ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", 0)
+        ply:SetNWInt("Inventory" .. k, 0)
+        ply:SetNWInt("Inventory" .. k .. "Ammo", 0)
     end
 
-    request = [[INSERT INTO mrp_characters (SteamID64, Faction, Regiment, RPName, ModelIndex, Size, Skin, BodyGroups) VALUES( ]] .. ply:SteamID64() .. [[, ]] .. tostring(ply:GetNWInt("Faction")) .. [[, ]] .. tostring(ply:GetNWInt("Regiment")) .. [[, ]] .. SQLStr(ply:GetNWString("RPName")) .. [[, ]] .. tostring(ply:GetNWInt("ModelIndex")) .. [[, ]] .. tostring(ply:GetNWInt("Size")) .. [[, ]] .. tostring(ply:GetNWInt("Skin")) .. [[, ']] .. ply.BodyGroups .. [[') ]] --SteamID64 BIGINT NOT NULL --Faction BOOL --Regiment TINYINT --RPName VARCHAR(45) --ModelIndex TINYINT --Size SMALLINT NOT NULL --Skin TINYINT --BodyGroups VARCHAR(60)
-    --print(request)
+    request =
+        "INSERT INTO mrp_characters VALUES( " ..
+        ply:SteamID64() .. ", " ..
+        tostring(ply:GetNWInt("Faction")) .. ", " ..
+        tostring(ply:GetNWInt("Regiment")) .. ", " ..
+        SQLStr(ply:GetNWString("RPName")) .. ", " ..
+        tostring(ply:GetNWInt("ModelIndex")) .. ", " ..
+        tostring(ply:GetNWInt("Size")) .. ", " ..
+        tostring(ply:GetNWInt("Skin")) .. ", '" ..
+        ply.BodyGroups .. "') "
     sql.Query(request)
-    local sqlret = sql.Query("SELECT * FROM mrp_characters WHERE SteamID64 = " .. ply:SteamID64() .. " AND RPName = " .. SQLStr(ply:GetNWString("RPName")) .. ";")
+    local sqlret =
+        sql.Query(
+            "SELECT * " ..
+            "FROM mrp_characters " ..
+            "WHERE SteamID64 = " .. ply:SteamID64() .. " " ..
+            "AND RPName = " .. SQLStr(ply:GetNWString("RPName")) .. ";")
     ply:SetNWInt("CharacterID", tonumber(sqlret[#sqlret]["UID"]))
     ply.BodyGroups = string.Split(ply.BodyGroups, ",")
     RunEquipment(ply)
 end)
 
-net.Receive("DeleteCharacter", function(len, ply)
+net.Receive("DeleteCharacter", function(_, _)
     local uid = net.ReadUInt(32)
     sql.Query("DELETE FROM mrp_characters WHERE UID = " .. tostring(uid))
 end)
 
-net.Receive("CharacterSelected", function(len, ply)
+net.Receive("CharacterSelected", function(_, ply)
     local uid = net.ReadUInt(32)
-    local Character = sql.QueryRow("SELECT * FROM mrp_characters WHERE UID = " .. tostring(uid))
+    local Character =
+        sql.QueryRow("SELECT * FROM mrp_characters WHERE UID = " .. tostring(uid))
     hook.Run("CharacterSelected", ply)
     Character.Faction = tonumber(Character.Faction)
     ply:SetNWInt("CharacterID", tonumber(uid))
@@ -342,15 +413,16 @@ net.Receive("CharacterSelected", function(len, ply)
     Character.InventoryArmor = string.Split(Character.InventoryArmor, ",")
 
     for k = 1, 20 do
-        ply:SetNWInt("Inventory" .. tostring(k), tonumber(Character.Inventory[k]))
-        ply:SetNWInt("Inventory" .. tostring(k) .. "Ammo", tonumber(Character.InventoryAmmo[k]))
-        ply:SetNWInt("Inventory" .. tostring(k) .. "Armor", tonumber(Character.InventoryArmor[k]))
+        local slot = "Inventory" .. k
+        ply:SetNWInt(slot, tonumber(Character.Inventory[k]))
+        ply:SetNWInt(slot .. "Ammo", tonumber(Character.InventoryAmmo[k]))
+        ply:SetNWInt(slot .. "Armor", tonumber(Character.InventoryArmor[k]))
     end
 
     RunEquipment(ply)
 end)
 
-net.Receive("PlayerDropAmmo", function(len, ply)
+net.Receive("PlayerDropAmmo", function(_, ply)
     local slotID = net.ReadUInt(5)
     local ent = ents.Create(MRP.getMRPEnt(ply:GetNWInt("Inventory" .. slotID)).ClassName)
     ent.ammoCount = ply:GetNWInt("Inventory" .. slotID .. "Ammo")
@@ -359,24 +431,26 @@ net.Receive("PlayerDropAmmo", function(len, ply)
     ent:SetPos(ply:EyePos() - Vector(0, 0, 10))
 end)
 
-net.Receive("PlayerDropVest", function(len, ply)
+net.Receive("PlayerDropVest", function(_, ply)
     local ent = ents.Create(MRP.getMRPEnt(ply:GetNWInt("Vest")).ClassName)
 
     if ent.Capacity then
         for k = ent.StartingIndex, ent.StartingIndex + ent.Capacity - 1 do
-            ent["Slot" .. tostring(k)] = ply:GetNWInt("Inventory" .. tostring(k))
+            ent["Slot" .. k] = ply:GetNWInt("Inventory" .. k)
 
-            if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).ammoName then
-                ent["Slot" .. tostring(k) .. "ammoCount"] = ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo")
+            if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).ammoName then
+                ent["Slot" .. k .. "ammoCount"] = ply:GetNWInt("Inventory" .. k .. "Ammo")
             end
 
-            ply:SetNWInt("Inventory" .. tostring(k), 1)
+            ply:SetNWInt("Inventory" .. k, 1)
         end
 
-        -- Since the "RemoveAmmo" function call the "PlayerAmmoChanged" function which change the "Inventory" networked value we have to do a boucle again ...
+        -- Since the "RemoveAmmo" function call the "PlayerAmmoChanged" function which
+        -- change the "Inventory" networked value we have to do a boucle again ...
         for k = ent.StartingIndex, ent.StartingIndex + ent.Capacity - 1 do
-            if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).ammoName then
-                ply:RemoveAmmo(ply:GetNWInt("Inventory" .. tostring(k) .. "Ammo"), MRP.getMRPEnt(ply:GetNWInt("Inventory" .. tostring(k))).ammoName)
+            if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).ammoName then
+                local ammoType = MRP.getMRPEnt(ply:GetNWInt("Inventory" .. k)).ammoName
+                ply:RemoveAmmo(ply:GetNWInt("Inventory" .. k .. "Ammo"), ammoType)
             end
         end
     end
@@ -390,7 +464,7 @@ net.Receive("PlayerDropVest", function(len, ply)
     ply:SetNWInt("Vest", 1)
 end)
 
-net.Receive("RagdollDropVest", function(len, ply)
+net.Receive("RagdollDropVest", function(_, ply)
     local target = net.ReadEntity()
     local ent = ents.Create(MRP.getMRPEnt(target:GetNWInt("Vest")).ClassName)
 
@@ -415,7 +489,7 @@ net.Receive("RagdollDropVest", function(len, ply)
     target:SetNWInt("Vest", 1)
 end)
 
-net.Receive("RagdollDropWep", function(len, ply)
+net.Receive("RagdollDropWep", function(_, ply)
     local category = net.ReadString()
     local target = net.ReadEntity()
     local ent = ents.Create(MRP.getMRPEnt(target:GetNWInt(category)).ClassName)
@@ -425,21 +499,21 @@ net.Receive("RagdollDropWep", function(len, ply)
     target:SetNWInt(category, 1)
 end)
 
-net.Receive("PlayerChangeRucksackWithRagdoll", function(len, ply)
+net.Receive("PlayerChangeRucksackWithRagdoll", function(_, ply)
     local ragdoll = net.ReadEntity()
     local ragdollRucksack = ents.Create(MRP.getMRPEnt(ragdoll:GetNWInt("Rucksack")).ClassName)
     setupRagdollRucksack(ragdoll, ragdollRucksack)
     ply:ChangeRucksack(ragdollRucksack)
 end)
 
-net.Receive("PlayerEquipRagdollRucksack", function(len, ply)
+net.Receive("PlayerEquipRagdollRucksack", function(_, ply)
     local ragdoll = net.ReadEntity()
     local ragdollRucksack = ents.Create(MRP.getMRPEnt(ragdoll:GetNWInt("Rucksack")).ClassName)
     setupRagdollRucksack(ragdoll, ragdollRucksack)
     ply:EquipRucksack(ragdollRucksack)
 end)
 
-net.Receive("ItemSwitchSlot", function(len, ply)
+net.Receive("ItemSwitchSlot", function(_, _)
     local ent = net.ReadEntity()
     local oldSlotName = net.ReadString()
     local newSlotName = net.ReadString()
@@ -451,7 +525,7 @@ net.Receive("ItemSwitchSlot", function(len, ply)
     ent:SetNWInt(oldSlotName .. "Armor", 0)
 end)
 
-net.Receive("ItemSwitchOwner", function(len, ply)
+net.Receive("ItemSwitchOwner", function(_, _)
     local oldOwner = net.ReadEntity()
     local oldSlotName = net.ReadString()
     local newOwner = net.ReadEntity()
@@ -464,29 +538,29 @@ net.Receive("ItemSwitchOwner", function(len, ply)
     oldOwner:SetNWInt(oldSlotName .. "Armor", 0)
 end)
 
-net.Receive("MRPDrop", function(len, ply)
+net.Receive("MRPDrop", function(_, ply)
     local MRPID = net.ReadUInt(7)
     local target = net.ReadEntity()
     local slotName = net.ReadString()
     MRP.getMRPEnt(MRPID):drop(slotName, target, ply)
 end)
 
-net.Receive("Use", function(len, ply)
+net.Receive("Use", function(_, ply)
     ply:SelectWeapon(net.ReadString())
 end)
 
+local wepCategories = { "PrimaryWep", "SecondaryWep", "RocketLauncher" }
 function MRP.SaveProgress(ply)
     if player_manager.GetPlayerClass(ply) == "player" then
-        if ply:GetNWInt("PrimaryWep") > 1 then
-            sql.Query("UPDATE mrp_characters SET PrimaryWepAmmo = " .. ply:GetWeapon(MRP.getMRPEnt(ply:GetNWInt("PrimaryWep")).wepClass):Clip1() .. " WHERE UID = " .. ply:GetCharacterID())
-        end
-
-        if ply:GetNWInt("SecondaryWep") > 1 then
-            sql.Query("UPDATE mrp_characters SET SecondaryWepAmmo = " .. ply:GetWeapon(MRP.getMRPEnt(ply:GetNWInt("SecondaryWep")).wepClass):Clip1() .. " WHERE UID = " .. ply:GetCharacterID())
-        end
-
-        if ply:GetNWInt("RocketLauncher") > 1 then
-            sql.Query("UPDATE mrp_characters SET RocketLauncherAmmo = " .. ply:GetWeapon(MRP.getMRPEnt(ply:GetNWInt("RocketLauncher")).wepClass):Clip1() .. " WHERE UID = " .. ply:GetCharacterID())
+        for _, cat in pairs(wepCategories) do
+            if ply:MRPHas(cat) then
+                local wep = ply:GetWeapon(MRP.getMRPEnt(ply:GetNWInt(cat)).wepClass)
+                sql.Query(
+                    "UPDATE mrp_characters " ..
+                    "SET " .. cat .. "Ammo = " .. wep:Clip1() .. " " ..
+                    "WHERE UID = " .. ply:GetCharacterID()
+                )
+            end
         end
 
         local InventoryAmmo = tostring(ply:GetNWInt("Inventory1Ammo"))
@@ -508,7 +582,26 @@ function MRP.SaveProgress(ply)
         end
 
         Inventory = table.concat(Inventory, ",")
-        sql.Query("UPDATE mrp_characters SET " .. "Rank = " .. ply:GetNWInt("Rank") .. "," .. "PrimaryWep = " .. ply:GetNWInt("PrimaryWep") .. "," .. "SecondaryWep = " .. ply:GetNWInt("SecondaryWep") .. "," .. "RocketLauncher = " .. ply:GetNWInt("RocketLauncher") .. "," .. "Vest = " .. ply:GetNWInt("Vest") .. ", " .. "VestArmor = " .. ply:GetNWInt("VestArmor") .. ", " .. "Rucksack = " .. ply:GetNWInt("Rucksack") .. ", " .. "Radio = " .. ply:GetNWInt("Radio") .. "," .. "Gasmask = " .. ply:GetNWInt("Gasmask") .. ", " .. "Helmet = " .. ply:GetNWInt("Helmet") .. ", " .. "HelmetArmor  = " .. ply:GetNWInt("HelmetArmor") .. ", " .. "NVGs = " .. ply:GetNWInt("NVGS") .. "," .. "Inventory = '" .. Inventory .. "'," .. "InventoryAmmo = '" .. InventoryAmmo .. "'," .. "InventoryArmor = '" .. InventoryArmor .. "'" .. " WHERE UID = " .. ply:GetCharacterID() .. ";")
+        sql.Query(
+            "UPDATE mrp_characters " ..
+            "SET " ..
+                "Rank = " .. ply:GetNWInt("Rank") .. "," ..
+                "PrimaryWep = " .. ply:GetNWInt("PrimaryWep") .. "," ..
+                "SecondaryWep = " .. ply:GetNWInt("SecondaryWep") .. "," ..
+                "RocketLauncher = " .. ply:GetNWInt("RocketLauncher") .. "," ..
+                "Vest = " .. ply:GetNWInt("Vest") .. ", " ..
+                "VestArmor = " .. ply:GetNWInt("VestArmor") .. ", " ..
+                "Rucksack = " .. ply:GetNWInt("Rucksack") .. ", " ..
+                "Radio = " .. ply:GetNWInt("Radio") .. "," ..
+                "Gasmask = " .. ply:GetNWInt("Gasmask") .. ", " ..
+                "Helmet = " .. ply:GetNWInt("Helmet") .. ", " ..
+                "HelmetArmor  = " .. ply:GetNWInt("HelmetArmor") .. ", " ..
+                "NVGs = " .. ply:GetNWInt("NVGS") .. "," ..
+                "Inventory = '" .. Inventory .. "'," ..
+                "InventoryAmmo = '" .. InventoryAmmo .. "'," ..
+                "InventoryArmor = '" .. InventoryArmor .. "' " ..
+            "WHERE UID = " .. ply:GetCharacterID() .. ";"
+        )
     end
 end
 
@@ -524,14 +617,16 @@ hook.Add("ShutDown", "ServerShuttingDown", function()
     end
 end)
 
-local function RemoveAmmoFromBoxes(index, AmmoCountToRemove, ammoName, ply)
+local function RemoveAmmoFromBoxes(index, ammoToRemove, ammoName, ply)
     for k = index, 20 do
         if MRP.getMRPEnt(ply:GetNWInt("Inventory" .. (21 - k)))["ammoName"] == ammoName then
-            ply:SetNWInt("Inventory" .. (21 - k) .. "Ammo", ply:GetNWInt("Inventory" .. (21 - k) .. "Ammo") - AmmoCountToRemove)
+            local dataField = "Inventory" .. (21 - k) .. "Ammo"
+            local newAmmo = ply:GetNWInt(dataField) - ammoToRemove
+            ply:SetNWInt(dataField, newAmmo)
 
-            if ply:GetNWInt("Inventory" .. (21 - k) .. "Ammo") <= 0 then
+            if newAmmo <= 0 then
                 ply:SetNWInt("Inventory" .. (21 - k), 1)
-                RemoveAmmoFromBoxes(k, -ply:GetNWInt("Inventory" .. (21 - k) .. "Ammo"), ammoName, ply)
+                RemoveAmmoFromBoxes(k, -newAmmo, ammoName, ply)
             end
 
             break
@@ -542,8 +637,9 @@ end
 function GM:InitPostEntity()
     local map = game.GetMap()
     local spawn
+    local tableExists = MRP.spawns and MRP.spawns[map]
 
-    if MRP.spawns and MRP.spawns[map] and MRP.spawns[map].spectators and MRP.spawns[map].rebels and MRP.spawns[map].army then
+    if tableExists then
         for k = 1, #MRP.spawns[map].spectators do
             spawn = ents.Create("info_spectator")
             spawn:SetPos(MRP.spawns[map].spectators[k].pos)
@@ -562,7 +658,7 @@ function GM:InitPostEntity()
             spawn:Spawn()
         end
 
-        function self:PlayerSelectSpawn(ply, transition)
+        function self:PlayerSelectSpawn(ply, _)
             if ply:GetNWInt("Faction") == 0 then
                 local army_spawns = ents.FindByClass("info_player_army")
                 local random_entry = math.random(#army_spawns)
@@ -583,21 +679,21 @@ function GM:InitPostEntity()
     end
 end
 
-function GM:PlayerInitialSpawn(ply, transition)
+function GM:PlayerInitialSpawn(ply, _)
     player_manager.SetPlayerClass(ply, "spectator")
     ply:SetShouldServerRagdoll(true)
     ply:SetNWString("RPName", ply:Nick())
     ply:AllowFlashlight(true)
 end
 
-function GM:PlayerSpawn(ply, transition)
+function GM:PlayerSpawn(ply, _)
     if player_manager.GetPlayerClass(ply) == "spectator" then
         --local view_ent = ents.FindByName("spectator_view")[1]
         --ply:SetViewEntity(view_ent)
         CheckData(ply)
     else
         --ply:SetViewEntity(ply)
-        ply:SetModel(MRP.PlayerModels[ply:GetNWString("Faction")][ply:GetNWInt("ModelIndex")].model)
+        ply:SetModel(MRP.PlayerModels[ply:MRPFaction()][ply:MRPModel()].model)
         ply:SetModelScale(ply:GetNWInt("Size") / 180, 0)
         ply:SetViewOffset(Vector(0, 0, 64 * ply:GetNWInt("Size") / 180))
         ply:SetSkin(ply:GetNWInt("Skin"))
@@ -620,13 +716,13 @@ function GM:PlayerAmmoChanged(ply, ammoID, oldCount, newCount)
     local ammoName = game.GetAmmoName(ammoID)
 
     if newCount < oldCount then
-        local AmmoCountToRemove = oldCount - newCount
+        local ammoCountToRemove = oldCount - newCount
         local startingIndex = 1
-        RemoveAmmoFromBoxes(startingIndex, AmmoCountToRemove, ammoName, ply)
+        RemoveAmmoFromBoxes(startingIndex, ammoCountToRemove, ammoName, ply)
     end
 end
 
-function GM:PlayerNoClip(ply, desiredState)
+function GM:PlayerNoClip(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -646,8 +742,9 @@ function GM:CreateEntityRagdoll(owner, ragdoll)
         ragdoll:AddEFlags(EFL_IN_SKYBOX)
 
         for k = 1, 20 do
-            ragdoll:SetNWInt("Inventory" .. k, owner:GetNWInt("Inventory" .. k))
-            ragdoll:SetNWInt("Inventory" .. k .. "Ammo", owner:GetNWInt("Inventory" .. k .. "Ammo"))
+            local dataField = "Inventory" .. k
+            ragdoll:SetNWInt(dataField, owner:GetNWInt(dataField))
+            ragdoll:SetNWInt(dataField .. "Ammo", owner:GetNWInt(dataField .. "Ammo"))
         end
 
         ragdoll:SetNWInt("Helmet", owner:GetNWInt("Helmet"))
@@ -664,31 +761,40 @@ function GM:CreateEntityRagdoll(owner, ragdoll)
         ragdoll:SetNWInt("ModelIndex", owner:GetNWInt("ModelIndex"))
         ragdoll:SetNWInt("GasmaskOn", owner:GetNWInt("GasmaskOn"))
 
-        if owner:GetNWInt("PrimaryWep") > 1 then
-            ragdoll:SetNWInt("PrimaryWepAmmo", owner:GetWeapon(MRP.getMRPEnt(owner:GetNWInt("PrimaryWep")).wepClass):Clip1())
-        end
-
-        if owner:GetNWInt("SecondaryWep") > 1 then
-            ragdoll:SetNWInt("SecondaryWepAmmo", owner:GetWeapon(MRP.getMRPEnt(owner:GetNWInt("SecondaryWep")).wepClass):Clip1())
-        end
-
-        if owner:GetNWInt("RocketLauncher") > 1 then
-            ragdoll:SetNWInt("RocketLauncherAmmo", owner:GetWeapon(MRP.getMRPEnt(owner:GetNWInt("RocketLauncher")).wepClass):Clip1())
+        for _, wepCat in pairs(wepCategories) do
+            if owner:MRPHas(wepCat) then
+                ragdoll:SetNWInt(wepCat .. "Ammo", owner:MRPWeapon(wepClass):Clip1())
+            end
         end
     end
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
-    if hitgroup == HITGROUP_HEAD and ply:GetNWInt("Helmet") > 1 then
-        ply:SetNWInt("HelmetArmor", math.Clamp(math.floor(ply:GetNWInt("HelmetArmor") - dmginfo:GetDamage()), 0, MRP.getMRPEnt(ply:GetNWInt("Helmet")).armor))
-        dmginfo:SetDamage(dmginfo:GetDamage() * (1 - ply:GetNWInt("HelmetArmor") / MRP.getMRPEnt(ply:GetNWInt("Helmet")).armor))
-    elseif hitgroup == HITGROUP_CHEST and ply:GetNWInt("Vest") > 1 then
-        ply:SetNWInt("VestArmor", math.Clamp(math.floor(ply:GetNWInt("VestArmor") - dmginfo:GetDamage()), 0, MRP.getMRPEnt(ply:GetNWInt("Vest")).armor))
-        dmginfo:SetDamage(dmginfo:GetDamage() * (1 - ply:GetNWInt("VestArmor") / MRP.getMRPEnt(ply:GetNWInt("Vest")).armor))
+    local armorType
+    local function ScaleDamage()
+        local baseArmor = MRP.getMRPEnt(ply:GetNWInt(armorType)).armor
+        local newArmor =
+            math.Clamp(
+                math.floor(ply:GetNWInt(armorType .. "Armor") - dmginfo:GetDamage()),
+                0,
+                baseArmor
+            )
+        ply:SetNWInt(armorType .. "Armor", newArmor)
+        dmginfo:SetDamage(
+            dmginfo:GetDamage() * (1 - ply:GetNWInt(armorType .. "Armor") / baseArmor)
+        )
+    end
+
+    if hitgroup == HITGROUP_HEAD and ply:MRPHas("Helmet") then
+        armorType = "Helmet"
+        ScaleDamage()
+    elseif hitgroup == HITGROUP_CHEST and ply:MRPHas("Vest") then
+        armorType = "Vest"
+        ScaleDamage()
     end
 end
 
-function GM:PlayerSay(sender, text, teamChat)
+function GM:PlayerSay(sender, text, _)
     if string.sub(text, 1, 1) == "/" then
         sender:ConCommand(string.sub(text, 2, #text))
 
@@ -698,7 +804,7 @@ function GM:PlayerSay(sender, text, teamChat)
     return text
 end
 
-function GM:PlayerSpawnEffect(ply, model)
+function GM:PlayerSpawnEffect(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -706,7 +812,7 @@ function GM:PlayerSpawnEffect(ply, model)
     end
 end
 
-function GM:PlayerSpawnNPC(ply, npc_type, weapon)
+function GM:PlayerSpawnNPC(ply, _, _)
     if ply:IsAdmin() then
         return true
     else
@@ -714,7 +820,7 @@ function GM:PlayerSpawnNPC(ply, npc_type, weapon)
     end
 end
 
-function GM:PlayerSpawnObject(ply, model)
+function GM:PlayerSpawnObject(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -722,7 +828,7 @@ function GM:PlayerSpawnObject(ply, model)
     end
 end
 
-function GM:PlayerSpawnProp(ply, model)
+function GM:PlayerSpawnProp(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -730,7 +836,7 @@ function GM:PlayerSpawnProp(ply, model)
     end
 end
 
-function GM:PlayerSpawnRagdoll(ply, model)
+function GM:PlayerSpawnRagdoll(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -738,7 +844,7 @@ function GM:PlayerSpawnRagdoll(ply, model)
     end
 end
 
-function GM:PlayerSpawnSENT(ply, sent)
+function GM:PlayerSpawnSENT(ply, _)
     if ply:IsAdmin() then
         return true
     else
@@ -746,7 +852,7 @@ function GM:PlayerSpawnSENT(ply, sent)
     end
 end
 
-function GM:PlayerSpawnSWEP(ply, swep, info)
+function GM:PlayerSpawnSWEP(ply, _, _)
     if ply:IsAdmin() then
         return true
     else
@@ -754,7 +860,7 @@ function GM:PlayerSpawnSWEP(ply, swep, info)
     end
 end
 
-function GM:PlayerSpawnVehicle(ply, model, name, vtable)
+function GM:PlayerSpawnVehicle(ply, _, _, _)
     if IsValid(ply) then
         if ply:IsAdmin() then
             return true

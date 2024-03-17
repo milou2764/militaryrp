@@ -27,24 +27,27 @@ function MRP.loadPlayerGear(p)
         userid = p
     end
     MRP.mountedGear[userid] = MRP.mountedGear[userid] or {}
-    for _,gear in pairs(MRP.mountedGear[userid]) do
+    for _, gear in pairs(MRP.mountedGear[userid]) do
         if gear.Remove then
             gear:Remove()
         end
     end
-    if p:Has("NVGs") then
+    if p:MRPHas("NVGs") then
         MRP.mountedGear[userid]["NVGs"] = MRP.getMRPEnt(getMRPID(p, "NVGs")):createCSModel(p)
     end
-    if p:Has("Helmet") then
-        MRP.mountedGear[userid]["Helmet"] = MRP.getMRPEnt(getMRPID(p, "Helmet")):createCSModel(p)
+    if p:MRPHas("Helmet") then
+        MRP.mountedGear[userid]["Helmet"] =
+            MRP.getMRPEnt(getMRPID(p, "Helmet")):createCSModel(p)
     end
-    if p:Has("Gasmask") then
-        MRP.mountedGear[userid]["Gasmask"] = MRP.getMRPEnt(getMRPID(p, "Gasmask")):createCSModel(p)
+    if p:MRPHas("Gasmask") then
+        MRP.mountedGear[userid]["Gasmask"] =
+            MRP.getMRPEnt(getMRPID(p, "Gasmask")):createCSModel(p)
     end
-    if p:Has("Rucksack") then
-        MRP.mountedGear[userid]["Rucksack"] = MRP.getMRPEnt(getMRPID(p, "Rucksack")):createCSModel(p)
+    if p:MRPHas("Rucksack") then
+        MRP.mountedGear[userid]["Rucksack"] =
+            MRP.getMRPEnt(getMRPID(p, "Rucksack")):createCSModel(p)
     end
-    if p:Has("Vest") then
+    if p:MRPHas("Vest") then
         MRP.mountedGear[userid]["Vest"] = MRP.getMRPEnt(getMRPID(p, "Vest")):createCSModel(p)
     end
 end
@@ -53,7 +56,7 @@ end
 ------------------------------------------------------------------
 hook.Add("InitPostEntity", "InitPlayersGear", function()
     timer.Simple(10, function()
-        for k,v in pairs(player.GetAll()) do
+        for _, v in pairs(player.GetAll()) do
             MRP.loadPlayerGear(v)
         end
     end)
@@ -67,7 +70,7 @@ hook.Add("MRPPlayerSpawn", "InitPlayerGear", function(p)
 end)
 hook.Add("NotifyShouldTransmit", "MRPNotifyShouldTransmitGear", function(ent, shouldTransmit)
     if ent:IsPlayer() and ent.UserID and MRP.mountedGear[ent:UserID()] then
-        for k,v in pairs(MRP.mountedGear[ent:UserID()]) do
+        for _, v in pairs(MRP.mountedGear[ent:UserID()]) do
             if IsValid(v) and shouldTransmit then
                 v:SetNoDraw(false)
                 v:SetParent(ent)
@@ -83,7 +86,7 @@ end)
 local function unmountGear(userid)
     MRP.mountedGear = MRP.mountedGear or {}
     MRP.mountedGear[userid] = MRP.mountedGear[userid] or {}
-    for _,v in pairs(MRP.mountedGear[userid]) do
+    for _, v in pairs(MRP.mountedGear[userid]) do
         if v.Remove then v:Remove() end
     end
 end
