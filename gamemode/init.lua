@@ -66,7 +66,7 @@ local request =
     "SteamID64 BIGINT NOT NULL," ..
     "Faction TINYINT," ..
     "Regiment TINYINT," ..
-    "Rank TINYINT DEFAULT '0'," ..
+    "Rank TINYINT DEFAULT '1'," ..
     "RPName VARCHAR(45)," ..
     "ModelIndex TINYINT," ..
     "Size SMALLINT NOT NULL," ..
@@ -328,7 +328,7 @@ end
 net.Receive("CharacterInformation", function(_, ply)
     ply:SetNWInt("Faction", net.ReadBit())
     ply:SetNWInt("Regiment", net.ReadUInt(4))
-    ply:SetNWInt("Rank", 0)
+    ply:SetNWInt("Rank", 1)
     ply:SetNWString("RPName", net.ReadString())
     ply:SetNWInt("ModelIndex", net.ReadUInt(5))
     ply:SetNWInt("Size", net.ReadUInt(8))
