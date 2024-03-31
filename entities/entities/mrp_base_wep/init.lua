@@ -6,7 +6,7 @@ function ENT:Use(activator, _, _, _)
     if activator:GetNWInt(self.MRPCategory) < 2 then
         MRP.PickupWep(activator, self)
     else
-        local oldWep = ents.Create(MRP.ents[activator:GetNWInt(self.MRPCategory)])
+        local oldWep = ents.Create(MRP.idClass[activator:GetNWInt(self.MRPCategory)])
         local wep = activator:GetWeapon(oldWep.wepClass)
         oldWep.ammoCount = wep:Clip1()
         activator:StripWeapon(oldWep.wepClass)

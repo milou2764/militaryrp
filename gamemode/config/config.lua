@@ -11,42 +11,28 @@ end
 function MRPRegisterEntity(class)
     print('### INITIALIZING ' .. class)
     local ent = scripted_ents.Get(class) -- get sent
-    ent.MRPID = table.insert(MRP.ents, class)
+    ent.MRPID = MRP.classId[class]
     RegisterModel(ent)
     scripted_ents.Register(ent, class) -- save changes
 end
 
 local function MRPInitEntities()
-    MRP.ents = {
+    MRP.idClass = {
         [0] = 'mrp_null_entity', -- no item slot
         [1] = 'mrp_null_entity', -- empty item slot
     }
+    for class, id in pairs(MRP.classId) do
+        MRP.idClass[id] = class
+    end
     MRP.entityModels = {}
     MRP.weaponClasses = {}
-    MRPRegisterEntity('mrp_nvgs')
-    MRPRegisterEntity('mrp_helmet1')
-    MRPRegisterEntity('mrp_helmet2')
-    MRPRegisterEntity('mrp_helmet3')
-    MRPRegisterEntity('mrp_ent_gasmask')
-    MRPRegisterEntity('mrp_rucksack1')
-    MRPRegisterEntity('mrp_rucksack2')
-    MRPRegisterEntity('mrp_vest1')
-    MRPRegisterEntity('mrp_vest2')
-    MRPRegisterEntity('mrp_vest3')
-    MRPRegisterEntity('mrp_vest4')
-    MRPRegisterEntity('mrp_vest5')
-    MRPRegisterEntity('mrp_vest6')
-    MRPRegisterEntity('mrp_vest7')
-    MRPRegisterEntity('mrp_vest8')
-    MRPRegisterEntity('mrp_m92beretta')
-    MRPRegisterEntity('mrp_matador')
     hook.Call('MRPInitEntities')
     hook.Call('MRPEntitiesInitialized')
     MRP.EntitiesInitialized = true
 end
 
 MRP = MRP or {}
-MRP.ents = MRP.ents or {}
+MRP.idClass = MRP.idClass or {}
 MRP.mountedGear = MRP.mountedGear or {}
 MRP.mountedWeps = MRP.mountedWeps or {}
 
@@ -55,8 +41,32 @@ MRP.mountedWeps = MRP.mountedWeps or {}
     @param MRPID Unique ID
 --]]
 function MRP.getMRPEnt(MRPID)
-    return scripted_ents.Get(MRP.ents[MRPID])
+    return scripted_ents.Get(MRP.idClass[MRPID])
 end
+
+MRP.classId = {
+    ['mrp_nvgs'] = 2,
+    ['mrp_ent_gasmask'] = 3,
+
+    ['mrp_helmet1'] = 4,
+    ['mrp_helmet2'] = 5,
+    ['mrp_helmet3'] = 6,
+
+    ['mrp_musette'] = 7,
+    ['mrp_sacf2'] = 8,
+
+    ['mrp_vest1'] = 9,
+    ['mrp_vest2'] = 10,
+    ['mrp_vest3'] = 11,
+    ['mrp_vest4'] = 12,
+    ['mrp_vest5'] = 13,
+    ['mrp_vest6'] = 14,
+    ['mrp_vest7'] = 15,
+    ['mrp_vest8'] = 16,
+
+    ['mrp_m92beretta'] = 17,
+    ['mrp_matador'] = 18,
+}
 
 MRP.categoryID = { NVGs = 0,
                    Gasmask = 1,
