@@ -69,6 +69,7 @@ function PLAYER:CalcView() end
 function PLAYER:ShouldDrawLocal() end
 function PLAYER:PreDrawViewModel() end
 function PLAYER:PostDrawViewModel() end
+function PLAYER:Death() end
 
 function PLAYER:SetModel()
 

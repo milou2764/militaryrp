@@ -125,13 +125,13 @@ local PLAYER_LINE = {
         self:SetHeight( 40 + 3 * 2 )
         self:DockMargin( 2, 0, 2, 2 )
 
-        self.Name:SetText( self.Player:RPName() )
-
     end,
 
     Setup = function( self, pl )
 
         self.Player = pl
+
+        self.Name:SetText( self.Player:RPName() )
 
         self.Avatar:SetPlayer( pl )
 

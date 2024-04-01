@@ -1,5 +1,7 @@
 file.CreateDir('mrp') -- garrysmod/data/mrp
 
+local TAG = 'mrpinit'
+
 local function RegisterModel(ent)
     MRP.entityModels[ent.ClassName] = ent.model
 end
@@ -9,9 +11,10 @@ end
     @param class The class name of the scripted entity
 --]]
 function MRPRegisterEntity(class)
-    print('### INITIALIZING ' .. class)
     local ent = scripted_ents.Get(class) -- get sent
-    ent.MRPID = MRP.classId[class]
+    local mrpid = MRP.classId[class]
+    ent.MRPID = mrpid
+    Log.d(TAG, class .. ' ' .. tostring(mrpid))
     RegisterModel(ent)
     scripted_ents.Register(ent, class) -- save changes
 end
@@ -64,8 +67,34 @@ MRP.classId = {
     ['mrp_vest7'] = 15,
     ['mrp_vest8'] = 16,
 
-    ['mrp_m92beretta'] = 17,
-    ['mrp_matador'] = 18,
+    ['mrp_beret_501rcc'] = 17,
+    ['mrp_beret_rima'] = 18,
+    ['mrp_beret_rpima'] = 19,
+    ['mrp_beret_legion'] = 20,
+    ['mrp_beret_2rep'] = 21,
+    ['mrp_beret_ca'] = 22,
+    ['tompms_musette'] = 23,
+    ['mrp_beret_1rpima'] = 24,
+    ['mrp_bob_ce'] = 25,
+    ['mrp_beret_fm'] = 26,
+    ['mrp_beret_genie'] = 27,
+    ['mrp_beret_cm'] = 28,
+    ['mrp_beret_1rpima'] = 29,
+    ['mrp_beret_2rep'] = 30,
+    ['mrp_beret_501rcc'] = 31,
+    ['mrp_beret_alat'] = 32,
+    ['mrp_beret_ca'] = 33,
+    ['mrp_beret_cm'] = 34,
+    ['mrp_beret_fm'] = 35,
+    ['mrp_beret_genie'] = 36,
+    ['mrp_beret_legion'] = 37,
+    ['mrp_beret_rima'] = 38,
+    ['mrp_beret_rpima'] = 39,
+    ['mrp_bob_ce'] = 40,
+    ['mrp_beret_alat'] = 41,
+
+    ['mrp_m92beretta'] = 42,
+    ['mrp_matador'] = 43,
 }
 
 MRP.categoryID = { NVGs = 0,

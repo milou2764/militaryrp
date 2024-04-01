@@ -27,7 +27,7 @@
     "lint_spaceAfterComma":             true,
     "lint_maxLineLength":               95,
 
-    "prettyprint_spaceBetweenParens":   false,
+    "prettyprint_spaceBetweenParens":   true,
     "prettyprint_spaceBetweenBrackets": false,
     "prettyprint_spaceBetweenBraces":   true,
     "prettyprint_spaceEmptyParens":     false,
