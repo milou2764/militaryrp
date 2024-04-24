@@ -73,7 +73,7 @@ local function character_creation( ply )
         Model:SetSize(ScrW() * 0.5, ScrH() * 0.8)
         Model:SetPos( 0.1 * ScrW(), 1.6 * ScrH() / 10 )
         ModelIndex = math.random( #MRP.PlayerModels[Faction] )
-        Model:SetModel( MRP.PlayerModels[Faction][ModelIndex].model )
+        Model:SetModel( MRP.PlayerModels[Faction][ModelIndex].Model )
         Model.Entity:SetModelScale(Size / 180)
         Model.vCamPos = Vector(60, 40, 37.288376)
 
@@ -181,7 +181,7 @@ local function character_creation( ply )
             ScrollPanel:Dock(TOP)
             ScrollPanel:SetSize(Model:GetWide(), Model:GetTall() - 30)
 
-            Model:SetModel(MRP.PlayerModels[Faction][ModelIndex].model)
+            Model:SetModel(MRP.PlayerModels[Faction][ModelIndex].Model)
             Model.Entity:SetModelScale(Size / 180)
             --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
@@ -348,7 +348,7 @@ local function character_selection(ply)
         rankPanel:SizeToContents()
 
         local model = Character[index]["ModelIndex"]
-        selecPanel.pmodel:SetModel( MRP.PlayerModels[faction][model].model )
+        selecPanel.pmodel:SetModel( MRP.PlayerModels[faction][model].Model )
         for k, v in pairs(Character[index]["BodyGroups"]) do
             selecPanel.pmodel.Entity:SetBodygroup( k - 1, v )
         end

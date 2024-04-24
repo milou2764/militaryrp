@@ -3,9 +3,9 @@ include("shared.lua")
 ENT.entPanelName = "MRPVestPanel"
 ENT.droppable = "Vest"
 
-function ENT:createSlotPanel(parentPanel, target, rect, context, slotName)
+function ENT:CreatePane(parentPanel, target, rect, context, slotName)
     local slotPanel =
-        baseclass.Get("mrp_base_entity").createSlotPanel(
+        baseclass.Get("mrp_base_entity").CreatePane(
             self,
             parentPanel,
             target,

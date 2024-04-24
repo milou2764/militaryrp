@@ -24,7 +24,7 @@ function ENT:makeDroppable(slotPanel, slotName)
     slotPanel:MakeDroppable(slotName)
 end
 
-function ENT:createSlotPanel(parentPanel, target, rect, context, slotName)
+function ENT:CreatePane(parentPanel, target, rect, context, slotName)
     local slotPanel = vgui.Create("MRPDragBase", parentPanel)
     slotPanel:SetName(slotName)
     slotPanel:SetDropPos("5")
@@ -32,18 +32,23 @@ function ENT:createSlotPanel(parentPanel, target, rect, context, slotName)
     slotPanel:SetSize(rect.w, rect.h)
     slotPanel.owner = target
     slotPanel.context = context
+    slotPanel.iconW = self.PaneIconW or slotPanel.iconW
+    slotPanel.leftBorderW = self.PaneLeftBorderW or slotPanel.leftBorderW
+
     local iconName = MRP.icons[slotPanel:GetName()]
     if iconName then
         slotPanel.iconID = surface.GetTextureID(iconName)
     else
         slotPanel.iconID = surface.GetTextureID("null")
     end
+
     local mrpid = target:GetNWInt(slotName)
     if mrpid > 1 then
-        slotPanel.entPanel = self.fillSlotPanel(MRP.getMRPEnt(mrpid), slotPanel)
+        slotPanel.entPanel = self.fillSlotPanel(MRP.EntityTable(mrpid), slotPanel)
     else
         slotPanel.drawSlotFunc = MRP.drawSlotWithIcon
     end
+
     return slotPanel
 end
 

@@ -26,7 +26,7 @@ else
         m9k_m4a1 = {
             offsetvec = Vector(-13.054831, 13.577024, 5.744125),
             boneID = 4,
-            model = "models/weapons/w_m4a1_iron.mdl",
+            Model = "models/weapons/w_m4a1_iron.mdl",
             offsetang = Angle(47.937, -12.219, 3.760),
             mrpcategory = "PrimaryWep",
         },
@@ -34,7 +34,7 @@ else
             offsetvec = Vector(1.562500, 2.593750, -5.218750),
             mrpcategory = "SecondaryWep",
             offsetang = Angle(-86.469, -14.094, 96.812),
-            model = "models/weapons/w_beretta_m92.mdl",
+            Model = "models/weapons/w_beretta_m92.mdl",
             boneID = 18,
         },
     }
@@ -130,7 +130,7 @@ net.Receive("MRPRequestHolsters", function()
             -- s'il n'y a pas de holster existant, on en crée un nouveau et on le montre
             local model =
                 ClientsideModel(
-                    MRP.holsters[old.ClassName].model,
+                    MRP.holsters[old.ClassName].Model,
                     RENDERGROUP_OPAQUE
                 )
             MRP.mountedWeps[ply:UserID()][oldMRPCategory] = model
@@ -153,7 +153,7 @@ end)
 
 local function setupEditor(ply, wepClass)
     if not MRP.holsters[wepClass] then return end
-    local model = ClientsideModel(MRP.holsters[wepClass].model, RENDERGROUP_OPAQUE)
+    local model = ClientsideModel(MRP.holsters[wepClass].Model, RENDERGROUP_OPAQUE)
     model.wepClass = wepClass
     updateModelPos(model, ply)
     local editMenu = vgui.Create("DFrame")
@@ -283,8 +283,8 @@ local function setupEditor(ply, wepClass)
         if currentModel then
             currentModel:Remove()
             MRP.mountedWeps[uid][MRP.holsters[wepClass].mrpcategory] =
-                ClientsideModel(MRP.holsters[wepClass].model, RENDERGROUP_OPAQUE)
-            MRP.mountedWeps[uid][MRP.holsters[wepClass].mrpcategory].wepClass = wepClass
+                ClientsideModel(MRP.holsters[wepClass].Model, RENDERGROUP_OPAQUE)
+            MRP.mountedWeps[uid][MRP.holsters[wepClass].mrpcategory].WeaponClass = wepClass
         end
 
         print("[\"" .. wepClass .. "\"] = {")

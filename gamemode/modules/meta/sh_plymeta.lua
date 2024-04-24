@@ -4,6 +4,15 @@ function meta:MRPGetID(cat)
     return meta:GetNWInt(cat)
 end
 
+function meta:MRPWeapon(cat)
+    local wepClass = self:MRPEntityTable(cat).WeaponClass
+    return self:GetWeapon(wepClass)
+end
+
+function meta:MRPEntityTable(cat)
+    return MRP.EntityTable(self:GetNWInt(cat))
+end
+
 function meta:MRPCharacterID()
     return self:GetNWInt('CharacterID')
 end

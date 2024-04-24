@@ -14,6 +14,6 @@ function ENT:Use(activator, _, _, _)
 end
 
 function ENT:fitIn(slotName, target)
-    target:SetNWInt(slotName .. "Armor", self.armor)
+    target:SetNWInt(slotName .. "Armor", self.Armor)
     baseclass.Get("mrp_base_gear").fitIn(self, slotName, target)
 end

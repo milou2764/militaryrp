@@ -7,7 +7,7 @@ function ENT:dropFromInventoryPanel(entPanel)
         net.WriteEntity(entPanel.owner)
         net.WriteString(entPanel:GetName())
         net.SendToServer()
-        --entPanel.model:Remove()
+        --entPanel.Model:Remove()
         entPanel:switchOff()
     else
         baseclass.Get("mrp_base_entity").dropFromInventoryPanel(self, entPanel)
@@ -15,7 +15,7 @@ function ENT:dropFromInventoryPanel(entPanel)
 end
 
 function ENT:getGearModelPath()
-    return self.model
+    return self.Model
 end
 
 function ENT:createCSModel(target)
@@ -74,7 +74,7 @@ function ENT:makeDroppable(slotPanel, slotName)
                         net.WriteUInt(v.gear.MRPID, 7)
                         net.WriteEntity(origin.owner)
                         net.SendToServer()
-                        v.model:SetParent(dest:GetParent().pmodel.Entity)
+                        v.Model:SetParent(dest:GetParent().pmodel.Entity)
                     else
                         dest:GetParent().pmodel.Entity:AddGear(v)
                     end

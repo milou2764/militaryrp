@@ -1,6 +1,6 @@
 net.Receive("PlayerMountGear", function()
     local MRPID = net.ReadUInt(7)
-    local MRPEnt = MRP.getMRPEnt(MRPID)
+    local MRPEnt = MRP.EntityTable(MRPID)
     local target = net.ReadEntity()
     local userid
     if target.UserID then
@@ -13,7 +13,7 @@ net.Receive("PlayerMountGear", function()
 end)
 net.Receive("PlayerUnmountGear", function()
     local MRPID = net.ReadUInt(7)
-    local MRPEnt = MRP.getMRPEnt(MRPID)
+    local MRPEnt = MRP.EntityTable(MRPID)
     local target = net.ReadEntity()
     MRPEnt:unmount(target)
 end)
@@ -33,22 +33,22 @@ function MRP.loadPlayerGear(p)
         end
     end
     if p:MRPHas("NVGs") then
-        MRP.mountedGear[userid]["NVGs"] = MRP.getMRPEnt(getMRPID(p, "NVGs")):createCSModel(p)
+        MRP.mountedGear[userid]["NVGs"] = MRP.EntityTable(getMRPID(p, "NVGs")):createCSModel(p)
     end
     if p:MRPHas("Helmet") then
         MRP.mountedGear[userid]["Helmet"] =
-            MRP.getMRPEnt(getMRPID(p, "Helmet")):createCSModel(p)
+            MRP.EntityTable(getMRPID(p, "Helmet")):createCSModel(p)
     end
     if p:MRPHas("Gasmask") then
         MRP.mountedGear[userid]["Gasmask"] =
-            MRP.getMRPEnt(getMRPID(p, "Gasmask")):createCSModel(p)
+            MRP.EntityTable(getMRPID(p, "Gasmask")):createCSModel(p)
     end
     if p:MRPHas("Rucksack") then
         MRP.mountedGear[userid]["Rucksack"] =
-            MRP.getMRPEnt(getMRPID(p, "Rucksack")):createCSModel(p)
+            MRP.EntityTable(getMRPID(p, "Rucksack")):createCSModel(p)
     end
     if p:MRPHas("Vest") then
-        MRP.mountedGear[userid]["Vest"] = MRP.getMRPEnt(getMRPID(p, "Vest")):createCSModel(p)
+        MRP.mountedGear[userid]["Vest"] = MRP.EntityTable(getMRPID(p, "Vest")):createCSModel(p)
     end
 end
 ------------------------------------------------------------------

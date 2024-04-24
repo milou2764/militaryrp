@@ -1,14 +1,14 @@
 local plyMeta = FindMetaTable("Player")
 
 function plyMeta:EquipHelmet(helmet)
-    self:SetNWInt("HelmetArmor", helmet.armor)
+    self:SetNWInt("HelmetArmor", helmet.Armor)
     self:SetNWInt("Helmet", helmet.MRPID)
     helmet:Remove()
 end
 
 function plyMeta:ChangeHelmet(newHelmet)
-    local oldHelmet = ents.Create(MRP.getMRPEnt(self:GetNWInt("Helmet")).className)
-    oldHelmet.armor = self:GetNWInt("HelmetArmor")
+    local oldHelmet = ents.Create(MRP.EntityTable(self:GetNWInt("Helmet")).className)
+    oldHelmet.Armor = self:GetNWInt("HelmetArmor")
     oldHelmet:Spawn()
     oldHelmet:SetPos( self:EyePos() - Vector(0, 0, 10) )
 
@@ -32,7 +32,7 @@ function plyMeta:EquipGasmask(gasmask)
 end
 
 function plyMeta:ChangeGasmask(newGasmask)
-    local oldGasmask = ents.Create(MRP.getMRPEnt(self:MRPGasmask()).className)
+    local oldGasmask = ents.Create(MRP.EntityClass(self:MRPGasmask()).className)
     oldGasmask:Spawn()
     oldGasmask:SetPos( self:EyePos() - Vector(0, 0, 10) )
 
@@ -43,24 +43,24 @@ function plyMeta:EquipRucksack(rucksack)
     self:SetNWInt( "Rucksack", rucksack.MRPID )
     for k = rucksack.StartingIndex, rucksack.StartingIndex + rucksack.Capacity - 1 do
         self:SetNWInt("Inventory" .. k, rucksack["Slot" .. k])
-        if MRP.getMRPEnt(rucksack["Slot" .. k]).ammoName then
-            local ammo = rucksack["Slot" .. k .. "ammoCount"]
-            local ammoType = MRP.getMRPEnt(rucksack["Slot" .. k]).ammoName
+        if MRP.EntityTable(rucksack["Slot" .. k]).Ammo then
+            local ammo = rucksack["Slot" .. k .. "Rounds"]
+            local ammoType = MRP.EntityTable(rucksack["Slot" .. k]).Ammo
             self:GiveAmmo(ammo, ammoType)
-            self:SetNWInt("Inventory" .. k .. "Ammo", ammo)
+            self:SetNWInt("Inventory" .. k .. "Rounds", ammo)
         end
     end
     rucksack:Remove()
 end
 
 function plyMeta:ChangeRucksack(newRucksack)
-    local oldRucksack = ents.Create(MRP.getMRPEnt(self:GetNWInt("Rucksack")).ClassName)
+    local oldRucksack = ents.Create(MRP.EntityTable(self:GetNWInt("Rucksack")).ClassName)
     for k = oldRucksack.StartingIndex, oldRucksack.StartingIndex + oldRucksack.Capacity - 1 do
         oldRucksack["Slot" .. 20-k] = self:GetNWInt("Inventory" .. k)
-        if MRP.getMRPEnt(self:GetNWInt("Inventory" .. (20-k))).ammoName then
-            local ammo = self:GetNWInt("Inventory" .. (20-k) .. "Ammo")
-            local ammoType = MRP.getMRPEnt(self:GetNWInt("Inventory" .. (20-k))).ammoName
-            oldRucksack["Slot" .. (20-k) .. "ammoCount"] = ammo
+        if MRP.EntityTable(self:GetNWInt("Inventory" .. (20-k))).Ammo then
+            local ammo = self:GetNWInt("Inventory" .. (20-k) .. "Rounds")
+            local ammoType = MRP.EntityTable(self:GetNWInt("Inventory" .. (20-k))).Ammo
+            oldRucksack["Slot" .. (20-k) .. "Rounds"] = ammo
             self:RemoveAmmo(ammo, ammoType)
         end
         self:SetNWInt("Inventory" .. (20-k), 1)
@@ -75,7 +75,7 @@ function plyMeta:inventoryPickup(ent)
     for k = 1, 20 do
         if self:GetNWInt("Inventory" .. k) == 1 then
             self:SetNWInt( "Inventory" .. k, ent.MRPID )
-            self:SetNWInt( "Inventory" .. k .. "Armor", ent.armor )
+            self:SetNWInt( "Inventory" .. k .. "Armor", ent.Armor )
             ent:Remove()
             return
         end

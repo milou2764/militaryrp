@@ -32,13 +32,16 @@ function MRP.drawSlotWithIcon(self, w, h)
     drawSlot(self, w, h)
     surface.SetDrawColor(255, 255, 255, 255)
     surface.SetTexture(self.iconID)
-    surface.DrawTexturedRect(self.leftBorderW * self.ss,
-                             self.topBorderW * self.ss,
-                             self.iconW, self.iconH)
+    surface.DrawTexturedRect(
+        self.leftBorderW * self.ss,
+        self.topBorderW * self.ss,
+        self.iconW,
+        self.iconH
+    )
 end
 
-function MRP.screenScale()
-    return ScrH() / 1080
+function MRP.ScreenScale()
+    return ScrW() / 1920
 end
 
 local MRPPanel = {}
@@ -58,11 +61,11 @@ vgui.Register("MRPPanel", MRPPanel, "EditablePanel")
 local MRPSpawnIcon = {}
 
 function MRPSpawnIcon:SetSize(width, height)
-    baseclass.Get("Panel").SetSize(self, width * MRP.screenScale(), height * MRP.screenScale())
+    baseclass.Get("Panel").SetSize(self, width * MRP.ScreenScale(), height * MRP.ScreenScale())
 end
 
 function MRPSpawnIcon:SetPos(x, y)
-    baseclass.Get("Panel").SetPos(self, x * MRP.screenScale(), y * MRP.screenScale())
+    baseclass.Get("Panel").SetPos(self, x * MRP.ScreenScale(), y * MRP.ScreenScale())
 end
 
 vgui.Register("MRPSpawnIcon", MRPSpawnIcon, "SpawnIcon")
@@ -147,7 +150,7 @@ end
 
 function MRPDragBase:Init()
     baseclass.Get("DDragBase").Init(self)
-    self.ss = MRP.screenScale()
+    self.ss = MRP.ScreenScale()
     self.iconW = 64 * self.ss
     self.iconH = 64 * self.ss
     self.leftBorderW = 18 * self.ss
@@ -183,7 +186,7 @@ local function MRPDragnDrop(dest, panels, bDoDrop, _, _, _)
                 net.WriteUInt(v.gear.MRPID, 7)
                 net.WriteEntity(origin.owner)
                 net.SendToServer()
-                v.model:Remove()
+                v.Model:Remove()
             end
 
             origin.drawSlotFunc = MRP.drawSlotWithIcon
@@ -212,7 +215,7 @@ MRPProgress.SetSize = MRPSpawnIcon.SetSize
 MRPProgress.SetPos = MRPSpawnIcon.SetPos
 
 function MRPProgress:Init()
-    self.ss = MRP.screenScale()
+    self.ss = MRP.ScreenScale()
 end
 
 MRPProgress.Paint = function(self, _, _)
@@ -228,7 +231,7 @@ vgui.Register("MRPProgress", MRPProgress, "Panel")
 local MRPEntPanel = {}
 
 function MRPEntPanel:Init()
-    self.ss = MRP.screenScale()
+    self.ss = MRP.ScreenScale()
     baseclass.Get("MRPSpawnIcon").Init(self)
     self.iconW = 64 * self.ss
     self.iconH = 64 * self.ss
@@ -243,7 +246,7 @@ function MRPEntPanel:switchOff()
 end
 
 function MRPEntPanel:switchOn()
-    self:SetModel(self.gear.model)
+    self:SetModel(self.gear.Model)
     self:SetTooltip(self.gear.PrintName)
 end
 
@@ -279,7 +282,7 @@ function MRPVestPanel:switchOn()
     self.progressBar:SetSize(10, 100)
 
     self.progressBar.getFraction = function()
-        return self.owner:GetNWInt(self:GetName() .. "Armor") / self.gear.armor
+        return self.owner:GetNWInt(self:GetName() .. "Armor") / self.gear.Armor
     end
 
     self.progressBar.color = Color(26, 19, 158, 100)
@@ -291,7 +294,7 @@ MRPPocketVestPanel.DoClick = MRP.selectContainer
 
 function MRPPocketVestPanel:switchOn()
     baseclass.Get("MRPVestPanel").switchOn(self)
-    self:SetModel(self.gear.model, 0, "0" .. self.gear.pocketID .. "0000000")
+    self:SetModel(self.gear.Model, 0, "0" .. self.gear.pocketID .. "0000000")
 
     if self.owner:IsPlayer() then
         self.fullness = vgui.Create("MRPProgress", self)
@@ -323,14 +326,14 @@ function MRPHelmetPanel:showArmorBar()
     self.progressBar:SetSize(10, 100)
 
     self.progressBar.getFraction = function()
-        return self.owner:GetNWInt(self:GetName() .. "Armor") / self.gear.armor
+        return self.owner:GetNWInt(self:GetName() .. "Armor") / self.gear.Armor
     end
 
     self.progressBar.color = Color(26, 19, 158, 100)
 end
 
 function MRPHelmetPanel:switchOn()
-    self:SetModel(self.gear.model, self.gear.skin or 0)
+    self:SetModel(self.gear.Model, self.gear.skin or 0)
     self:SetTooltip(self.gear.PrintName)
     self:showArmorBar()
 end
@@ -378,7 +381,7 @@ function MRPAmmoboxPanel:switchOn(ent)
     self.fullness:SetSize(10, 100)
 
     local function calcAmmoboxFullness()
-        return self.owner:GetNWInt(self:GetName() .. "Ammo") / self.gear.capacity
+        return self.owner:GetNWInt(self:GetName() .. "Rounds") / self.gear.Capacity
     end
 
     self.fullness.getFraction = calcAmmoboxFullness
@@ -388,7 +391,7 @@ vgui.Register("MRPAmmoboxPanel", MRPAmmoboxPanel, "MRPEntPanel")
 local MRPWepPanel = {}
 
 function MRPWepPanel:switchOn()
-    self:SetSpawnIcon(MRP.getMRPEnt(self.owner:GetNWInt(self:GetName())).icon)
+    self:SetModel(MRP.EntityTable(self.owner:GetNWInt(self:GetName())).Model)
 
     if not self.owner:IsPlayer() then
         self.progressBar = vgui.Create("MRPProgress", self)
@@ -396,7 +399,7 @@ function MRPWepPanel:switchOn()
         self.progressBar:SetSize(10, 100)
 
         self.progressBar.getFraction = function()
-            return self.owner:GetNWInt(self:GetName() .. "Ammo") / self.gear.clipSize
+            return self.owner:GetNWInt(self:GetName() .. "Rounds") / self.gear.ClipSize
         end
     end
 end

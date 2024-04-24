@@ -20,10 +20,10 @@ function ENT:drop(slotName, target, activator)
         for k = ent.StartingIndex, ent.StartingIndex + ent.Capacity - 1 do
             ent["Slot" .. k] = target:GetNWInt("Inventory" .. k)
             ent["Slot" .. k .. "Armor"] = target:GetNWInt("Inventory" .. k .. "Armor")
-            ent["Slot" .. k .. "Ammo"] = target:GetNWInt("Inventory" .. k .. "Ammo")
-            if MRP.getMRPEnt(target:GetNWInt("Inventory" .. k)).ammoName then
-                local ammo = target:GetNWInt("Inventory" .. k .. "Ammo")
-                local ammoType = MRP.getMRPEnt(target:GetNWInt("Inventory" .. k)).ammoName
+            ent["Slot" .. k .. "Rounds"] = target:GetNWInt("Inventory" .. k .. "Rounds")
+            if MRP.EntityTable(target:GetNWInt("Inventory" .. k)).Ammo then
+                local ammo = target:GetNWInt("Inventory" .. k .. "Rounds")
+                local ammoType = MRP.EntityTable(target:GetNWInt("Inventory" .. k)).Ammo
                 target:RemoveAmmo(ammo, ammoType)
             else
                 target:SetNWInt("Inventory" .. k, 1)
@@ -38,11 +38,11 @@ function ENT:equip(ply)
     for k = self.StartingIndex, self.StartingIndex + self.Capacity - 1 do
         ply:SetNWInt("Inventory" .. k, self["Slot" .. k])
         ply:SetNWInt("Inventory" .. k .. "Armor", self["Slot" .. k .. "Armor"])
-        if MRP.getMRPEnt(self["Slot" .. k]).ammoName then
-            local ammo = self["Slot" .. k .. "Ammo"]
-            local ammoType = MRP.getMRPEnt(self["Slot" .. k]).ammoName
+        if MRP.EntityTable(self["Slot" .. k]).Ammo then
+            local ammo = self["Slot" .. k .. "Rounds"]
+            local ammoType = MRP.EntityTable(self["Slot" .. k]).Ammo
             ply:GiveAmmo(ammo, ammoType)
-            ply:SetNWInt("Inventory" .. k .. "Ammo", self["Slot" .. k .. "Ammo"])
+            ply:SetNWInt("Inventory" .. k .. "Rounds", self["Slot" .. k .. "Rounds"])
         end
     end
     baseclass.Get("mrp_base_gear").equip(self, ply)

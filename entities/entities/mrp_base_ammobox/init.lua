@@ -5,7 +5,7 @@ include("shared.lua")
 ENT.Delay = 0
 
 function ENT:Initialize()
-    self:SetModel(self.model)
+    self:SetModel(self.Model)
     self:SetMoveType(MOVETYPE_VPHYSICS)
     self:SetSolid(SOLID_VPHYSICS)
     self:PhysicsInit(SOLID_VPHYSICS)
@@ -15,16 +15,17 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator, _, _, _)
+    Log.d(self.ClassName, "MRPID " .. self.MRPID)
     MRP.PickupAmmoBox(activator, self)
 end
 
 function ENT:drop(slotName, target, activator)
     local ent = baseclass.Get("mrp_base_entity").drop(self, slotName, target, activator)
-    ent.ammoCount = target:GetNWInt(slotName .. "Ammo")
+    ent.Rounds = target:GetNWInt(slotName .. "Rounds")
     return ent
 end
 
 function ENT:fitIn(slotName, target)
-    target:SetNWInt(slotName .. "Ammo", self.ammoCount)
+    target:SetNWInt(slotName .. "Rounds", self.Rounds)
     baseclass.Get("mrp_base_entity").fitIn(self, slotName, target)
 end

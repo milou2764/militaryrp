@@ -15,12 +15,12 @@ function ENT:Initialize()
 end
 
 function ENT:equip(ply)
-    ply:SetNWInt("VestArmor", self.armor)
+    ply:SetNWInt("VestArmor", self.Armor)
     baseclass.Get("mrp_base_rucksack").equip(self, ply)
 end
 
 function ENT:drop(slotName, target, activator)
     local ent = baseclass.Get("mrp_base_rucksack").drop(self, slotName, target, activator)
-    ent.armor = target:GetNWInt(slotName .. "Armor")
+    ent.Armor = target:GetNWInt(slotName .. "Armor")
     target:SetNWInt("VestArmor", 0)
 end

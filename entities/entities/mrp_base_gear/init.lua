@@ -47,7 +47,7 @@ end
 
 function ENT:createServerModel(target)
     local model = ents.Create('prop_dynamic')
-    model:SetModel(self.model)
+    model:SetModel(self.Model)
     model:SetParent(target)
     model:AddEffects(EF_BONEMERGE)
 
