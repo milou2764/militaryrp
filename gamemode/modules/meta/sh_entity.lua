@@ -4,6 +4,10 @@ function meta:MRPHas(category)
     return self:GetNWInt(category) > 1
 end
 
+function meta:MRPEntityTable(cat)
+    return MRP.EntityTable(self:GetNWInt(cat))
+end
+
 function meta:MRPRLauncher()
     return MRP.EntityTable(self:GetNWInt('RocketLauncher'))
 end

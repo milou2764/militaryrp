@@ -159,73 +159,56 @@ function MRP.OpenRagdollInvPanel(target)
     end
 end
 
-function MRP.OpenPlyInvPanel(ply)
+function MRP.OpenPlyInvPanel(target, ragdoll)
     MRP.plyInvPanel = vgui.Create("EditablePanel", MRP.dropZone)
-    messageNames = {
-        drop         = "PlayerDrop",
-        dropAmmo     = "PlayerDropAmmo",
-        dropNVGs     = "PlayerDropNVGs",
-        dropHelmet   = "PlayerDropHelmet",
-        dropGasmask  = "PlayerDropGasmask",
-        dropVest     = "PlayerDropVest",
-        dropRucksack = "PlayerDropRucksack",
-        dropWep      = "PlayerDropWep",
+    local msgSuffix
+    local panelName
+    if ragdoll then
+        msgSuffix = "Ragdoll"
+        panelName = "ragdollInvPanel"
+    else
+        msgSuffix = "Player"
+        panelName = "plyInvPanel"
+    end
+    local pane = MRP[panelName]
+
+    CreateInventoryPanel(target, panelName)
+    local NVGs           = pane.NVGs
+    local Rucksack       = pane.Rucksack
+    local Vest           = pane.Vest
+
+    local barconfs = {
+        PrimaryWep = 340,
+        SecondaryWep = 215,
+        RocketLauncher = 590,
     }
 
-    CreateInventoryPanel(ply, "plyInvPanel")
-    local NVGs           = MRP.plyInvPanel.NVGs
-    local Rucksack       = MRP.plyInvPanel.Rucksack
-    local Vest           = MRP.plyInvPanel.Vest
-    local PrimaryWep     = MRP.plyInvPanel.PrimaryWep
-    local SecondaryWep   = MRP.plyInvPanel.SecondaryWep
-    local RocketLauncher = MRP.plyInvPanel.RocketLauncher
-
-    if ply:MRPHas("PrimaryWep") then
-        local entityTable = ply:MRPPWep()
-        PrimaryWep:SetTooltip(entityTable.PrintName)
-        PrimaryWep.progressBar = vgui.Create("MRPProgress",  PrimaryWep)
-        PrimaryWep.progressBar:SetX(340)
-        PrimaryWep.progressBar:SetSize(10, 100)
-        local swep = ply:GetWeapon(entityTable.WeaponClass)
-        PrimaryWep.progressBar.getFraction = function()
-            if IsValid(swep) then
-                return swep:Clip1() / swep.Primary.ClipSize
+    for _, wepcat in ipairs(MRP.WeaponCat) do
+        if target:MRPHas(wepcat) then
+            local wepPane = MRP[paneName][wepcat]
+            local entityTable = target:MRPEntityTable(wepcat)
+            wepPane:SetTooltip(entityTable.PrintName)
+            wepPane.progressBar = vgui.Create("MRPProgress",  wepPane)
+            wepPane.progressBar:SetX(barconfs[wepcat])
+            wepPane.progressBar:SetSize(10, 100)
+            if ragdoll then
+                wepPane.progressBar.getFraction = function()
+                    return target:GetNWInt(wepcat .. "Rounds") / entityTable.ClipSize
+                end
+            else
+                local swep = target:GetWeapon(entityTable.WeaponClass)
+                wepPane.progressBar.getFraction = function()
+                    if IsValid(swep) then
+                        return swep:Clip1() / swep.Primary.ClipSize
+                    end
+                    return 0
+                end
             end
-            return 0
         end
     end
 
-    if ply:MRPHas("SecondaryWep") then
-        local entityTable = ply:MRPSecWep()
-        SecondaryWep:SetTooltip(entityTable.PrintName)
-        SecondaryWep.progressBar = vgui.Create("MRPProgress",  SecondaryWep)
-        SecondaryWep.progressBar:SetX(215)
-        SecondaryWep.progressBar:SetSize(10, 100)
-        local sswep = ply:GetWeapon(entityTable.WeaponClass)
-        SecondaryWep.progressBar.getFraction = function()
-            if IsValid(sswep) then
-                return sswep:Clip1() / sswep.Primary.ClipSize
-            end
-            return 1
-        end
-    end
-
-    if ply:MRPHas("RocketLauncher") then
-        RocketLauncher:SetTooltip("Lance-roquettes")
-        RocketLauncher.progressBar = vgui.Create("MRPProgress",  RocketLauncher)
-        RocketLauncher.progressBar:SetX(590)
-        RocketLauncher.progressBar:SetSize(10, 100)
-        local rlauncher = ply:GetWeapon(ply:MRPRLauncher().WeaponClass)
-        RocketLauncher.progressBar.getFraction = function()
-            if IsValid(rlauncher) then
-                return rlauncher:Clip1() / rlauncher.Primary.ClipSize
-            end
-            return 1
-        end
-    end
-
-    MRP.plyInvPanel.DropNVGs = function()
-        net.Start(messageNames.dropNVGs)
+    pane.DropNVGs = function()
+        net.Start(msgSuffix + "DropNVGS")
         net.SendToServer()
         NVGs:switchOff()
         if NV_Status then
@@ -236,12 +219,12 @@ function MRP.OpenPlyInvPanel(ply)
     end
 
     Rucksack.DoRightClick = function(self)
-        removeSelectedContainer(MRP.plyInvPanel, self)
+        removeSelectedContainer(pane, self)
         self.gear:dropFromInventoryPanel(self)
     end
 
     Vest.DoRightClick = function(self)
-        removeSelectedContainer(MRP.plyInvPanel, self)
+        removeSelectedContainer(pane, self)
         self.gear:dropFromInventoryPanel(self)
     end
 end
@@ -383,7 +366,7 @@ hook.Add("Tick", "InventoryOpening", function()
         if not MRP.plyInvPanel or
         not MRP.plyInvPanel:IsValid() and not vgui.CursorVisible() then
             MRP.createDropZone()
-            MRP.OpenPlyInvPanel(LocalPlayer())
+            MRP.OpenPlyInvPanel(LocalPlayer(), false)
         else
             MRP.dropZone:Remove()
         end
