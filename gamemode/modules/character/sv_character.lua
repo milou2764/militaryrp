@@ -211,13 +211,13 @@ net.Receive("CharacterSelected", function(_, ply)
     ply:SetNWInt("HelmetArmor", tonumber(Character.HelmetArmor))
     ply:SetNWInt("NVGs", tonumber(Character.NVGs))
     Character.Inventory = string.Split(Character.Inventory, ",")
-    Character.InventoryAmmo = string.Split(Character.InventoryAmmo, ",")
+    Character.InventoryRounds = string.Split(Character.InventoryRounds, ",")
     Character.InventoryArmor = string.Split(Character.InventoryArmor, ",")
 
     for k = 1, 20 do
         local slot = "Inventory" .. k
         ply:SetNWInt(slot, tonumber(Character.Inventory[k]))
-        ply:SetNWInt(slot .. "Rounds", tonumber(Character.InventoryAmmo[k]))
+        ply:SetNWInt(slot .. "Rounds", tonumber(Character.InventoryRounds[k]))
         ply:SetNWInt(slot .. "Armor", tonumber(Character.InventoryArmor[k]))
     end
 

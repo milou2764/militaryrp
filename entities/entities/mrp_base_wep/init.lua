@@ -23,7 +23,14 @@ function ENT:drop(slotName, target, activator)
     local bclass = baseclass.Get("mrp_base_gear")
     local ent = bclass.drop(self, slotName, target, activator)
 
-    ent.Rounds = target:GetNWInt(slotName .. "Rounds")
+    local rounds
+    if target:IsPlayer() then
+        rounds = target:GetWeapon(self.WeaponClass):Clip1()
+    else
+        rounds = target:GetNWInt(slotName .. "Rounds")
+    end
+
+    ent.Rounds = rounds
     target:SetNWInt(slotName .. "Rounds", 0)
     if target:IsPlayer() then
         target:StripWeapon(self.WeaponClass)

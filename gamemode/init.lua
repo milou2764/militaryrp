@@ -91,7 +91,7 @@ local request =
     "HelmetArmor TINYINT DEFAULT '0'," ..
     "NVGs TINYINT DEFAULT '1'," ..
     "Inventory VARCHAR(60) DEFAULT '1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," ..
-    "InventoryAmmo VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," ..
+    "InventoryRounds VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'," ..
     "InventoryArmor VARCHAR(120) DEFAULT '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'" ..
     ")"
 
@@ -386,10 +386,11 @@ function MRP.SaveProgress(ply)
             end
         end
 
-        local InventoryAmmo = tostring(ply:GetNWInt("Inventory1Ammo"))
+        local InventoryRounds = tostring(ply:GetNWInt("Inventory1Rounds"))
 
         for k = 2, 20 do
-            InventoryAmmo = InventoryAmmo .. "," .. ply:GetNWInt("Inventory" .. k .. "Rounds")
+            local rounds = ply:GetNWInt("Inventory" .. k .. "Rounds")
+            InventoryRounds = InventoryRounds .. "," .. rounds
         end
 
         local InventoryArmor = tostring(ply:GetNWInt("Inventory1Armor"))
@@ -421,7 +422,7 @@ function MRP.SaveProgress(ply)
                 "HelmetArmor  = " .. ply:GetNWInt("HelmetArmor") .. ", " ..
                 "NVGs = " .. ply:GetNWInt("NVGS") .. "," ..
                 "Inventory = '" .. Inventory .. "'," ..
-                "InventoryAmmo = '" .. InventoryAmmo .. "'," ..
+                "InventoryRounds = '" .. InventoryRounds .. "'," ..
                 "InventoryArmor = '" .. InventoryArmor .. "' " ..
             "WHERE UID = " .. ply:MRPCharacterID() .. ";"
         )
