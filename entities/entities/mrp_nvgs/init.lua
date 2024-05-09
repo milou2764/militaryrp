@@ -7,8 +7,8 @@ function ENT:Initialize()
     self:SetBodygroup(0, 1)
 end
 
-function ENT:canBeEquipped(ply)
-    local ret = baseclass.Get("mrp_base_gear").canBeEquipped(self, ply)
+function ENT:CanBeEquipped(ply)
+    local ret = baseclass.Get("mrp_base_gear").CanBeEquipped(self, ply)
     if not ply:MRPHas("Helmet") then
         ply:ChatPrint("Il faut un casque pour équiper les LVN.")
         return false

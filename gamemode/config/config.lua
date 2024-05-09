@@ -29,6 +29,7 @@ local function MRPInitEntities()
     end
     MRP.entityModels = {}
     MRP.weaponClasses = {}
+    MRPRegisterEntity("mrp_nvgs")
     hook.Call("MRPInitEntities")
     hook.Call("MRPEntitiesInitialized")
     MRP.EntitiesInitialized = true

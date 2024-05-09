@@ -71,7 +71,7 @@ function plyMeta:ChangeRucksack(newRucksack)
     self:EquipRucksack(newRucksack)
 end
 
-function plyMeta:inventoryPickup(ent)
+function plyMeta:MRPInventoryPickup(ent)
     for k = 1, 20 do
         if self:GetNWInt("Inventory" .. k) == 1 then
             self:SetNWInt( "Inventory" .. k, ent.MRPID )

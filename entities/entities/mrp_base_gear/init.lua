@@ -5,9 +5,9 @@ include('shared.lua')
 
 local TAG = 'mrp_base_gear'
 
-function ENT:canBeEquipped(ply)
+function ENT:CanBeEquipped(ply)
     local cat = self.MRPCategory
-    Log.d(TAG, 'canBeEquipped')
+    Log.d(TAG, 'CanBeEquipped')
     local status = ply:GetNWInt(cat)
     Log.d(TAG, cat .. ' ' .. status)
 
@@ -28,12 +28,12 @@ function ENT:equip(ply)
 end
 
 function ENT:Use(activator, _, _, _)
-    if self:canBeEquipped(activator) then
+    if self:CanBeEquipped(activator) then
         Log.d(TAG, 'equip')
         self:equip(activator)
     else
         Log.d(TAG, 'store')
-        activator:inventoryPickup(self)
+        activator:MRPInventoryPickup(self)
     end
 end
 

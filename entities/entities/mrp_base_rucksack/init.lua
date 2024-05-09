@@ -51,7 +51,7 @@ end
 function ENT:Use(activator, _, _, _)
     if CurTime() > activator:GetNWInt("pickupTime") then
         activator:SetNWInt("pickupTime", CurTime() + 1)
-        if self:canBeEquipped(activator) then
+        if self:CanBeEquipped(activator) then
             self:equip(activator)
         else
             activator:ChatPrint("Vous portez déjà un sac à dos.")
