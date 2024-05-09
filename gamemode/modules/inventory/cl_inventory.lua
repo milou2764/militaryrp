@@ -185,7 +185,7 @@ function MRP.OpenPlyInvPanel(target, ragdoll)
 
     for _, wepcat in ipairs(MRP.WeaponCat) do
         if target:MRPHas(wepcat) then
-            local wepPane = MRP[paneName][wepcat]
+            local wepPane = pane[wepcat]
             local entityTable = target:MRPEntityTable(wepcat)
             wepPane:SetTooltip(entityTable.PrintName)
             wepPane.progressBar = vgui.Create("MRPProgress",  wepPane)
@@ -339,14 +339,14 @@ function CreateInventoryPanel(target, context)
         return filledUniformSlotCount / 5
     end
     panel.Uniform.fullness.getFraction = calcFilledUniformSlotCount
+    panel.Vest.startingIndex = 6
+    panel.Rucksack.startingIndex = 11
 
     if IsValid(panel.Rucksack) then
-        panel.Rucksack.startingIndex = 11
         panel.Rucksack.OverlayFade = 255
         panel.SelectedContainer = panel.Rucksack
         panel.ReloadSelectedContainer(11)
     elseif IsValid(panel.Vest) and panel.Vest.gear.Capacity then
-        panel.Vest.startingIndex = 6
         panel.Vest.OverlayFade = 255
         panel.SelectedContainer = panel.Vest
         panel.ReloadSelectedContainer(6)

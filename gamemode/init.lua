@@ -445,6 +445,7 @@ local function RemoveAmmoFromBoxes(index, ammoToRemove, Ammo, ply)
         if MRP.EntityTable(ply:GetNWInt("Inventory" .. (21 - k)))["Ammo"] == Ammo then
             local dataField = "Inventory" .. (21 - k) .. "Rounds"
             local newAmmo = ply:GetNWInt(dataField) - ammoToRemove
+            Log.d("RemoveAmmoFromBoxes", dataField .. " " .. newAmmo)
             ply:SetNWInt(dataField, newAmmo)
 
             if newAmmo <= 0 then
@@ -464,24 +465,20 @@ function GM:InitPostEntity()
     local map = game.GetMap()
     local spawn
     local tableExists = MRP.spawns and MRP.spawns[map]
+    local spawnClassNames =
+        {
+            spectators = "info_spectator",
+            rebels = "info_player_rebel",
+            army = "info_player_army",
+        }
 
     if tableExists then
-        for k = 1, #MRP.spawns[map].spectators do
-            spawn = ents.Create("info_spectator")
-            spawn:SetPos(MRP.spawns[map].spectators[k].pos)
-            spawn:Spawn()
-        end
-
-        for k = 1, #MRP.spawns[map].rebels do
-            spawn = ents.Create("info_player_rebel")
-            spawn:SetPos(MRP.spawns[map].rebels[k].pos)
-            spawn:Spawn()
-        end
-
-        for k = 1, #MRP.spawns[map].army do
-            spawn = ents.Create("info_player_army")
-            spawn:SetPos(MRP.spawns[map].army[k].pos)
-            spawn:Spawn()
+        for faction, className in ipairs(spawnClassNames) do
+            for k = 1, #MRP.spawns[map][faction] do
+                spawn = ents.Create(className)
+                spawn:SetPos(MRP.spawns[map][faction][k].pos)
+                spawn:Spawn()
+            end
         end
 
         function self:PlayerSelectSpawn(ply, _)
@@ -513,12 +510,12 @@ function GM:PlayerInitialSpawn(ply, _)
 end
 
 function GM:PlayerAmmoChanged(ply, ammoID, oldCount, newCount)
-    local Ammo = game.GetAmmoName(ammoID)
+    local ammo = game.GetAmmoName(ammoID)
 
     if newCount < oldCount then
         local roundsToRemove = oldCount - newCount
         local startingIndex = 1
-        RemoveAmmoFromBoxes(startingIndex, roundsToRemove, Ammo, ply)
+        RemoveAmmoFromBoxes(startingIndex, roundsToRemove, ammo, ply)
     end
 end
 

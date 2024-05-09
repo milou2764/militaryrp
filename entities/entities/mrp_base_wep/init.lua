@@ -18,7 +18,10 @@ end
 
 function ENT:drop(slotName, target, activator)
     Log.d("mrp_base_wep", "drop")
-    local ent = baseclass.Get("mrp_base_gear").drop(self, slotName, target, activator)
+    Log.d("mrp_base_wep", "ent Rounds: " .. self.Rounds)
+    Log.d("mrp_base_wep", "ply Rounds: " .. target:GetNWInt(slotName .. "Rounds"))
+    local bclass = baseclass.Get("mrp_base_gear")
+    local ent = bclass.drop(self, slotName, target, activator)
 
     ent.Rounds = target:GetNWInt(slotName .. "Rounds")
     target:SetNWInt(slotName .. "Rounds", 0)
