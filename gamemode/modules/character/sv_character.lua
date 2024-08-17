@@ -1,8 +1,10 @@
+local tbName = MRP.TABLE_CHAR
+
 local function GetPlayerData(ply)
     local data =
         sql.Query(
-            "SELECT * FROM " .. SQLStr(MRP.TABLE_CHAR) .. " " ..
-            "WHERE SteamID64 = " .. ply:SteamID64() .. ";"
+            "SELECT * FROM " .. SQLStr(tbName) ..
+            " WHERE SteamID64 = " .. ply:SteamID64() .. ";"
         )
     return data
 end
@@ -22,7 +24,7 @@ local function HandlePlayerData(ply, data)
         net.WriteUInt(#data, 5)
 
         for _, v in pairs(data) do
-            net.WriteUInt(tonumber(v["UID"]), 32)
+            net.WriteUInt(tonumber(v["CharacterID"]), 32)
             net.WriteUInt(tonumber(v["Faction"]), 1)
             net.WriteUInt(tonumber(v["Regiment"]), 4)
             net.WriteUInt(tonumber(v["Rank"]), 5)
@@ -113,7 +115,7 @@ net.Receive("CharacterInformation", function(_, ply)
     ply:SetNWInt("Helmet", 1)
     ply:SetNWInt("HelmetArmor", 0)
     ply:SetNWInt("NVGs", 1)
-    hook.Run("CharacterRegistration", ply)
+    hook.Run("CharacterRegistration", ply, uid)
 
     for k = 1, 5 do
         ply:SetNWInt("Inventory" .. k, 1)
@@ -160,13 +162,13 @@ net.Receive("CharacterInformation", function(_, ply)
             "AND RPName = " .. SQLStr(ply:GetNWString("RPName"))
         )
     if sqlret == false then
-        print("### MRP SQL error could not get character UID")
+        print("### MRP SQL error could not get character CharacterID")
         print(sql.LastError())
     elseif sqlret == nil then
-        print("### MRP could not get character UID")
+        print("### MRP could not get character CharacterID")
     else
-        print("### MRP successfully got the character UID")
-        ply:SetNWInt("CharacterID", tonumber(sqlret[#sqlret]["UID"]))
+        print("### MRP successfully got the character CharacterID")
+        ply:SetNWInt("CharacterID", tonumber(sqlret[#sqlret]["CharacterID"]))
         ply.BodyGroups = string.Split(ply.BodyGroups, ",")
 
         MRP.SpawnPlayer(ply)
@@ -174,18 +176,21 @@ net.Receive("CharacterInformation", function(_, ply)
    end
 end)
 
+
 net.Receive("DeleteCharacter", function(_, _)
     local uid = net.ReadUInt(32)
-    sql.Query("DELETE FROM mrp_characters WHERE UID = " .. uid)
+    sql.Query("DELETE FROM " .. tbName .. " WHERE CharacterID = " .. uid)
 end)
 
 net.Receive("CharacterSelected", function(_, ply)
     local uid = net.ReadUInt(32)
     local Character =
-        sql.QueryRow("SELECT * FROM mrp_characters WHERE UID = " .. tostring(uid))
-    hook.Run("CharacterSelected", ply)
-    Character.Faction = tonumber(Character.Faction)
+        sql.QueryRow(
+            "SELECT * FROM " .. tbName .. " WHERE CharacterID = " .. tostring(uid)
+        )
     ply:SetNWInt("CharacterID", tonumber(uid))
+    hook.Run("CharacterSelected", ply, uid)
+    Character.Faction = tonumber(Character.Faction)
     ply:SetNWString("RPName", Character.RPName)
     ply:SetNWInt("Faction", tonumber(Character.Faction))
     ply:SetNWInt("Regiment", tonumber(Character.Regiment))
@@ -197,29 +202,6 @@ net.Receive("CharacterSelected", function(_, ply)
     ply.Skin = tonumber(Character.Skin)
     ply.BodyGroups = string.Split(Character.BodyGroups, ",")
     ply:SetNWBool("GasmaskOn", false)
-    ply:SetNWInt("PrimaryWep", tonumber(Character.PrimaryWep))
-    ply.PrimaryWepRounds = tonumber(Character.PrimaryWepRounds)
-    ply:SetNWInt("SecondaryWep", tonumber(Character.SecondaryWep))
-    ply.SecondaryWepRounds = tonumber(Character.SecondaryWepRounds)
-    ply:SetNWInt("RocketLauncher", tonumber(Character.RocketLauncher))
-    ply.RocketLauncherRounds = tonumber(Character.RocketLauncherRounds)
-    ply:SetNWInt("Vest", tonumber(Character.Vest))
-    ply:SetNWInt("VestArmor", tonumber(Character.VestArmor))
-    ply:SetNWInt("Rucksack", tonumber(Character.Rucksack))
-    ply:SetNWInt("Gasmask", tonumber(Character.Gasmask))
-    ply:SetNWInt("Helmet", tonumber(Character.Helmet))
-    ply:SetNWInt("HelmetArmor", tonumber(Character.HelmetArmor))
-    ply:SetNWInt("NVGs", tonumber(Character.NVGs))
-    Character.Inventory = string.Split(Character.Inventory, ",")
-    Character.InventoryRounds = string.Split(Character.InventoryRounds, ",")
-    Character.InventoryArmor = string.Split(Character.InventoryArmor, ",")
-
-    for k = 1, 20 do
-        local slot = "Inventory" .. k
-        ply:SetNWInt(slot, tonumber(Character.Inventory[k]))
-        ply:SetNWInt(slot .. "Rounds", tonumber(Character.InventoryRounds[k]))
-        ply:SetNWInt(slot .. "Armor", tonumber(Character.InventoryArmor[k]))
-    end
 
     MRP.SpawnPlayer(ply)
     EquipPlayer(ply)

@@ -41,6 +41,7 @@ MRP.mountedGear = MRP.mountedGear or {}
 MRP.mountedWeps = MRP.mountedWeps or {}
 
 MRP.TABLE_CHAR = "mrp_characters"
+MRP.TABLE_INV = "mrp_inv"
 
 --[[
     Returns the class name associated with the given ID

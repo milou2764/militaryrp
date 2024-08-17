@@ -25,7 +25,7 @@ function plyMeta:EquipGasmask(gasmask)
     sql.Query(
         "UPDATE mrp_characters " ..
         "SET Gasmask = " .. gasmask.MRPID .. " " ..
-        "WHERE UID = " .. self:GetCharacterID()
+        "WHERE CharacterID = " .. self:GetCharacterID()
     )
     MRP.SaveBodyGroupsData(self)
     gasmask:Remove()
