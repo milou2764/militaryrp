@@ -17,6 +17,7 @@ end
 
 Log.e = function(tag, m)
     log(red, tag, m)
+    error(m)
 end
 
 

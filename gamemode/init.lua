@@ -159,7 +159,7 @@ function MRP.SaveProgress(ply)
     local cid = ply:MRPCharacterID()
     hook.Run("MRP::SaveProgress", ply, cid)
     sql.Query(
-        "UPDATE " .. tbName
+        "UPDATE " .. tbName ..
         " SET " ..
             "Rank = " .. ply:GetNWInt("Rank") ..
         " WHERE CharacterID = " .. cid .. ";"
@@ -185,40 +185,61 @@ function GM:InitPostEntity()
     local map = game.GetMap()
     local spawn
     local tableExists = MRP.spawns and MRP.spawns[map]
-    local spawnClassNames =
+    local factions =
         {
-            spectators = "info_spectator",
-            rebels = "info_player_rebel",
-            army = "info_player_army",
+            spectators = "info_player_start",
+            rebels = "info_player_start",
+            army = "info_player_start",
         }
 
     if tableExists then
-        for faction, className in ipairs(spawnClassNames) do
-            for k = 1, #MRP.spawns[map][faction] do
-                spawn = ents.Create(className)
-                spawn:SetPos(MRP.spawns[map][faction][k].pos)
-                spawn:Spawn()
+        Log.d("MRPSpawn", "spawns loaded")
+        Log.d("MRPSpawn", "coucou")
+        for faction, className in pairs(factions) do
+            Log.d("MRPSpawn", "looping")
+            local factionTab = MRP.spawns[map][faction]
+            if factionTab ~=nil then
+                Log.d("MRPSpawn", "faction " .. faction .. "not empty")
+                MRP.spawns[map][faction]["ents"] = {}
+                for k = 1, #factionTab do
+                    spawn = ents.Create(className)
+                    spawn:SetPos(MRP.spawns[map][faction][k].pos)
+                    spawn:Spawn()
+                    table.insert(MRP.spawns[map][faction]["ents"], spawn)
+                    PrintTable(MRP.spawns)
+                end
             end
         end
 
         function self:PlayerSelectSpawn(ply, _)
-            if ply:GetNWInt("Faction") == 1 then
-                local army_spawns = ents.FindByClass("info_player_army")
+            local faction = ply:GetNWInt("Faction")
+            Log.d("MRPSpawn", "ply faction : " .. faction)
+            local posEnt
+            if faction == 1 then
+                local army_spawns = MRP.spawns[map]["army"]["ents"]
                 local random_entry = math.random(#army_spawns)
+                posEnt = army_spawns[random_entry]
 
-                return army_spawns[random_entry]
-            elseif ply:GetNWInt("Faction") == 2 then
-                local rebel_spawns = ents.FindByClass("info_player_rebel")
+            elseif faction == 2 then
+                local rebel_spawns = MRP.spawns[map]["rebels"]["ents"]
                 local random_entry = math.random(#rebel_spawns)
 
-                return rebel_spawns[random_entry]
+                posEnt = rebel_spawns[random_entry]
             elseif player_manager.GetPlayerClass(ply) == "spectator" then
-                local spectator_spawns = ents.FindByClass("info_spectator")
+                local factionTab = MRP.spawns[map]["spectator"]
+                if factionTab == nil then
+                    return nil
+                end
+                local spectator_spawns = factionTab["ents"]
                 local random_entry = math.random(#spectator_spawns)
 
-                return spectator_spawns[random_entry]
+                posEnt = spectator_spawns[random_entry]
             end
+            Log.d("MRPSpawn", "selected pos : " .. tostring(posEnt))
+            return posEnt
         end
+    else
+        Log.e("MRPSpawn", "spawns loaded")
     end
 end
 

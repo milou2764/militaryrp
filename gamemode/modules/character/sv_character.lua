@@ -33,11 +33,6 @@ local function HandlePlayerData(ply, data)
             net.WriteUInt(tonumber(v["Size"]), 8)
             net.WriteUInt(tonumber(v["Skin"]), 5)
             net.WriteString(v["BodyGroups"])
-            net.WriteUInt(tonumber(v["NVGs"]), 7)
-            net.WriteUInt(tonumber(v["Helmet"]), 7)
-            net.WriteUInt(tonumber(v["Gasmask"]), 7)
-            net.WriteUInt(tonumber(v["Rucksack"]), 7)
-            net.WriteUInt(tonumber(v["Vest"]), 7)
         end
 
         net.Send(ply)
@@ -115,7 +110,6 @@ net.Receive("CharacterInformation", function(_, ply)
     ply:SetNWInt("Helmet", 1)
     ply:SetNWInt("HelmetArmor", 0)
     ply:SetNWInt("NVGs", 1)
-    hook.Run("CharacterRegistration", ply, uid)
 
     for k = 1, 5 do
         ply:SetNWInt("Inventory" .. k, 1)
@@ -168,7 +162,10 @@ net.Receive("CharacterInformation", function(_, ply)
         print("### MRP could not get character CharacterID")
     else
         print("### MRP successfully got the character CharacterID")
-        ply:SetNWInt("CharacterID", tonumber(sqlret[#sqlret]["CharacterID"]))
+        local cid = tonumber(sqlret[#sqlret]["CharacterID"])
+        ply:SetNWInt("CharacterID", cid)
+
+        hook.Run("CharacterRegistration", ply, cid)
         ply.BodyGroups = string.Split(ply.BodyGroups, ",")
 
         MRP.SpawnPlayer(ply)

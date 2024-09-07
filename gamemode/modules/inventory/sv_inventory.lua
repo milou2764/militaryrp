@@ -342,8 +342,9 @@ hook.Add("MRP::SaveProgress", "MRP::InvSave", function(ply, cid)
     end
 
     inventory = table.concat(inventory, ",")
+    Log.d("InvUpdate", "tbName : " .. tostring(tbName))
     sql.Query(
-        "UPDATE " .. tbName
+        "UPDATE " .. tbName ..
         " SET " ..
             "PrimaryWep = " .. ply:GetNWInt("PrimaryWep") .. "," ..
             "SecondaryWep = " .. ply:GetNWInt("SecondaryWep") .. "," ..
