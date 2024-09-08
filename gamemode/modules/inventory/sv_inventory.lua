@@ -315,7 +315,7 @@ hook.Add("MRP::SaveProgress", "MRP::InvSave", function(ply, cid)
         if ply:MRPHas(cat) then
             local wep = ply:GetWeapon(ply:MRPEntityTable(cat).WeaponClass)
             sql.Query(
-                "UPDATE " .. tbName
+                "UPDATE " .. tbName ..
                 " SET " .. cat .. "Rounds = " .. wep:Clip1() ..
                 " WHERE CharacterID = " .. cid
             )
@@ -342,9 +342,7 @@ hook.Add("MRP::SaveProgress", "MRP::InvSave", function(ply, cid)
     end
 
     inventory = table.concat(inventory, ",")
-    Log.d("InvUpdate", "tbName : " .. tostring(tbName))
-    sql.Query(
-        "UPDATE " .. tbName ..
+    sqlQuery = "UPDATE " .. tbName ..
         " SET " ..
             "PrimaryWep = " .. ply:GetNWInt("PrimaryWep") .. "," ..
             "SecondaryWep = " .. ply:GetNWInt("SecondaryWep") .. "," ..
@@ -361,6 +359,9 @@ hook.Add("MRP::SaveProgress", "MRP::InvSave", function(ply, cid)
             "InventoryRounds = '" .. inventoryRounds .. "'," ..
             "InventoryArmor = '" .. inventoryArmor .. "'" ..
         " WHERE CharacterID = " .. cid .. ";"
-    )
+
+    Log.d("InvUpdate", "sqlQuery: " .. tostring(sqlQuery))
+    sqlRet = sql.Query(sqlQuery)
+    -- Log.d("InvUpdate", "sqlRet: " .. tostring(sqlRet))
 end)
 

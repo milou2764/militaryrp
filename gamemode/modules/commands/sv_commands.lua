@@ -87,11 +87,13 @@ concommand.Add("mrp", function(ply, _, args)
     end
 end)
 
-concommand.Add("mrp addspawn rebels", function()
-end)
-concommand.Add("mrp addspawn spectators", function()
-end)
-concommand.Add("mrp addspawn army", function()
-end)
-concommand.Add("mrp addspawn npcs", function()
-end)
+concommand.Add("mrp addspawn rebels", function() end)
+concommand.Add("mrp setspawn rebels", function() end)
+
+concommand.Add("mrp addspawn spectators", function() end)
+concommand.Add("mrp setspawn spectators", function() end)
+
+concommand.Add("mrp addspawn army", function() end)
+concommand.Add("mrp setspawn army", function() end)
+
+concommand.Add("mrp addspawn npcs", function() end)

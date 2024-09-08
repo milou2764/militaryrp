@@ -145,7 +145,7 @@ function MRP.SaveBodyGroupsData(ply)
     end
 
     sql.Query(
-        "UPDATE " .. tbname .. " SET BodyGroups = " .. SQLStr(BodyGroups) ..
+        "UPDATE " .. tbName .. " SET BodyGroups = " .. SQLStr(BodyGroups) ..
         " WHERE CharacterID = " .. ply:MRPCharacterID()
     )
 end
@@ -193,13 +193,9 @@ function GM:InitPostEntity()
         }
 
     if tableExists then
-        Log.d("MRPSpawn", "spawns loaded")
-        Log.d("MRPSpawn", "coucou")
         for faction, className in pairs(factions) do
-            Log.d("MRPSpawn", "looping")
             local factionTab = MRP.spawns[map][faction]
             if factionTab ~=nil then
-                Log.d("MRPSpawn", "faction " .. faction .. "not empty")
                 MRP.spawns[map][faction]["ents"] = {}
                 for k = 1, #factionTab do
                     spawn = ents.Create(className)
@@ -213,7 +209,6 @@ function GM:InitPostEntity()
 
         function self:PlayerSelectSpawn(ply, _)
             local faction = ply:GetNWInt("Faction")
-            Log.d("MRPSpawn", "ply faction : " .. faction)
             local posEnt
             if faction == 1 then
                 local army_spawns = MRP.spawns[map]["army"]["ents"]
@@ -235,7 +230,6 @@ function GM:InitPostEntity()
 
                 posEnt = spectator_spawns[random_entry]
             end
-            Log.d("MRPSpawn", "selected pos : " .. tostring(posEnt))
             return posEnt
         end
     else

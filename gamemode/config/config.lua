@@ -155,19 +155,29 @@ MRP.Factions = {
 }
 MRP.Regiments = {
     -- France
-     { { name = "2REI",
-         insignia = "materials/gui/regiment/2rei.png",
-         -- width/height ratio of the insignia
-         whratio = 219 / 295 },
-        { name = "5RHC",
-          insignia = "materials/gui/regiment/5rhc.png",
-          whratio = 6 / 8 },
-        { name = "1REC",
-          insignia = "materials/gui/regiment/1rec.png",
-          whratio = 800 / 925 },
-        { name = "1RPIMA",
-          insignia = "materials/gui/regiment/1rpima.png",
-          whratio = 800 / 1372 } },
+     {    
+         {
+            name = "2REI",
+            insignia = "materials/gui/regiment/2rei.png",
+            -- width/height ratio of the insignia
+            whratio = 219 / 295
+         },
+         {
+             name = "2REP",
+             insignia = "materials/gui/regiment/2rep.png",
+             whratio = 500/500,
+         },
+         {
+             name = "5RHC",
+             insignia = "materials/gui/regiment/5rhc.png",
+             whratio = 6 / 8
+         },
+         {
+             name = "1REC",
+             insignia = "materials/gui/regiment/1rec.png",
+             whratio = 800 / 925
+         },
+     },
     -- Rebels
     { { name = "SansNom",
         insignia = "null",
