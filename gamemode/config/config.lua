@@ -124,6 +124,8 @@ MRP.classId = {
     ["mrp_ammobox_9x19mm"] = 59,
     ["mrp_ammobox_127x99mm"] = 60,
 
+    ["mrp_at4cs"] = 61,
+
 }
 
 MRP.categoryID = {

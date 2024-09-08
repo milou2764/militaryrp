@@ -145,7 +145,7 @@ function MRP.PickupWep(ply, ent)
     -- wep.Primary.DefaultClip = ent.Rounds
     -- wep.Primary.Ammo = ent.Ammo
     local wep = ply:Give(ent.WeaponClass)
-    Log.d("PickupWep", ent.Rounds)
+    Log.d("PickupWep ", ent.MRPID)
     wep:SetClip1(ent.Rounds)
     ply:SetNWInt(ent.MRPCategory, ent.MRPID)
     ply:SetNWInt(ent.MRPCategory .. "Rounds", ent.Rounds)

@@ -331,18 +331,19 @@ local function character_selection(ply)
     local rankPanel = vgui.Create("DImage", selecPanel)
 
     function LoadCharacter()
-
-        local reg = MRP.Regiments[Character[index]["Faction"]][Character[index]["Regiment"]]
-        regimentPanel:SetImage(reg["insignia"])
-        regimentPanel:SetSize(500, 500 / reg["whratio"])
+        local faction = Character[index]["Faction"]
+        local regiment = Character[index]["Regiment"]
+        Log.d("CharSelection", "faction: " .. tostring(faction))
+        Log.d("CharSelection", "regiment: " .. tostring(regiment))
+        local regImg = MRP.Regiments[faction][regiment]
+        regimentPanel:SetImage(regImg["insignia"])
+        regimentPanel:SetSize(500, 500 / regImg["whratio"])
 
         rpname:SetText( Character[index]["RPName"] )
         rpname:SizeToContents()
         rpname:SetPos( ScrW() / 2 - rpname:GetWide() / 2, ScrH() / 10 + 50 )
 
         rankPanel:SetPos(rpname:GetX() + rpname:GetWide() + 40, rpname:GetY())
-        local faction = Character[index]["Faction"]
-        local regiment = Character[index]["Regiment"]
         local rank = Character[index]["Rank"]
         rankPanel:SetImage(MRP.Ranks[faction][regiment][rank]["shoulderrank"])
         rankPanel:SizeToContents()
