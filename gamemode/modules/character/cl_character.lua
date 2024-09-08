@@ -331,6 +331,13 @@ local function character_selection(ply)
     local rankPanel = vgui.Create("DImage", selecPanel)
 
     function LoadCharacter()
+        local gears = {
+            {"mrp_nvgs", "NVGs"},
+            {"mrp_base_helmet", "Helmet"},
+            { "mrp_base_gear", "Gasmask" },
+            { "mrp_base_rucksack", "Rucksack" },
+            { "mrp_base_vest", "Vest" },
+        }
         local faction = Character[index]["Faction"]
         local regiment = Character[index]["Regiment"]
         Log.d("CharSelection", "faction: " .. tostring(faction))
@@ -361,7 +368,18 @@ local function character_selection(ply)
         selecPanel.pmodel.Entity.getMRPID = function(_, MRPCategory)
             return Character[index][MRPCategory]
         end
-        MRP.loadPlayerGear(selecPanel.pmodel.Entity)
+        for _, conf in pairs(gears) do
+            local className = conf[1]
+            local cat = conf[2]
+            local bclass = baseclass.Get(className)
+            local entTab = MRP.EntityTable(Character[index][cat])
+            PrintTable(entTab)
+            local pm = selecPanel.pmodel.Entity
+            if entTab.createCSModel then
+                local gearModel = entTab:createCSModel(pm)
+                gearModel:SetNoDraw(true)
+            end
+        end
 
         if LeftArrow then LeftArrow:Remove() RightArrow:Remove() end
 

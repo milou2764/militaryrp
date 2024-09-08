@@ -20,19 +20,28 @@ local function HandlePlayerData(ply, data)
     else
         net.Start("CharacterSelection")
         Log.d(TAG, "character selection")
-        PrintTable(data)
         net.WriteUInt(#data, 5)
 
         for _, v in pairs(data) do
-            net.WriteUInt(tonumber(v["CharacterID"]), 32)
-            net.WriteUInt(tonumber(v["Faction"]), 1)
-            net.WriteUInt(tonumber(v["Regiment"]), 4)
-            net.WriteUInt(tonumber(v["Rank"]), 5)
-            net.WriteString(v["RPName"])
-            net.WriteUInt(tonumber(v["ModelIndex"]), 5)
-            net.WriteUInt(tonumber(v["Size"]), 8)
-            net.WriteUInt(tonumber(v["Skin"]), 5)
-            net.WriteString(v["BodyGroups"])
+            local cid = tonumber(v["CharacterID"])
+            net.WriteUInt(cid, 32)
+            net.WriteUInt(v.Faction, 1)
+            net.WriteUInt(v.Regiment, 4)
+            net.WriteUInt(v.Rank, 5)
+            net.WriteString(v.RPName)
+            net.WriteUInt(v.ModelIndex, 5)
+            net.WriteUInt(v.Size, 8)
+            net.WriteUInt(v.Skin, 5)
+            net.WriteString(v.BodyGroups)
+            local invData = sql.Query(
+                "SELECT * FROM " .. MRP.TABLE_INV ..
+                " WHERE CharacterID = " .. cid
+                )[1]
+            net.WriteUInt(invData.NVGs, 7)
+            net.WriteUInt(invData.Helmet, 7)
+            net.WriteUInt(invData.Gasmask, 7)
+            net.WriteUInt(invData.Rucksack, 7)
+            net.WriteUInt(invData.Vest, 7)
         end
 
         net.Send(ply)
