@@ -1,6 +1,7 @@
 local lastent = nil
 hook.Add('simfphysPhysicsCollide', 'MRPsimfphysPhysicsCollide', function(ent, data, _)
     local item = data.HitEntity
+    Log.d("MRPInv", "collision")
     if item.MRPID and item ~= lastent then
         for k = 1, 20 do
             if ent:GetNWInt('Inventory' .. k) < 2 then

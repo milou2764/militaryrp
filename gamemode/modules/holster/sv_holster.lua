@@ -14,6 +14,7 @@ end)
 
 hook.Add("PlayerSwitchWeapon", "MRPPlayerSwitchWeapon", function(ply, old, new)
     if not IsFirstTimePredicted() then return end
+    Log.d("MRPHolster", "player switched weapon")
     net.Start("MRPRequestHolsters")
     net.WriteEntity(ply)
     net.WriteEntity(old)
