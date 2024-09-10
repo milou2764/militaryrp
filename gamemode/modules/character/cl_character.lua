@@ -373,7 +373,6 @@ local function character_selection(ply)
             local cat = conf[2]
             local bclass = baseclass.Get(className)
             local entTab = MRP.EntityTable(Character[index][cat])
-            PrintTable(entTab)
             local pm = selecPanel.pmodel.Entity
             if entTab.createCSModel then
                 local gearModel = entTab:createCSModel(pm)

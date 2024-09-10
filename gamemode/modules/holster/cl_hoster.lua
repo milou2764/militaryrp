@@ -83,7 +83,6 @@ local function updateModelPos(model, ply, wepClass)
     local matrix = ply:GetBoneMatrix(boneID)
 
     if not matrix then
-        print("no matrix")
 
         return
     end
@@ -120,14 +119,12 @@ hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
 end)
 
 net.Receive("MRPRequestHolsters", function()
-    Log.d("HolsterClient", "Player switched weapon")
     local ply = net.ReadEntity()
     local old = net.ReadEntity()
     local new = net.ReadEntity()
     MRP.mountedWeps[ply:UserID()] = MRP.mountedWeps[ply:UserID()] or {}
 
     if MRP.Holsters[old.ClassName] then
-        print("wep among the holsters")
         local oldMRPCategory = MRP.Holsters[old.ClassName].mrpcategory
         local oldModel = MRP.mountedWeps[ply:UserID()][oldMRPCategory]
 
