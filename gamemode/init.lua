@@ -81,8 +81,8 @@ MRP.UpdateTable = function(name, schema)
             "WHERE name = " .. SQLStr(name)
         )
     if existingTable ~= schema then
-        Log.e(TAG, name .. " TABLE CHANGED SINCE LAST TIME")
-        Log.e(TAG, "DELETING ...")
+        Log.d(TAG, name .. " TABLE CHANGED SINCE LAST TIME")
+        Log.d(TAG, "DELETING ...")
         sql.Query("DROP TABLE " .. SQLStr(name))
         sql.Query(schema)
     else
@@ -232,8 +232,6 @@ function GM:InitPostEntity()
             end
             return posEnt
         end
-    else
-        Log.e("MRPSpawn", "spawns loaded")
     end
 end
 

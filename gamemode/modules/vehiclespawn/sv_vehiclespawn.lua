@@ -4,6 +4,37 @@ vehiclespawn.MinSpawnDistance = 300
 vehiclespawn.vehicleCount = 0
 vehiclespawn.vehicleLimit = 20
 
+local spawnFuncs = {
+	simfphys = function(platform)
+        local vname = platform.class
+        local vehicle = list.Get( "simfphys_vehicles" )[vname]
+        platform.vehicle =
+            simfphys.SpawnVehicle(
+                nil,
+                platform.pos,
+                platform.ang,
+                vehicle.Model,
+                vehicle.Class,
+                vname,
+                vehicle
+            )
+        platform.vehicle.isMRPVehicle = true
+        vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
+    end,
+	wac = function(platform)
+        local className = platform.class
+        local vehicle = ents.Create(className)
+        vehicle:SetPos(platform.pos+Vector(0,0,100))
+        vehicle:SetAngles(platform.ang)
+        vehicle:Spawn()
+        vehicle:Activate()
+        platform.vehicle = vehicle
+        platform.vehicle.isMRPVehicle = true
+        vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
+	end
+}
+
+
 local function vehicleSpawnSystem()
     if vehiclespawn.SpawnDelay < CurTime() then
         vehiclespawn.SpawnDelay = CurTime() + 20
@@ -20,20 +51,7 @@ local function vehicleSpawnSystem()
                     end
                 end
                 if canSpawn then
-                    local vname = platform.class
-                    local vehicle = list.Get( "simfphys_vehicles" )[vname]
-                    platform.vehicle =
-                        simfphys.SpawnVehicle(
-                            nil,
-                            platform.pos,
-                            platform.ang,
-                            vehicle.Model,
-                            vehicle.Class,
-                            vname,
-                            vehicle
-                        )
-                    platform.vehicle.isMRPVehicle = true
-                    vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
+                    spawnFuncs[platform.cat](platform)
                 end
             end
         end

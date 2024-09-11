@@ -58,6 +58,7 @@ MRP = MRP or {}
 MRP.idClass = MRP.idClass or {}
 MRP.mountedGear = MRP.mountedGear or {}
 MRP.mountedWeps = MRP.mountedWeps or {}
+MRP.Commands = {}
 
 MRP.TABLE_CHAR = "mrp_characters"
 MRP.TABLE_INV = "mrp_inv"

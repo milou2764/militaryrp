@@ -1,4 +1,4 @@
-MRP.commands = {
+MRP.Commands.players = {
     addspawn = function(ply, class, entClass, weapon)
         local map = game.GetMap()
         if not MRP.spawns then MRP.spawns = {} end
@@ -7,7 +7,7 @@ MRP.commands = {
         table.insert(MRP.spawns[map][class], { pos = ply:GetPos(),
                                                ang = ply:GetAngles(),
                                                class = entClass, weapon = weapon })
-        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns))
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns, true))
         ply:ChatPrint(class .. " spawn added")
     end,
     setspawn = function(ply, class, entClass, weapon)
@@ -21,7 +21,7 @@ MRP.commands = {
                     class = entClass,
                     weapon = weapon }
         }
-        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns))
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns, true))
         ply:ChatPrint(class .. " spawn set")
     end
 }
@@ -83,17 +83,17 @@ end)
 
 concommand.Add("mrp", function(ply, _, args)
     if ply:IsAdmin() then
-        MRP.commands[args[1]](ply, args[2], args[3], args[4])
+        MRP.Commands[args[1]][args[2]](ply, args[3], args[4], args[5])
     end
 end)
 
-concommand.Add("mrp addspawn rebels", function() end)
-concommand.Add("mrp setspawn rebels", function() end)
+concommand.Add("mrp players addspawn rebels", function() end)
+concommand.Add("mrp players setspawn rebels", function() end)
 
-concommand.Add("mrp addspawn spectators", function() end)
-concommand.Add("mrp setspawn spectators", function() end)
+concommand.Add("mrp players addspawn spectators", function() end)
+concommand.Add("mrp players setspawn spectators", function() end)
 
-concommand.Add("mrp addspawn army", function() end)
-concommand.Add("mrp setspawn army", function() end)
+concommand.Add("mrp players addspawn army", function() end)
+concommand.Add("mrp players setspawn army", function() end)
 
-concommand.Add("mrp addspawn npcs", function() end)
+concommand.Add("mrp players addspawn npcs", function() end)
