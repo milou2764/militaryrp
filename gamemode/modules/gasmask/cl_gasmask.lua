@@ -193,7 +193,9 @@ local keyReleased = true
 hook.Add("Tick", "GasMaskHandle", function()
     GASMASK_BreathThink()
     local notInMenus = not vgui.CursorVisible() or IsValid(MRP.plyInvPanel)
-    if input.IsKeyDown(MRP.keybinds.gasmask) and keyReleased and notInMenus then
+    if input.IsKeyDown(MRP.keybinds.gasmask)
+        and keyReleased
+        and notInMenus then
         keyReleased = false
         LocalPlayer():ConCommand("gasmask_toggle")
     elseif not input.IsKeyDown(MRP.keybinds.gasmask) then

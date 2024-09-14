@@ -12,6 +12,14 @@ hook.Add('simfphysPhysicsCollide', 'MRPsimfphysPhysicsCollide', function(ent, da
     end
 end)
 
+hook.Add(
+    "MRP::ResetInv",
+    "MRP::PlayerDeath",
+    function(ply)
+        ply:SetNWInt("PrimaryWep", 0)
+    end
+)
+
 function MRP.SaveInventoryData(ply)
     local Inventory = {}
 

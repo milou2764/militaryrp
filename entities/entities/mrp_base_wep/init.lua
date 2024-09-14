@@ -17,15 +17,22 @@ function ENT:Use(activator, _, _, _)
 end
 
 function ENT:drop(slotName, target, activator)
-    Log.d("mrp_base_wep", "drop")
-    Log.d("mrp_base_wep", "ent Rounds: " .. self.Rounds)
-    Log.d("mrp_base_wep", "ply Rounds: " .. target:GetNWInt(slotName .. "Rounds"))
+    local TAG = "mrp_base_wep"
+    Log.d(TAG, "drop")
+    Log.d(TAG, "ent Rounds: " .. self.Rounds)
+    Log.d(TAG, "ply Rounds: " .. target:GetNWInt(slotName .. "Rounds"))
     local bclass = baseclass.Get("mrp_base_gear")
     local ent = bclass.drop(self, slotName, target, activator)
 
     local rounds
     if target:IsPlayer() then
-        rounds = target:GetWeapon(self.WeaponClass):Clip1()
+        local wep = target:GetWeapon(self.WeaponClass)
+        if wep == nil then
+            Log.d(TAG, "could not get player wep")
+        else
+            Log.d(TAG, "got player wep")
+        end
+        rounds = wep:Clip1()
     else
         rounds = target:GetNWInt(slotName .. "Rounds")
     end
