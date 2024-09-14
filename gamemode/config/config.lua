@@ -165,10 +165,12 @@ MRP.disabledDefaults.modules = {
 
 MRP.Factions = {
     [0] = {
-        name = "France"
+        name = "France",
+        flag = "gui/faction/france.png",
     },
     [1] = {
-        name = "Rebelles"
+        name = "Rebelles",
+        flag = "gui/faction/latvia-nationalist.png",
     }
 }
 MRP.Regiments = {

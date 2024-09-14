@@ -31,12 +31,12 @@ local function character_creation( ply )
     end
 
     local FranceButton = vgui.Create( "DImageButton", CharacPanel )
-    FranceButton:SetImage( "gui/faction/france.png" )
+    FranceButton:SetImage(MRP.Factions[0]["flag"])
     FranceButton:SizeToContents()
     FranceButton:SetPos( ScrW() / 2 - FranceButton:GetWide() - 100, ScrH() / 2 - 150 )
 
     local RebelButton = vgui.Create( "DImageButton", CharacPanel )
-    RebelButton:SetImage( "gui/faction/cotedivoire.png" )
+    RebelButton:SetImage(MRP.Factions[1]["flag"])
     RebelButton:SizeToContents()
     RebelButton:SetPos( ScrW() / 2 + 100, ScrH() / 2 - 150 )
 
