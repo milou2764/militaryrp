@@ -59,6 +59,7 @@ function PLAYER:Loadout()
 	self.Player:Give("gmod_tool")
 	self.Player:Give("re_hands")
 	self.Player:Give("wep_jack_job_drpradio")
+    self.Player:Give("weapon_physgun")
 end
 
 function PLAYER:ViewModelChanged() end
@@ -71,7 +72,7 @@ function PLAYER:ShouldDrawLocal() end
 function PLAYER:PreDrawViewModel() end
 function PLAYER:PostDrawViewModel() end
 function PLAYER:Death()
-    hook.Run("MRP::PlayerDeath", self)
+    hook.Run("MRP::PlayerDeath", self.Player)
 end
 
 function PLAYER:SetModel()

@@ -118,7 +118,7 @@ function MRP.OpenRagdollInvPanel(target)
     local SecondaryWep   = MRP.ragdollInvPanel.SecondaryWep
     local RocketLauncher = MRP.ragdollInvPanel.RocketLauncher
 
-    if target:GetNWInt("PrimaryWep") > 1 then
+    if target:MRPHas("PrimaryWep") then
         local entityTable = target:MRPWep()
         PrimaryWep:SetTooltip(entityTable.PrintName)
         PrimaryWep.progressBar = vgui.Create("MRPProgress",  PrimaryWep)
@@ -128,7 +128,7 @@ function MRP.OpenRagdollInvPanel(target)
             return target:MRPWepRounds() / entityTable.ClipSize
         end
     end
-    if target:GetNWInt("SecondaryWep") > 1 then
+    if target:MRPHas("SecondaryWep") then
         local entityTable = target:MRPSecWep()
         SecondaryWep:SetTooltip(entityTable.PrintName)
         SecondaryWep.progressBar = vgui.Create("MRPProgress",  SecondaryWep)
@@ -363,8 +363,8 @@ hook.Add("Tick", "InventoryOpening", function()
     and player_manager.GetPlayerClass(LocalPlayer()) ~= "player_spectator"
     and keyReleased then
         keyReleased = false
-        if not MRP.plyInvPanel or
-        not MRP.plyInvPanel:IsValid() and not vgui.CursorVisible() then
+        if (not MRP.plyInvPanel or not MRP.plyInvPanel:IsValid())
+            and not vgui.CursorVisible() then
             MRP.createDropZone()
             MRP.OpenPlyInvPanel(LocalPlayer(), false)
         else

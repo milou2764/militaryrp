@@ -144,7 +144,7 @@ MRP.classId = {
     ["mrp_ammobox_127x99mm"] = 60,
 }
 
-MRP.categoryID = {
+MRP.CategoryID = {
     NVGs = 0,
     Gasmask = 1,
     Helmet = 2,

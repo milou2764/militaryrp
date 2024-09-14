@@ -157,8 +157,8 @@ function GM:HUDDrawTargetID()
 
 	local tr = util.GetPlayerTrace( LocalPlayer() )
 	local trace = util.TraceLine( tr )
-	if ( !trace.Hit ) then return end
-	if ( !trace.HitNonWorld ) then return end
+	if not trace.Hit then return end
+	if not trace.HitNonWorld then return end
 
 	local text = "ERROR"
 	local font = "TargetID"
@@ -180,7 +180,7 @@ function GM:HUDDrawTargetID()
 
 	local MouseX, MouseY = input.GetCursorPos()
 
-	if ( MouseX == 0 && MouseY == 0 || !vgui.CursorVisible() ) then
+	if MouseX == 0 and MouseY == 0 or not vgui.CursorVisible() then
 
 		MouseX = ScrW() / 2
 		MouseY = ScrH() / 2

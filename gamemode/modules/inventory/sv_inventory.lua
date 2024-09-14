@@ -13,10 +13,19 @@ hook.Add('simfphysPhysicsCollide', 'MRPsimfphysPhysicsCollide', function(ent, da
 end)
 
 hook.Add(
-    "MRP::ResetInv",
     "MRP::PlayerDeath",
+    "MRP::ResetInv",
     function(ply)
-        ply:SetNWInt("PrimaryWep", 0)
+        for cat, _ in pairs(MRP.CategoryID) do
+            ply:SetNWInt(cat, 1)
+            ply:SetNWInt(cat .. "Rounds", 0)
+            ply:SetNWInt(cat .. "Armor", 0)
+        end
+        for k=1,20 do
+            ply:SetNWInt("Inventory" .. k, 0)
+            ply:SetNWInt("Inventory" .. k .. "Rounds", 0)
+            ply:SetNWInt("Inventory" .. k .. "Armor", 0)
+        end
     end
 )
 
