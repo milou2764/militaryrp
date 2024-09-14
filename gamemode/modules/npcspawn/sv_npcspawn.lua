@@ -16,7 +16,7 @@ local npcWep =
 local function NPCSpawnSystem()
     if npcspawn.SpawnDelay < CurTime() then
         npcspawn.SpawnDelay = CurTime() + 20
-        for _, platform in pairs( MRP.spawns[game.GetMap()].npcs ) do
+        for _, platform in pairs( MRP.Spawns[game.GetMap()].npcs ) do
             if not platform.npc or not IsValid(platform.npc) then
                 local canSpawn = true
                 for _, p in pairs( player.GetAll() ) do
@@ -47,7 +47,7 @@ end
 
 hook.Add("Initialize", "InitNPCSpawn", function()
     local map = game.GetMap()
-    if MRP.spawns and MRP.spawns[map].npcs and #MRP.spawns[map].npcs > 0 then
+    if MRP.Spawns and MRP.Spawns[map].npcs and #MRP.Spawns[map].npcs > 0 then
         hook.Add("Think", "NPCSpawn", NPCSpawnSystem)
     end
 end)
@@ -59,7 +59,7 @@ concommand.Add("mrp_activatenpcspawn", function(ply)
             ply:ChatPrint("NPC Spawn System Disabled")
         else
             local map = game.GetMap()
-            if MRP.spawns[map].npcs and #MRP.spawns[map].npcs > 0 then
+            if MRP.Spawns[map].npcs and #MRP.Spawns[map].npcs > 0 then
                 hook.Add("Think", "NPCSpawn", NPCSpawnSystem)
                 ply:ChatPrint("NPC Spawn System Enabled")
                 return

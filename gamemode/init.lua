@@ -8,9 +8,10 @@ include("player_class/spectator.lua")
 include("config/config.lua")
 include("config/sv_config.lua")
 include("config/ammotypes.lua")
-include("modules/log/sh_log.lua")
+include("modules/log/log.lua")
 AddCSLuaFile("player_class/player.lua")
 AddCSLuaFile("player_class/spectator.lua")
+AddCSLuaFile("modules/log/log.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("config/config.lua")
 AddCSLuaFile("config/cl_config.lua")
@@ -182,56 +183,44 @@ function GM:PlayerSpawn()
 end
 
 function GM:InitPostEntity()
+    local TAG = "InitPostEntity"
     local map = game.GetMap()
     local spawn
-    local tableExists = MRP.spawns and MRP.spawns[map]
+    local tableExists = MRP.Spawns and MRP.Spawns[map]
     local factions =
         {
-            spectators = "info_player_start",
-            rebels = "info_player_start",
-            army = "info_player_start",
+            [0] = "spectators",
+            [1] = "army",
+            [2] = "rebels",
         }
 
+
     if tableExists then
-        for faction, className in pairs(factions) do
-            local factionTab = MRP.spawns[map][faction]
+        Log.d(TAG, "spawn data found")
+        for _, faction in pairs(factions) do
+            MRP.SpawnEnts[faction] = {}
+            local factionTab = MRP.Spawns[map][faction]
             if factionTab ~=nil then
-                MRP.spawns[map][faction]["ents"] = {}
+                MRP.Spawns[map][faction]["ents"] = {}
                 for k = 1, #factionTab do
-                    spawn = ents.Create(className)
-                    spawn:SetPos(MRP.spawns[map][faction][k].pos)
+                    spawn = ents.Create("info_player_start")
+                    spawn:SetPos(MRP.Spawns[map][faction][k].pos)
+                    spawn:SetAngles(MRP.Spawns[map][faction][k].ang)
                     spawn:Spawn()
-                    table.insert(MRP.spawns[map][faction]["ents"], spawn)
-                    PrintTable(MRP.spawns)
+                    table.insert(MRP.SpawnEnts[faction], spawn)
                 end
             end
         end
 
         function self:PlayerSelectSpawn(ply, _)
-            local faction = ply:GetNWInt("Faction")
-            local posEnt
-            if faction == 1 then
-                local army_spawns = MRP.spawns[map]["army"]["ents"]
-                local random_entry = math.random(#army_spawns)
-                posEnt = army_spawns[random_entry]
-
-            elseif faction == 2 then
-                local rebel_spawns = MRP.spawns[map]["rebels"]["ents"]
-                local random_entry = math.random(#rebel_spawns)
-
-                posEnt = rebel_spawns[random_entry]
-            elseif player_manager.GetPlayerClass(ply) == "spectator" then
-                local factionTab = MRP.spawns[map]["spectator"]
-                if factionTab == nil then
-                    return nil
-                end
-                local spectator_spawns = factionTab["ents"]
-                local random_entry = math.random(#spectator_spawns)
-
-                posEnt = spectator_spawns[random_entry]
-            end
-            return posEnt
+            local faction = factions[ply:GetNWInt("Faction")]
+            local spawn_ents = MRP.SpawnEnts[faction]
+            PrintTable(spawn_ents)
+            local random_entry = math.random(#spawn_ents)
+            return spawn_ents[random_entry]
         end
+    else
+        Log.d(TAG, "spawn data NOT found")
     end
 end
 

@@ -18,6 +18,7 @@ local spawnFuncs = {
                 vname,
                 vehicle
             )
+        platform.vehicle:SetSkin(0)
         platform.vehicle.isMRPVehicle = true
         vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
     end,
@@ -38,7 +39,7 @@ local spawnFuncs = {
 local function vehicleSpawnSystem()
     if vehiclespawn.SpawnDelay < CurTime() then
         vehiclespawn.SpawnDelay = CurTime() + 20
-        for _, platform in pairs( MRP.spawns[game.GetMap()].vehicles ) do
+        for _, platform in pairs( MRP.Spawns[game.GetMap()].vehicles ) do
             if not platform.vehicle or not platform.vehicle:IsValid() then
                 local canSpawn = true
                 for _, p in pairs( player.GetAll() ) do
@@ -60,7 +61,7 @@ end
 
 hook.Add("Initialize", "InitvehicleSpawn", function()
     local map = game.GetMap()
-    if MRP.spawns and MRP.spawns[map].vehicles and #MRP.spawns[map].vehicles > 0 then
+    if MRP.Spawns and MRP.Spawns[map].vehicles and #MRP.Spawns[map].vehicles > 0 then
         hook.Add("Think", "vehicleSpawn", vehicleSpawnSystem)
     end
 end)
@@ -72,7 +73,15 @@ concommand.Add("mrp_activatevehiclespawn", function(ply)
             ply:ChatPrint("vehicle Spawn System Disabled")
         else
             local map = game.GetMap()
-            if MRP.spawns[map].vehicles and #MRP.spawns[map].vehicles > 0 then
+            if MRP.Spawns[map].vehicles and #MRP.Spawns[map].vehicles > 0 then
+
+                for _, platform in pairs( MRP.Spawns[game.GetMap()].vehicles ) do
+                    if platform.vehicle and platform.vehicle:IsValid() then
+                        platform.vehicle:Remove()
+                    end
+                    platform.vehicle = nil
+                end
+                vehiclespawn.vehicleCount = 0
                 hook.Add("Think", "vehicleSpawn", vehicleSpawnSystem)
                 ply:ChatPrint("vehicle Spawn System Enabled")
                 return

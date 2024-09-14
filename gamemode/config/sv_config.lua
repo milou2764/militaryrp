@@ -1,4 +1,5 @@
 local spawnData = file.Read("mrp/spawns.txt", "DATA")
+MRP.SpawnEnts = MRP.SpawnEnts or {}
 if spawnData then
-    MRP.spawns = util.JSONToTable(spawnData)
+    MRP.Spawns = util.JSONToTable(spawnData)
 end

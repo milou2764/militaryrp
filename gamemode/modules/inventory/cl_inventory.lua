@@ -263,7 +263,7 @@ function CreateInventoryPanel(target, context)
     local ang = panel.pmodel.Entity:GetAngles()
     ang:RotateAroundAxis(Vector(0, 0, 1), 45)
     panel.pmodel.Entity:SetAngles(ang)
-    local boneId = panel.pmodel.Entity:LookupBone("ValveBiped.Bip01_Head1")
+    local boneId = panel.pmodel.Entity:LookupBone("ValveBiped.Bip01_Head1") or 1
     local headpos = panel.pmodel.Entity:GetBonePosition(boneId)
     panel.pmodel.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
     for k = 0, target:GetNumBodyGroups() - 1 do

@@ -1,27 +1,27 @@
 MRP.Commands.players = {
     addspawn = function(ply, class, entClass, weapon)
         local map = game.GetMap()
-        if not MRP.spawns then MRP.spawns = {} end
-        if not MRP.spawns[map] then MRP.spawns[map] = {} end
-        if not MRP.spawns[map][class] then MRP.spawns[map][class] = {} end
-        table.insert(MRP.spawns[map][class], { pos = ply:GetPos(),
+        if not MRP.Spawns then MRP.Spawns = {} end
+        if not MRP.Spawns[map] then MRP.Spawns[map] = {} end
+        if not MRP.Spawns[map][class] then MRP.Spawns[map][class] = {} end
+        table.insert(MRP.Spawns[map][class], { pos = ply:GetPos(),
                                                ang = ply:GetAngles(),
                                                class = entClass, weapon = weapon })
-        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns, true))
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.Spawns, true))
         ply:ChatPrint(class .. " spawn added")
     end,
     setspawn = function(ply, class, entClass, weapon)
         local map = game.GetMap()
-        if not MRP.spawns then MRP.spawns = {} end
-        if not MRP.spawns[map] then MRP.spawns[map] = {} end
-        if not MRP.spawns[map][class] then MRP.spawns[map][class] = {} end
-        MRP.spawns[map][class] = {
+        if not MRP.Spawns then MRP.Spawns = {} end
+        if not MRP.Spawns[map] then MRP.Spawns[map] = {} end
+        if not MRP.Spawns[map][class] then MRP.Spawns[map][class] = {} end
+        MRP.Spawns[map][class] = {
             [1] = { pos = ply:GetPos(),
                     ang = ply:GetAngles(),
                     class = entClass,
                     weapon = weapon }
         }
-        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.spawns, true))
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.Spawns, true))
         ply:ChatPrint(class .. " spawn set")
     end
 }
