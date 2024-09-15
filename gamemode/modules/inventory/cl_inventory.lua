@@ -357,14 +357,21 @@ function CreateInventoryPanel(target, context)
     end
 end
 
-concommand.Add("mrp inventory", function(ply, cmd, args)
-    if player_manager.GetPlayerClass(ply) ~= "player_spectator" then
-        if not MRP.plyInvPanel or not MRP.plyInvPanel:IsValid() then
+local keyReleased = true
+hook.Add("CalcView", "InventoryOpening", function()
+    if input.IsKeyDown(MRP.keybinds.inventory)
+    and player_manager.GetPlayerClass(LocalPlayer()) ~= "player_spectator"
+    and keyReleased then
+        keyReleased = false
+        if (not MRP.plyInvPanel or not MRP.plyInvPanel:IsValid())
+            and not vgui.CursorVisible() then
             MRP.createDropZone()
-            MRP.OpenPlyInvPanel(ply, false)
+            MRP.OpenPlyInvPanel(LocalPlayer(), false)
         elseif MRP.dropZone and MRP.dropZone.Remove then
             MRP.dropZone:Remove()
         end
+    elseif not input.IsKeyDown(MRP.keybinds.inventory) then
+        keyReleased = true
     end
 end)
 
