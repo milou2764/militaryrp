@@ -197,11 +197,11 @@ local function character_creation( ply )
             end
         end
 
-        local DoneButton = vgui.Create( "DButton", CharacPanel )
-        DoneButton:SetText( "Done" )
-        DoneButton:SetSize( 100, 30)
-        DoneButton:SetPos( ScrW() / 2 - 50, 9 * ScrH() / 10 )
-        DoneButton.DoClick = function()
+        local doneBtn = vgui.Create( "DButton", CharacPanel )
+        doneBtn:SetText( "Done" )
+        doneBtn:SetSize( 100, 30)
+        doneBtn:SetPos( ScrW() / 2 - 50, 9 * ScrH() / 10 )
+        doneBtn.DoClick = function()
             net.Start( "CharacterInformation" )
             net.WriteUInt( faction, 2 )
             net.WriteUInt( Regiment, 4 )

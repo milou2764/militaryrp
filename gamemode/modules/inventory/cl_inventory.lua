@@ -357,21 +357,14 @@ function CreateInventoryPanel(target, context)
     end
 end
 
-local keyReleased = true
-hook.Add("Tick", "InventoryOpening", function()
-    if input.IsKeyDown(MRP.keybinds.inventory)
-    and player_manager.GetPlayerClass(LocalPlayer()) ~= "player_spectator"
-    and keyReleased then
-        keyReleased = false
-        if (not MRP.plyInvPanel or not MRP.plyInvPanel:IsValid())
-            and not vgui.CursorVisible() then
+concommand.Add("mrp inventory", function(ply, cmd, args)
+    if player_manager.GetPlayerClass(ply) ~= "player_spectator" then
+        if not MRP.plyInvPanel or not MRP.plyInvPanel:IsValid() then
             MRP.createDropZone()
-            MRP.OpenPlyInvPanel(LocalPlayer(), false)
-        else
+            MRP.OpenPlyInvPanel(ply, false)
+        elseif MRP.dropZone and MRP.dropZone.Remove then
             MRP.dropZone:Remove()
         end
-    elseif not input.IsKeyDown(MRP.keybinds.inventory) then
-        keyReleased = true
     end
 end)
 
