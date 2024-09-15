@@ -98,7 +98,7 @@ local function EquipPlayer(ply)
 end
 
 net.Receive("CharacterInformation", function(_, ply)
-    ply:SetNWInt("Faction", net.ReadBit())
+    ply:SetNWInt("Faction", net.ReadUInt(2))
     ply:SetNWInt("Regiment", net.ReadUInt(4))
     ply:SetNWInt("Rank", 1)
     ply:SetNWString("RPName", net.ReadString())

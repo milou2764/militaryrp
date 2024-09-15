@@ -174,79 +174,110 @@ MRP.Factions = {
     }
 }
 MRP.Regiments = {
-    -- France
-     {    
-         {
-            name = "2REI",
-            insignia = "materials/gui/regiment/2rei.png",
-            -- width/height ratio of the insignia
-            whratio = 219 / 295
-         },
-         {
-             name = "2REP",
-             insignia = "materials/gui/regiment/2rep.png",
-             whratio = 500/500,
-         },
-         {
-             name = "5RHC",
-             insignia = "materials/gui/regiment/5rhc.png",
-             whratio = 6 / 8
-         },
-         {
-             name = "1REC",
-             insignia = "materials/gui/regiment/1rec.png",
-             whratio = 800 / 925
-         },
-     },
+   -- France
+    [1] = {    
+        {
+           name = "2REI",
+           insignia = "materials/gui/regiment/2rei.png",
+           -- width/height ratio of the insignia
+           whratio = 219 / 295
+        },
+        {
+            name = "2REP",
+            insignia = "materials/gui/regiment/2rep.png",
+            whratio = 500/500,
+        },
+        {
+            name = "5RHC",
+            insignia = "materials/gui/regiment/5rhc.png",
+            whratio = 6 / 8
+        },
+        {
+            name = "1REC",
+            insignia = "materials/gui/regiment/1rec.png",
+            whratio = 800 / 925
+        },
+    },
     -- Rebels
-    { { name = "SansNom",
-        insignia = "null",
-        whratio = 800 / 1372 } } }
+    [2] = {
+        {
+            name = "5e Régiment National de la Libération ( 5-y polk natsional'nogo osvobozhdeniya )",
+            insignia = "materials/gui/regiment/latvijai.png",
+            whratio = 960 / 720
+        }
+    }
+}
 
 MRP.PlayerModels = {
-    { { Model = "models/tom/player/french_army/ce_male_white_01.mdl",
-        -- authorized skins
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                  19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },
-        -- authorized bodygroups
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 },
-      { Model = "models/tom/player/french_army/ce_male_white_02.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-                  25, 26, 27, 28, 29, 30, 31 },
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 },
-      { Model = "models/tom/player/french_army/ce_male_african.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 },
-      { Model = "models/tom/player/french_army/ce_male_asian.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 },
-      { Model = "models/tom/player/french_army/ce_male_greek.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16, 17, 18, 19, 20, 21 },
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 },
-      { Model = "models/tom/player/french_army/ce_male_persian.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19 },
-        bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
-        stripes = 5 } },
-    { {
-        Model = "models/yukon/conscripts/conscript_a_w_pm_v2.mdl",
-        skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 },
-        bodygroups = { 0, 3, 0, 1, { 0, 2 }, 0, 0, 1, 1, 2, 17, 0, { 0, 1, 2 }, 0, 0,
-                       0, 0, 0, 1 },
-        gasmask_bodygroup = { 17, 2, 1 },
-        nvg_bodygroup = { 14, 1, 2 },
-        stripes = 5 },
-      { Model = "models/yukon/conscripts/conscript_a_b_pm_v2.mdl",
-        skins = { 0, 1, 2, 3, 4, 5 },
-        bodygroups = { 0, 3, 0, 1, { 0, 2 }, 0, 0, 1, 1, 2, { 17 }, 0, { 0, 1, 2 },
-                       0, 0, 0, 0, 0, 1 },
-        gasmask_bodygroup = { 17, 2, 1 },
-        nvg_bodygroup = { 16, 9, 10 },
-        stripes = 5 } }
+    -- 1 France
+    {
+        {
+            Model = "models/tom/player/french_army/ce_male_white_01.mdl",
+            -- authorized skins
+            skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },
+            -- authorized bodygroups
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        },
+        {
+            Model = "models/tom/player/french_army/ce_male_white_02.mdl",
+            skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        },
+        {
+            Model = "models/tom/player/french_army/ce_male_african.mdl",
+            skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        },
+        {
+            Model = "models/tom/player/french_army/ce_male_asian.mdl",
+            skins = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        },
+        {
+            Model = "models/tom/player/french_army/ce_male_greek.mdl",
+            skins = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16, 17, 18, 19, 20, 21 },
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        },
+        {
+            Model = "models/tom/player/french_army/ce_male_persian.mdl",
+            skins = { 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19 },
+            bodygroups = { 0, 0, 0, 0, 0, { 0, 1, 2, 3, 4, 5, 6, 7, 8 } },
+            stripes = 5
+        }
+    },
+    -- 2 Rebels
+    {
+        {
+            Model = "models/arachnit/hdtf/characters/soldier/soldier_player_blck.mdl",
+            skins = 0,
+            bodygroups = {0},
+        },
+        {
+            Model = "models/arachnit/hdtf/characters/soldier/soldier_player_digicam.mdl",
+            skins = 0,
+            bodygroups = {0},
+        },
+        {
+            Model = "models/arachnit/hdtf/characters/soldier/soldier_player_hecu.mdl",
+            skins = 0,
+            bodygroups = {0},
+        },
+        {
+            Model = "models/arachnit/hdtf/characters/soldier/soldier_player_sand.mdl",
+            skins = 0,
+            bodygroups = {0},
+        },
+        {
+            Model = "models/arachnit/hdtf/characters/soldier/soldier_player_woodland.mdl",
+            skins = 0,
+            bodygroups = {0},
+        },
+    }
 }
 
 MRP.npcs = { "npc_vj_ssenpirateh", "npc_vj_ssenpirateleh", "npc_vj_ssenpiratesch" }

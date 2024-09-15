@@ -1,4 +1,4 @@
-local Faction = 1
+local faction = 1
 local Regiment = 1
 local CharacPanel
 local BodygroupSlider
@@ -72,8 +72,8 @@ local function character_creation( ply )
         local Model = vgui.Create( "MRPAdjustableModelPanel", CharacPanel )
         Model:SetSize(ScrW() * 0.5, ScrH() * 0.8)
         Model:SetPos( 0.1 * ScrW(), 1.6 * ScrH() / 10 )
-        ModelIndex = math.random( #MRP.PlayerModels[Faction] )
-        Model:SetModel( MRP.PlayerModels[Faction][ModelIndex].Model )
+        ModelIndex = math.random( #MRP.PlayerModels[faction] )
+        Model:SetModel( MRP.PlayerModels[faction][ModelIndex].Model )
         Model.Entity:SetModelScale(Size / 180)
         Model.vCamPos = Vector(60, 40, 37.288376)
 
@@ -104,33 +104,33 @@ local function character_creation( ply )
                 Size = math.Round(self:GetValue(), 0)
                 Model.Entity:SetModelScale(Size / 180)
             end
-            if istable(MRP.PlayerModels[Faction][ModelIndex].skins) then
-                local skinCount = #MRP.PlayerModels[Faction][ModelIndex].skins
-                SkinSlider = vgui.Create( "DNumSlider", ScrollPanel )
-                SkinSlider:Dock(TOP)				-- Set the position
-                SkinSlider:DockMargin(0, 0, 0, 0)
-                SkinSlider:SetSize(300, 30)			-- Set the size
-                SkinSlider:SetText("Skin")	-- Set the text above the slider
-                SkinSlider:SetMin(1)				 	-- Set the minimum number you can slide to
-                SkinSlider:SetMax(skinCount)
-                SkinSlider:SetDecimals(0)				-- Decimal places - zero for whole number
-                SkinSlider:SetValue(math.random(1, skinCount))
-                Skin = MRP.PlayerModels[Faction][ModelIndex].skins[SkinSlider:GetValue()]
-                Model.Entity:SetSkin(Skin)
-                SkinSlider.OnValueChanged = function( self )
+            if istable(MRP.PlayerModels[faction][ModelIndex].skins) then
+                local skinCount = #MRP.PlayerModels[faction][ModelIndex].skins
+                local skinSLider = vgui.Create( "DNumSlider", ScrollPanel )
+                skinSLider:Dock(TOP)				-- Set the position
+                skinSLider:DockMargin(0, 0, 0, 0)
+                skinSLider:SetSize(300, 30)			-- Set the size
+                skinSLider:SetText("Skin")	-- Set the text above the slider
+                skinSLider:SetMin(1)				 	-- Set the minimum number you can slide to
+                skinSLider:SetMax(skinCount)
+                skinSLider:SetDecimals(0)				-- Decimal places - zero for whole number
+                skinSLider:SetValue(math.random(1, skinCount))
+                skin = MRP.PlayerModels[faction][ModelIndex].skins[skinSLider:GetValue()]
+                Model.Entity:SetSkin(skin)
+                skinSLider.OnValueChanged = function( self )
                     -- Called when the slider value changes
                     local val = math.Round(self:GetValue(), 0)
-                    Skin = MRP.PlayerModels[Faction][ModelIndex].skins[val]
-                    Model.Entity:SetSkin(Skin)
+                    skin = MRP.PlayerModels[faction][ModelIndex].skins[val]
+                    Model.Entity:SetSkin(skin)
                 end
             else
-                Skin = MRP.PlayerModels[Faction][ModelIndex].skins
-                Model.Entity:SetSkin(MRP.PlayerModels[Faction][ModelIndex].skins)
+                skin = MRP.PlayerModels[faction][ModelIndex].skins
+                Model.Entity:SetSkin(MRP.PlayerModels[faction][ModelIndex].skins)
             end
 
             for i = 1, Model.Entity:GetNumBodyGroups() do
-                if istable(MRP.PlayerModels[Faction][ModelIndex].bodygroups[i]) then
-                    local lentgh = #MRP.PlayerModels[Faction][ModelIndex].bodygroups[i]
+                if istable(MRP.PlayerModels[faction][ModelIndex].bodygroups[i]) then
+                    local lentgh = #MRP.PlayerModels[faction][ModelIndex].bodygroups[i]
                     BodygroupSlider = vgui.Create( "DNumSlider", ScrollPanel )
                     BodygroupSlider:Dock(TOP)
                     BodygroupSlider:DockMargin(0, 0, 0, 0)
@@ -144,25 +144,25 @@ local function character_creation( ply )
                     BodygroupSlider:SetValue(sliderVal)
                     Model.Entity:SetBodygroup(
                         i - 1,
-                        MRP.PlayerModels[Faction][ModelIndex].bodygroups[i][sliderVal])
+                        MRP.PlayerModels[faction][ModelIndex].bodygroups[i][sliderVal])
                     BodygroupSlider.OnValueChanged = function( self )
                         -- Called when the slider value changes
                         local val = math.Round(self:GetValue(), 0)
                         Model.Entity:SetBodygroup(
                             i - 1,
-                            MRP.PlayerModels[Faction][ModelIndex].bodygroups[i][val]
+                            MRP.PlayerModels[faction][ModelIndex].bodygroups[i][val]
                         )
                     end
                 else
                     Model.Entity:SetBodygroup(
                         i - 1,
-                        MRP.PlayerModels[Faction][ModelIndex].bodygroups[i]
+                        MRP.PlayerModels[faction][ModelIndex].bodygroups[i]
                     )
                 end
             end
         end
 
-        local modelCount = #MRP.PlayerModels[Faction]
+        local modelCount = #MRP.PlayerModels[faction]
         ModelSlider = vgui.Create("DNumSlider", SpecPanel)
         ModelSlider:Dock(TOP)
         ModelSlider:DockMargin(0, 0, 0, 0)
@@ -181,7 +181,7 @@ local function character_creation( ply )
             ScrollPanel:Dock(TOP)
             ScrollPanel:SetSize(Model:GetWide(), Model:GetTall() - 30)
 
-            Model:SetModel(MRP.PlayerModels[Faction][ModelIndex].Model)
+            Model:SetModel(MRP.PlayerModels[faction][ModelIndex].Model)
             Model.Entity:SetModelScale(Size / 180)
             --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
@@ -203,12 +203,12 @@ local function character_creation( ply )
         DoneButton:SetPos( ScrW() / 2 - 50, 9 * ScrH() / 10 )
         DoneButton.DoClick = function()
             net.Start( "CharacterInformation" )
-            net.WriteBit( Faction == 1 )
+            net.WriteUInt( faction, 2 )
             net.WriteUInt( Regiment, 4 )
             net.WriteString( RPName )
             net.WriteUInt( ModelIndex, 5 )
             net.WriteUInt( Size, 8 )
-            net.WriteUInt( Skin, 5 )
+            net.WriteUInt( skin, 5 )
             local BodyGroups = tostring(Model.Entity:GetBodygroup(0))
             for i = 1, Model.Entity:GetNumBodyGroups() - 1 do
                 BodyGroups = BodyGroups .. "," .. tostring(Model.Entity:GetBodygroup(i))
@@ -220,16 +220,16 @@ local function character_creation( ply )
         end
     end
 
-    local function ChooseRegiment()
+    local function chooseRegiment()
         local h = 700
         local scrollPanel = vgui.Create("DHorizontalScroller", CharacPanel)
         scrollPanel:SetPos(0, 300)
         scrollPanel:SetSize(ScrW(), h)
         scrollPanel:SetOverlap( -40 )
 
-        for i = 1, #MRP.Regiments[1] do
+        for i = 1, #MRP.Regiments[faction] do
             local Reg = vgui.Create("DImageButton")
-            Reg:SetImage(MRP.Regiments[1][i]["insignia"])
+            Reg:SetImage(MRP.Regiments[faction][i]["insignia"])
             Reg:SizeToContents()
             local ratio = Reg:GetWide() / Reg:GetTall()
             Reg:SetWide(h * ratio)
@@ -243,24 +243,23 @@ local function character_creation( ply )
         end
     end
 
-    FranceButton.DoClick = function()
-        Faction = 1
+    local function facButton(fac)
+        faction = fac
         ChooseLabel:SetText("Choisissez votre régiment")
         ChooseLabel:SizeToContents()
         ChooseLabel:SetPos( ScrW() / 2 - ChooseLabel:GetWide() / 2, 200 )
         FranceButton:Remove()
         RebelButton:Remove()
-        ChooseRegiment()
+        chooseRegiment()
+    end
+
+
+    FranceButton.DoClick = function()
+        facButton(1)
     end
 
     RebelButton.DoClick = function()
-        -- dire que ça n'est pas encore implémenté
-        LocalPlayer():ChatPrint("Cette faction n'est pas encore implémentée")
-        -- Faction = 2
-        -- ChooseLabel:Remove()
-        -- FranceButton:Remove()
-        -- RebelButton:Remove()
-        -- DrawCharacPerso()
+        facButton(2)
     end
 end
 
@@ -275,13 +274,13 @@ local function character_selection(ply)
         baseclass.Get("MRPPanel").Remove(self)
     end
 
-    local SelectionPanelLabel = vgui.Create( "DLabel", selecPanel )
-    SelectionPanelLabel:SetFont("DermaLarge")
-    SelectionPanelLabel:SetTextColor(Color(255, 255, 255))
-    SelectionPanelLabel:SetText("Character selection")
-    SelectionPanelLabel:SizeToContents()
-    SelectionPanelLabel:CenterHorizontal(0.5)
-    SelectionPanelLabel:CenterVertical(0.05)
+    local selecLabel = vgui.Create( "DLabel", selecPanel )
+    selecLabel:SetFont("DermaLarge")
+    selecLabel:SetTextColor(Color(255, 255, 255))
+    selecLabel:SetText("Character selection")
+    selecLabel:SizeToContents()
+    selecLabel:CenterHorizontal(0.5)
+    selecLabel:CenterVertical(0.05)
 
     local CloseLabel = vgui.Create( "DLabel", selecPanel )
     CloseLabel:SetFont( "DermaLarge" )
