@@ -1,6 +1,6 @@
 local tbName = MRP.TABLE_CHAR
 
-local function GetPlayerData(ply)
+local function getPlayerData(ply)
     local data =
         sql.Query(
             "SELECT * FROM " .. SQLStr(tbName) ..
@@ -8,51 +8,58 @@ local function GetPlayerData(ply)
         )
     return data
 end
+local function sendCharacterData(data)
+    net.WriteUInt(#data, 5)
 
-local function HandlePlayerData(ply, data)
+    for _, v in pairs(data) do
+        local cid = tonumber(v["CharacterID"])
+        net.WriteUInt(cid, 32)
+        net.WriteUInt(v.Faction, 2)
+        net.WriteUInt(v.Regiment, 4)
+        net.WriteUInt(v.Rank, 5)
+        net.WriteString(v.RPName)
+        net.WriteUInt(v.ModelIndex, 5)
+        net.WriteUInt(v.Size, 8)
+        net.WriteUInt(v.Skin, 5)
+        net.WriteString(v.BodyGroups)
+        local invData = sql.Query(
+            "SELECT * FROM " .. MRP.TABLE_INV ..
+            " WHERE CharacterID = " .. cid
+            )[1]
+        net.WriteUInt(invData.NVGs, 7)
+        net.WriteUInt(invData.Helmet, 7)
+        net.WriteUInt(invData.Gasmask, 7)
+        net.WriteUInt(invData.Rucksack, 7)
+        net.WriteUInt(invData.Vest, 7)
+    end
+end
+
+
+local function handlePlayerData(ply, data, spawn)
     --PrintTable(data)
     if data == false then
         Log.e(TAG, "error selecting characters")
         Log.e(TAG, sql.LastError())
     elseif data == nil then
-        net.Start("CharacterCreation")
+        net.Start("mrp_characters_creation")
+        net.Send(ply)
+    elseif spawn then
+        net.Start("mrp_characters_selection")
+        Log.d(TAG, "character selection")
+        sendCharacterData(data)
         net.Send(ply)
     else
-        net.Start("CharacterSelection")
-        Log.d(TAG, "character selection")
-        net.WriteUInt(#data, 5)
-
-        for _, v in pairs(data) do
-            local cid = tonumber(v["CharacterID"])
-            net.WriteUInt(cid, 32)
-            net.WriteUInt(v.Faction, 1)
-            net.WriteUInt(v.Regiment, 4)
-            net.WriteUInt(v.Rank, 5)
-            net.WriteString(v.RPName)
-            net.WriteUInt(v.ModelIndex, 5)
-            net.WriteUInt(v.Size, 8)
-            net.WriteUInt(v.Skin, 5)
-            net.WriteString(v.BodyGroups)
-            local invData = sql.Query(
-                "SELECT * FROM " .. MRP.TABLE_INV ..
-                " WHERE CharacterID = " .. cid
-                )[1]
-            net.WriteUInt(invData.NVGs, 7)
-            net.WriteUInt(invData.Helmet, 7)
-            net.WriteUInt(invData.Gasmask, 7)
-            net.WriteUInt(invData.Rucksack, 7)
-            net.WriteUInt(invData.Vest, 7)
-        end
-
+        net.Start("mrp_characters_update")
+        sendCharacterData(data)
         net.Send(ply)
     end
 end
 
-hook.Add( "PlayerSpawn", "MRP::character::PlayerSpawn", function( ply )
+hook.Add("PlayerSpawn", "MRP::character::PlayerSpawn", function( ply )
     Log.d("character", "PlayerSpawn hook")
     if player_manager.GetPlayerClass(ply) == "spectator" then
-        local data = GetPlayerData(ply)
-        HandlePlayerData(ply, data)
+        local data = getPlayerData(ply)
+        handlePlayerData(ply, data, true)
     else
         ply:SetModel(MRP.PlayerModels[ply:MRPFaction()][ply:MRPModel()].Model)
         ply:SetModelScale(ply:GetNWInt("Size") / 180, 0)
@@ -179,13 +186,17 @@ net.Receive("CharacterInformation", function(_, ply)
 
         MRP.SpawnPlayer(ply)
         EquipPlayer(ply)
-   end
+    end
+    local data = getPlayerData(ply)
+    handlePlayerData(ply, data)
 end)
 
 
-net.Receive("DeleteCharacter", function(_, _)
+net.Receive("mrp_characters_deletion", function(_, ply)
     local uid = net.ReadUInt(32)
     sql.Query("DELETE FROM " .. tbName .. " WHERE CharacterID = " .. uid)
+    local data = getPlayerData(ply)
+    handlePlayerData(ply, data)
 end)
 
 net.Receive("CharacterSelected", function(_, ply)

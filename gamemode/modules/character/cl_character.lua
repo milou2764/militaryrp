@@ -1,46 +1,47 @@
 local faction = 1
 local Regiment = 1
 local CharacPanel
-local BodygroupSlider
+local bdyGrpSlider
 
-local function character_creation( ply )
-    ply = ply or LocalPlayer()
+local function characterCreation(ply)
+    local specsScroll
+    local leftArrow
     CharacPanel = vgui.Create("MRPPanel")
 
-    local CharacCreationLabel = vgui.Create( "DLabel", CharacPanel )
-    CharacCreationLabel:SetFont( "DermaLarge" )
-    CharacCreationLabel:SetText( "Création de personnage" )
-    CharacCreationLabel:SizeToContents()
-    CharacCreationLabel:CenterHorizontal( 0.5 )
-    CharacCreationLabel:CenterVertical( 0.05 )
+    local header = vgui.Create( "DLabel", CharacPanel )
+    header:SetFont( "DermaLarge" )
+    header:SetText( "Création de personnage" )
+    header:SizeToContents()
+    header:CenterHorizontal( 0.5 )
+    header:CenterVertical( 0.05 )
 
-    local ChooseLabel = vgui.Create( "DLabel", CharacPanel )
-    ChooseLabel:SetFont( "DermaLarge" )
-    ChooseLabel:SetText( "Choisissez votre faction" )
-    ChooseLabel:SizeToContents()
-    ChooseLabel:SetPos( ScrW() / 2 - ChooseLabel:GetWide() / 2, 200 )
+    local chooseLbl = vgui.Create( "DLabel", CharacPanel )
+    chooseLbl:SetFont( "DermaLarge" )
+    chooseLbl:SetText( "Choisissez votre faction" )
+    chooseLbl:SizeToContents()
+    chooseLbl:SetPos( ScrW() / 2 - chooseLbl:GetWide() / 2, 200 )
 
-    local CloseLabel = vgui.Create( "DLabel", CharacPanel )
-    CloseLabel:SetFont( "DermaLarge" )
-    CloseLabel:SetText( "CLOSE" )
-    CloseLabel:SizeToContents()
-    CloseLabel:Dock(BOTTOM)
-    CloseLabel:SetMouseInputEnabled( true )
-    function CloseLabel:DoClick()
+    local closeLbl = vgui.Create( "DLabel", CharacPanel )
+    closeLbl:SetFont( "DermaLarge" )
+    closeLbl:SetText( "CLOSE" )
+    closeLbl:SizeToContents()
+    closeLbl:Dock(BOTTOM)
+    closeLbl:SetMouseInputEnabled( true )
+    function closeLbl:DoClick()
         CharacPanel:SetVisible( false )
     end
 
-    local FranceButton = vgui.Create( "DImageButton", CharacPanel )
-    FranceButton:SetImage(MRP.Factions[0]["flag"])
-    FranceButton:SizeToContents()
-    FranceButton:SetPos( ScrW() / 2 - FranceButton:GetWide() - 100, ScrH() / 2 - 150 )
+    local armyBtn = vgui.Create( "DImageButton", CharacPanel )
+    armyBtn:SetImage(MRP.Factions[0]["flag"])
+    armyBtn:SizeToContents()
+    armyBtn:SetPos( ScrW() / 2 - armyBtn:GetWide() - 100, ScrH() / 2 - 150 )
 
-    local RebelButton = vgui.Create( "DImageButton", CharacPanel )
-    RebelButton:SetImage(MRP.Factions[1]["flag"])
-    RebelButton:SizeToContents()
-    RebelButton:SetPos( ScrW() / 2 + 100, ScrH() / 2 - 150 )
+    local rebelBtn = vgui.Create( "DImageButton", CharacPanel )
+    rebelBtn:SetImage(MRP.Factions[1]["flag"])
+    rebelBtn:SizeToContents()
+    rebelBtn:SetPos( ScrW() / 2 + 100, ScrH() / 2 - 150 )
 
-    local function DrawCharacPerso()
+    local function drawCharac()
         local function generateRPName()
             local fname = MRP.FirstName[math.random(#MRP.FirstName)]
             local lname = MRP.LastName[math.random(#MRP.LastName)]
@@ -50,63 +51,63 @@ local function character_creation( ply )
         RPName = generateRPName()
         Size = math.random(MRP.minSize, MRP.maxSize)
 
-        local RPNameEntry = vgui.Create("DTextEntry", CharacPanel)
-        RPNameEntry:SetSize( 200, 35 )
-        RPNameEntry:SetPlaceholderText( RPName )
-        RPNameEntry:SetPos(ScrW() / 2 - 100, ScrH() / 10 + 20)
-        RPNameEntry.OnLoseFocus = function( self )
+        local rpnameEntry = vgui.Create("DTextEntry", CharacPanel)
+        rpnameEntry:SetSize( 200, 35 )
+        rpnameEntry:SetPlaceholderText( RPName )
+        rpnameEntry:SetPos(ScrW() / 2 - 100, ScrH() / 10 + 20)
+        rpnameEntry.OnLoseFocus = function( self )
             RPName = self:GetValue()
         end
 
-        local GenerateButton = vgui.Create( "DButton", CharacPanel )
-        GenerateButton:SetText( "Generate" )
-        GenerateButton:SetSize( 100, 30)
-        local x = ScrW() / 2 - 100 + RPNameEntry:GetWide() + 20
+        local generateBtn = vgui.Create( "DButton", CharacPanel )
+        generateBtn:SetText( "Generate" )
+        generateBtn:SetSize( 100, 30)
+        local x = ScrW() / 2 - 100 + rpnameEntry:GetWide() + 20
         local y = ScrH() / 10 + 20
-        GenerateButton:SetPos( x, y )
-        GenerateButton.DoClick = function()
+        generateBtn:SetPos( x, y )
+        generateBtn.DoClick = function()
             RPName = generateRPName()
-            RPNameEntry:SetPlaceholderText( RPName )
+            rpnameEntry:SetPlaceholderText( RPName )
         end
 
-        local Model = vgui.Create( "MRPAdjustableModelPanel", CharacPanel )
-        Model:SetSize(ScrW() * 0.5, ScrH() * 0.8)
-        Model:SetPos( 0.1 * ScrW(), 1.6 * ScrH() / 10 )
-        ModelIndex = math.random( #MRP.PlayerModels[faction] )
-        Model:SetModel( MRP.PlayerModels[faction][ModelIndex].Model )
-        Model.Entity:SetModelScale(Size / 180)
-        Model.vCamPos = Vector(60, 40, 37.288376)
+        local mdlPanel = vgui.Create( "MRPAdjustableModelPanel", CharacPanel )
+        mdlPanel:SetSize(ScrW() * 0.5, ScrH() * 0.8)
+        mdlPanel:SetPos( 0.1 * ScrW(), 1.6 * ScrH() / 10 )
+        local modelIdx = math.random( #MRP.PlayerModels[faction] )
+        mdlPanel:SetModel( MRP.PlayerModels[faction][modelIdx].Model )
+        mdlPanel.Entity:SetModelScale(Size / 180)
+        mdlPanel.vCamPos = Vector(60, 40, 37.288376)
 
-        function Model:LayoutEntity( _ ) return end	-- Disable cam rotation
+        function mdlPanel:LayoutEntity( _ ) return end	-- Disable cam rotation
 
         --local headpos =
-         --   Model.Entity:GetBonePosition(Model.Entity:LookupBone("ValveBiped.Bip01_Head1"))
-        --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
+         --   mdlPanel.Entity:GetBonePosition(mdlPanel.Entity:LookupBone("ValveBiped.Bip01_Head1"))
+        --mdlPanel.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
-        SpecPanel = vgui.Create( "EditablePanel", CharacPanel )
-        SpecPanel:SetPos( ScrW() / 2, 4 * ScrH() / 10 )
-        SpecPanel:SetSize( ScrW() / 3, Model:GetTall() )
+        local specsPanel = vgui.Create( "EditablePanel", CharacPanel )
+        specsPanel:SetPos( ScrW() / 2, 4 * ScrH() / 10 )
+        specsPanel:SetSize( ScrW() / 3, mdlPanel:GetTall() )
 
-        local function LoadBodygroup()
-            SizeSlider = vgui.Create( "DNumSlider", ScrollPanel )
-            SizeSlider:Dock( TOP )				-- Set the position
-            SizeSlider:DockMargin(0, 0, 0, 0)
-            SizeSlider:SetSize(300, 30)			-- Set the size
-            SizeSlider:SetText("Size(cm)")	-- Set the text above the slider
-            SizeSlider:SetMin(MRP.minSize)				 	-- Set the minimum number you can slide to
-            SizeSlider:SetMax(MRP.maxSize)
-            SizeSlider:SetDecimals(0)				-- Decimal places - zero for whole number
-            SizeSlider:SetValue(math.random(MRP.minSize, MRP.maxSize))
-            Size = SizeSlider:GetValue()
-            Model.Entity:SetModelScale(Size / 180)
-            SizeSlider.OnValueChanged = function(self)
+        local function loadBodygroup()
+            local sizeSlider = vgui.Create("DNumSlider", specsScroll)
+            sizeSlider:Dock(TOP)				-- Set the position
+            sizeSlider:DockMargin(0, 0, 0, 0)
+            sizeSlider:SetSize(300, 30)			-- Set the size
+            sizeSlider:SetText("Size(cm)")	-- Set the text above the slider
+            sizeSlider:SetMin(MRP.minSize)				 	-- Set the minimum number you can slide to
+            sizeSlider:SetMax(MRP.maxSize)
+            sizeSlider:SetDecimals(0)				-- Decimal places - zero for whole number
+            sizeSlider:SetValue(math.random(MRP.minSize, MRP.maxSize))
+            Size = sizeSlider:GetValue()
+            mdlPanel.Entity:SetModelScale(Size / 180)
+            sizeSlider.OnValueChanged = function(self)
                 -- Called when the slider value changes
                 Size = math.Round(self:GetValue(), 0)
-                Model.Entity:SetModelScale(Size / 180)
+                mdlPanel.Entity:SetModelScale(Size / 180)
             end
-            if istable(MRP.PlayerModels[faction][ModelIndex].skins) then
-                local skinCount = #MRP.PlayerModels[faction][ModelIndex].skins
-                local skinSLider = vgui.Create( "DNumSlider", ScrollPanel )
+            if istable(MRP.PlayerModels[faction][modelIdx].skins) then
+                local skinCount = #MRP.PlayerModels[faction][modelIdx].skins
+                local skinSLider = vgui.Create( "DNumSlider", specsScroll )
                 skinSLider:Dock(TOP)				-- Set the position
                 skinSLider:DockMargin(0, 0, 0, 0)
                 skinSLider:SetSize(300, 30)			-- Set the size
@@ -115,103 +116,103 @@ local function character_creation( ply )
                 skinSLider:SetMax(skinCount)
                 skinSLider:SetDecimals(0)				-- Decimal places - zero for whole number
                 skinSLider:SetValue(math.random(1, skinCount))
-                skin = MRP.PlayerModels[faction][ModelIndex].skins[skinSLider:GetValue()]
-                Model.Entity:SetSkin(skin)
+                skin = MRP.PlayerModels[faction][modelIdx].skins[skinSLider:GetValue()]
+                mdlPanel.Entity:SetSkin(skin)
                 skinSLider.OnValueChanged = function( self )
                     -- Called when the slider value changes
                     local val = math.Round(self:GetValue(), 0)
-                    skin = MRP.PlayerModels[faction][ModelIndex].skins[val]
-                    Model.Entity:SetSkin(skin)
+                    skin = MRP.PlayerModels[faction][modelIdx].skins[val]
+                    mdlPanel.Entity:SetSkin(skin)
                 end
             else
-                skin = MRP.PlayerModels[faction][ModelIndex].skins
-                Model.Entity:SetSkin(MRP.PlayerModels[faction][ModelIndex].skins)
+                skin = MRP.PlayerModels[faction][modelIdx].skins
+                mdlPanel.Entity:SetSkin(MRP.PlayerModels[faction][modelIdx].skins)
             end
 
-            for i = 1, Model.Entity:GetNumBodyGroups() do
-                if istable(MRP.PlayerModels[faction][ModelIndex].bodygroups[i]) then
-                    local lentgh = #MRP.PlayerModels[faction][ModelIndex].bodygroups[i]
-                    BodygroupSlider = vgui.Create( "DNumSlider", ScrollPanel )
-                    BodygroupSlider:Dock(TOP)
-                    BodygroupSlider:DockMargin(0, 0, 0, 0)
-                    BodygroupSlider:SetSize( 300, 30 )
-                    BodygroupSlider:SetText( Model.Entity:GetBodygroupName(i - 1) )
-                    BodygroupSlider:SetMin( 1 )
-                    BodygroupSlider:SetMax(lentgh)
+            for i = 1, mdlPanel.Entity:GetNumBodyGroups() do
+                if istable(MRP.PlayerModels[faction][modelIdx].bodygroups[i]) then
+                    local lentgh = #MRP.PlayerModels[faction][modelIdx].bodygroups[i]
+                    bdyGrpSlider = vgui.Create( "DNumSlider", specsScroll )
+                    bdyGrpSlider:Dock(TOP)
+                    bdyGrpSlider:DockMargin(0, 0, 0, 0)
+                    bdyGrpSlider:SetSize( 300, 30 )
+                    bdyGrpSlider:SetText( mdlPanel.Entity:GetBodygroupName(i - 1) )
+                    bdyGrpSlider:SetMin( 1 )
+                    bdyGrpSlider:SetMax(lentgh)
                     -- Decimal places - zero for whole number
-                    BodygroupSlider:SetDecimals( 0 )
+                    bdyGrpSlider:SetDecimals( 0 )
                     local sliderVal = math.random(1, lentgh)
-                    BodygroupSlider:SetValue(sliderVal)
-                    Model.Entity:SetBodygroup(
+                    bdyGrpSlider:SetValue(sliderVal)
+                    mdlPanel.Entity:SetBodygroup(
                         i - 1,
-                        MRP.PlayerModels[faction][ModelIndex].bodygroups[i][sliderVal])
-                    BodygroupSlider.OnValueChanged = function( self )
+                        MRP.PlayerModels[faction][modelIdx].bodygroups[i][sliderVal])
+                    bdyGrpSlider.OnValueChanged = function( self )
                         -- Called when the slider value changes
                         local val = math.Round(self:GetValue(), 0)
-                        Model.Entity:SetBodygroup(
+                        mdlPanel.Entity:SetBodygroup(
                             i - 1,
-                            MRP.PlayerModels[faction][ModelIndex].bodygroups[i][val]
+                            MRP.PlayerModels[faction][modelIdx].bodygroups[i][val]
                         )
                     end
                 else
-                    Model.Entity:SetBodygroup(
+                    mdlPanel.Entity:SetBodygroup(
                         i - 1,
-                        MRP.PlayerModels[faction][ModelIndex].bodygroups[i]
+                        MRP.PlayerModels[faction][modelIdx].bodygroups[i]
                     )
                 end
             end
         end
 
         local modelCount = #MRP.PlayerModels[faction]
-        ModelSlider = vgui.Create("DNumSlider", SpecPanel)
-        ModelSlider:Dock(TOP)
-        ModelSlider:DockMargin(0, 0, 0, 0)
-        ModelSlider:SetSize(300, 30 )
-        ModelSlider:SetText("Model")
-        ModelSlider:SetMin(0)
-        ModelSlider:SetMax(modelCount)
-        ModelSlider:SetDecimals(0)
-        ModelSlider:SetValue(ModelIndex)
-        Model.Entity:SetModelScale(Size / 180)
+        local modelSlider = vgui.Create("DNumSlider", specsPanel)
+        modelSlider:Dock(TOP)
+        modelSlider:DockMargin(0, 0, 0, 0)
+        modelSlider:SetSize(300, 30 )
+        modelSlider:SetText("Model")
+        modelSlider:SetMin(0)
+        modelSlider:SetMax(modelCount)
+        modelSlider:SetDecimals(0)
+        modelSlider:SetValue(modelIdx)
+        mdlPanel.Entity:SetModelScale(Size / 180)
 
-        local function LoadModel()
-            if ScrollPanel and ScrollPanel:IsValid() then ScrollPanel:Remove() end
+        local function loadModel()
+            if specsScroll and specsScroll:IsValid() then specsScroll:Remove() end
 
-            ScrollPanel = vgui.Create("DScrollPanel", SpecPanel)
-            ScrollPanel:Dock(TOP)
-            ScrollPanel:SetSize(Model:GetWide(), Model:GetTall() - 30)
+            specsScroll = vgui.Create("DScrollPanel", specsPanel)
+            specsScroll:Dock(TOP)
+            specsScroll:SetSize(mdlPanel:GetWide(), mdlPanel:GetTall() - 30)
 
-            Model:SetModel(MRP.PlayerModels[faction][ModelIndex].Model)
-            Model.Entity:SetModelScale(Size / 180)
-            --Model.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
+            mdlPanel:SetModel(MRP.PlayerModels[faction][modelIdx].Model)
+            mdlPanel.Entity:SetModelScale(Size / 180)
+            --mdlPanel.Entity:SetEyeTarget(headpos-Vector(-15, 0, 0))
 
-            LoadBodygroup()
+            loadBodygroup()
         end
-        LoadModel()
+        loadModel()
 
-        ModelSlider.OnValueChanged = function(self)
+        modelSlider.OnValueChanged = function(self)
             local val = math.Round(self:GetValue(), 0)
-            if val - ModelIndex ~= 0 then
-                ModelIndex = val
-                LoadModel()
+            if val - modelIdx ~= 0 then
+                modelIdx = val
+                loadModel()
             end
         end
 
         local doneBtn = vgui.Create( "DButton", CharacPanel )
-        doneBtn:SetText( "Done" )
-        doneBtn:SetSize( 100, 30)
-        doneBtn:SetPos( ScrW() / 2 - 50, 9 * ScrH() / 10 )
+        doneBtn:SetText("Done")
+        doneBtn:SetSize(100, 30)
+        doneBtn:SetPos(ScrW() / 2 - 50, 9 * ScrH() / 10)
         doneBtn.DoClick = function()
-            net.Start( "CharacterInformation" )
-            net.WriteUInt( faction, 2 )
-            net.WriteUInt( Regiment, 4 )
-            net.WriteString( RPName )
-            net.WriteUInt( ModelIndex, 5 )
-            net.WriteUInt( Size, 8 )
-            net.WriteUInt( skin, 5 )
-            local BodyGroups = tostring(Model.Entity:GetBodygroup(0))
-            for i = 1, Model.Entity:GetNumBodyGroups() - 1 do
-                BodyGroups = BodyGroups .. "," .. tostring(Model.Entity:GetBodygroup(i))
+            net.Start("CharacterInformation")
+            net.WriteUInt(faction, 2)
+            net.WriteUInt(Regiment, 4)
+            net.WriteString(RPName)
+            net.WriteUInt(modelIdx, 5)
+            net.WriteUInt(Size, 8)
+            net.WriteUInt(skin, 5)
+            local BodyGroups = tostring(mdlPanel.Entity:GetBodygroup(0))
+            for i = 1, mdlPanel.Entity:GetNumBodyGroups() - 1 do
+                BodyGroups = BodyGroups .. "," .. tostring(mdlPanel.Entity:GetBodygroup(i))
             end
             net.WriteString(BodyGroups)
             net.SendToServer()
@@ -236,8 +237,8 @@ local function character_creation( ply )
             Reg.DoClick = function()
                 Regiment = i
                 scrollPanel:Remove()
-                ChooseLabel:Remove()
-                DrawCharacPerso()
+                chooseLbl:Remove()
+                drawCharac()
             end
             scrollPanel:AddPanel(Reg)
         end
@@ -245,25 +246,25 @@ local function character_creation( ply )
 
     local function facButton(fac)
         faction = fac
-        ChooseLabel:SetText("Choisissez votre régiment")
-        ChooseLabel:SizeToContents()
-        ChooseLabel:SetPos( ScrW() / 2 - ChooseLabel:GetWide() / 2, 200 )
-        FranceButton:Remove()
-        RebelButton:Remove()
+        chooseLbl:SetText("Choisissez votre régiment")
+        chooseLbl:SizeToContents()
+        chooseLbl:SetPos( ScrW() / 2 - chooseLbl:GetWide() / 2, 200 )
+        armyBtn:Remove()
+        rebelBtn:Remove()
         chooseRegiment()
     end
 
 
-    FranceButton.DoClick = function()
+    armyBtn.DoClick = function()
         facButton(1)
     end
 
-    RebelButton.DoClick = function()
+    rebelBtn.DoClick = function()
         facButton(2)
     end
 end
 
-local function character_selection(ply)
+local function characterSelection(ply)
     local selecPanel = vgui.Create("MRPPanel")
     selecPanel.Remove = function(self)
         if self.pmodel.Entity then
@@ -282,36 +283,17 @@ local function character_selection(ply)
     selecLabel:CenterHorizontal(0.5)
     selecLabel:CenterVertical(0.05)
 
-    local CloseLabel = vgui.Create( "DLabel", selecPanel )
-    CloseLabel:SetFont( "DermaLarge" )
-    CloseLabel:SetText( "CLOSE" )
-    CloseLabel:SizeToContents()
-    CloseLabel:Dock(BOTTOM)
-    CloseLabel:SetMouseInputEnabled( true )
-    function CloseLabel:DoClick()
-        selecPanel:SetVisible( false )
+    local closeLbl = vgui.Create("DLabel", selecPanel)
+    closeLbl:SetFont("DermaLarge")
+    closeLbl:SetText("CLOSE")
+    closeLbl:SizeToContents()
+    closeLbl:Dock(BOTTOM)
+    closeLbl:SetMouseInputEnabled(true)
+    function closeLbl:DoClick()
+        selecPanel:SetVisible(false)
     end
 
-    local Character = {}
-    local namesCount = net.ReadUInt( 5 )
-    for i = 1, namesCount do
-        Character[i] = {}
-        Character[i]["CharacterID"] = net.ReadUInt(32)
-        Character[i]["Faction"] = net.ReadUInt(1)
-        Character[i]["Regiment"] = net.ReadUInt(4)
-        Character[i]["Rank"] = net.ReadUInt(5)
-        Character[i]["RPName"] = net.ReadString()
-        Character[i]["ModelIndex"] = net.ReadUInt(5)
-        Character[i]["Size"] = tostring(net.ReadUInt(8))
-        Character[i]["Skin"] = net.ReadUInt(5)
-        Character[i]["BodyGroups"] = net.ReadString()
-        Character[i]["BodyGroups"] = string.Split(Character[i]["BodyGroups"], ",")
-        Character[i]["NVGs"] = net.ReadUInt(7)
-        Character[i]["Helmet"] = net.ReadUInt(7)
-        Character[i]["Gasmask"] = net.ReadUInt(7)
-        Character[i]["Rucksack"] = net.ReadUInt(7)
-        Character[i]["Vest"] = net.ReadUInt(7)
-    end
+    
 
     local index = 1
     local rpname = vgui.Create("DLabel", selecPanel)
@@ -329,49 +311,49 @@ local function character_selection(ply)
 
     local rankPanel = vgui.Create("DImage", selecPanel)
 
-    function LoadCharacter()
+    function loadCharacter()
         local gears = {
             {"mrp_nvgs", "NVGs"},
             {"mrp_base_helmet", "Helmet"},
-            { "mrp_base_gear", "Gasmask" },
-            { "mrp_base_rucksack", "Rucksack" },
-            { "mrp_base_vest", "Vest" },
+            {"mrp_base_gear", "Gasmask"},
+            {"mrp_base_rucksack", "Rucksack"},
+            {"mrp_base_vest", "Vest"},
         }
-        local faction = Character[index]["Faction"]
-        local regiment = Character[index]["Regiment"]
+        local faction = MRP.Character[index]["Faction"]
+        local regiment = MRP.Character[index]["Regiment"]
         Log.d("CharSelection", "faction: " .. tostring(faction))
         Log.d("CharSelection", "regiment: " .. tostring(regiment))
         local regImg = MRP.Regiments[faction][regiment]
         regimentPanel:SetImage(regImg["insignia"])
         regimentPanel:SetSize(500, 500 / regImg["whratio"])
 
-        rpname:SetText( Character[index]["RPName"] )
+        rpname:SetText( MRP.Character[index]["RPName"] )
         rpname:SizeToContents()
         rpname:SetPos( ScrW() / 2 - rpname:GetWide() / 2, ScrH() / 10 + 50 )
 
         rankPanel:SetPos(rpname:GetX() + rpname:GetWide() + 40, rpname:GetY())
-        local rank = Character[index]["Rank"]
+        local rank = MRP.Character[index]["Rank"]
         rankPanel:SetImage(MRP.Ranks[faction][regiment][rank]["shoulderrank"])
         rankPanel:SizeToContents()
 
-        local model = Character[index]["ModelIndex"]
+        local model = MRP.Character[index]["ModelIndex"]
         selecPanel.pmodel:SetModel( MRP.PlayerModels[faction][model].Model )
-        for k, v in pairs(Character[index]["BodyGroups"]) do
+        for k, v in pairs(MRP.Character[index]["BodyGroups"]) do
             selecPanel.pmodel.Entity:SetBodygroup( k - 1, v )
         end
-        selecPanel.pmodel.Entity:SetModelScale(tonumber(Character[index]["Size"]) / 180)
-        selecPanel.pmodel.Entity:SetSkin( Character[index]["Skin"] )
+        selecPanel.pmodel.Entity:SetModelScale(tonumber(MRP.Character[index]["Size"]) / 180)
+        selecPanel.pmodel.Entity:SetSkin( MRP.Character[index]["Skin"] )
         selecPanel.pmodel.Entity.Has = function(_, MRPCategory)
-            return Character[index][MRPCategory] > 1
+            return MRP.Character[index][MRPCategory] > 1
         end
         selecPanel.pmodel.Entity.getMRPID = function(_, MRPCategory)
-            return Character[index][MRPCategory]
+            return MRP.Character[index][MRPCategory]
         end
         for _, conf in pairs(gears) do
             local className = conf[1]
             local cat = conf[2]
             local bclass = baseclass.Get(className)
-            local entTab = MRP.EntityTable(Character[index][cat])
+            local entTab = MRP.EntityTable(MRP.Character[index][cat])
             local pm = selecPanel.pmodel.Entity
             if entTab.createCSModel then
                 local gearModel = entTab:createCSModel(pm)
@@ -379,22 +361,22 @@ local function character_selection(ply)
             end
         end
 
-        if LeftArrow then LeftArrow:Remove() RightArrow:Remove() end
+        if leftArrow then leftArrow:Remove() RightArrow:Remove() end
 
-        if namesCount > 1 then
-            LeftArrow = vgui.Create( "DImageButton", selecPanel )
-            LeftArrow:SetSize( 16, 32)
-            LeftArrow:SetImage( "icon32/mvsa_arrow_left.png" )
+        if #MRP.Character > 1 then
+            leftArrow = vgui.Create( "DImageButton", selecPanel )
+            leftArrow:SetSize( 16, 32)
+            leftArrow:SetImage( "icon32/mvsa_arrow_left.png" )
             local x = selecPanel.pmodel:GetX() - 16
             local y = selecPanel.pmodel:GetY() + selecPanel.pmodel:GetTall() / 2
-            LeftArrow:SetPos(x, y)
-            LeftArrow.DoClick = function()
+            leftArrow:SetPos(x, y)
+            leftArrow.DoClick = function()
                 if index > 1 then
                     index = index - 1
-                    LoadCharacter()
+                    loadCharacter()
                 else
-                    index = namesCount
-                    LoadCharacter()
+                    index = #MRP.Character
+                    loadCharacter()
                 end
             end
 
@@ -405,21 +387,21 @@ local function character_selection(ply)
             local y1 = selecPanel.pmodel:GetY() + selecPanel.pmodel:GetTall() / 2
             RightArrow:SetPos(x1, y1)
             RightArrow.DoClick = function()
-                if index < namesCount then
+                if index < #MRP.Character then
                     index = index + 1
-                    LoadCharacter()
+                    loadCharacter()
                 else
                     index = 1
-                    LoadCharacter()
+                    loadCharacter()
                 end
             end
         end
     end
     hook.Add("MRPEntitiesInitialized", "MRPDrawSelectionCharacter", function()
-        LoadCharacter()
+        loadCharacter()
     end)
     if MRP.EntitiesInitialized then
-        LoadCharacter()
+        loadCharacter()
     end
 
     local SelectButton = vgui.Create( "DLabel", selecPanel )
@@ -431,7 +413,7 @@ local function character_selection(ply)
     SelectButton:SetMouseInputEnabled( true )
     function SelectButton:DoClick()
         net.Start("CharacterSelected")
-        net.WriteUInt(Character[index]["CharacterID"], 32)
+        net.WriteUInt(MRP.Character[index]["CharacterID"], 32)
         net.SendToServer()
         selecPanel:Remove()
     end
@@ -454,59 +436,95 @@ local function character_selection(ply)
         ConfirmationLabel:SizeToContents()
         ConfirmationLabel:Center()
 
-        local YesButton = vgui.Create( "DButton", ConfirmationPanel )
-        YesButton:SetText("Yes")
-        YesButton:SetSize(60, 30)
-        YesButton:SetPos(375 - 60, 150)
-        YesButton.DoClick = function()
-            net.Start("DeleteCharacter")
-            net.WriteUInt(Character[index]["CharacterID"], 32)
+        local yesBtn = vgui.Create( "DButton", ConfirmationPanel )
+        yesBtn:SetText("Yes")
+        yesBtn:SetSize(60, 30)
+        yesBtn:SetPos(375 - 60, 150)
+        yesBtn.DoClick = function()
+            net.Start("mrp_characters_deletion")
+            net.WriteUInt(MRP.Character[index]["CharacterID"], 32)
             net.SendToServer()
-            table.remove(Character, index)
-            namesCount = namesCount - 1
-            if index == 1 then index = namesCount else index = index - 1 end
-            if namesCount > 0 then
-                LoadCharacter()
+            table.remove(MRP.Character, index)
+            if index == 1 then index = #MRP.Character else index = index - 1 end
+            if #MRP.Character > 0 then
+                loadCharacter()
             else
                 selecPanel:Remove()
-                character_creation( LocalPlayer() )
+                characterCreation( LocalPlayer() )
             end
             ConfirmationPanel:Remove()
         end
 
-        local NoButton = vgui.Create( "DButton", ConfirmationPanel )
-        NoButton:SetText("No")
-        NoButton:SetSize(60, 30)
-        NoButton:SetPos(25, 150)
-        NoButton.DoClick = function()
+        local noBtn = vgui.Create( "DButton", ConfirmationPanel )
+        noBtn:SetText("No")
+        noBtn:SetSize(60, 30)
+        noBtn:SetPos(25, 150)
+        noBtn.DoClick = function()
             ConfirmationPanel:Remove()
         end
     end
 
-    local SeparationLabel = vgui.Create("DLabel", selecPanel)
-    SeparationLabel:SetFont("DermaLarge")
-    SeparationLabel:SetText(" | ")
-    SeparationLabel:SizeToContents()
-    SeparationLabel:Dock(RIGHT)
-    SeparationLabel:DockMargin( 0, ScrH() - ScrH() / 10, 0, 0)
+    local sepLbl = vgui.Create("DLabel", selecPanel)
+    sepLbl:SetFont("DermaLarge")
+    sepLbl:SetText(" | ")
+    sepLbl:SizeToContents()
+    sepLbl:Dock(RIGHT)
+    sepLbl:DockMargin( 0, ScrH() - ScrH() / 10, 0, 0)
 
-    local NewButton = vgui.Create("DLabel", selecPanel)
-    NewButton:SetFont("DermaLarge")
-    NewButton:SetText("NEW")
-    NewButton:SizeToContents()
-    NewButton:Dock(RIGHT)
-    NewButton:DockMargin(0, ScrH() - ScrH() / 10, 0, 0)
-    NewButton:SetMouseInputEnabled(true)
-    function NewButton:DoClick()
+    local newBtn = vgui.Create("DLabel", selecPanel)
+    newBtn:SetFont("DermaLarge")
+    newBtn:SetText("NEW")
+    newBtn:SizeToContents()
+    newBtn:Dock(RIGHT)
+    newBtn:DockMargin(0, ScrH() - ScrH() / 10, 0, 0)
+    newBtn:SetMouseInputEnabled(true)
+    function newBtn:DoClick()
         selecPanel:Remove()
-        character_creation(ply)
+        characterCreation(ply)
     end
 end
 
-net.Receive("CharacterCreation", function()
-    character_creation()
+net.Receive("mrp_characters_creation", function()
+    characterCreation(LocalPlayer())
 end)
 
-net.Receive("CharacterSelection", function(_, ply)
-    character_selection(ply)
+function charactersUpdate()
+    MRP.Character = {}
+    local namesCount = net.ReadUInt( 5 )
+    for i = 1, namesCount do
+        MRP.Character[i] = {}
+        MRP.Character[i]["CharacterID"] = net.ReadUInt(32)
+        MRP.Character[i]["Faction"] = net.ReadUInt(2)
+        MRP.Character[i]["Regiment"] = net.ReadUInt(4)
+        MRP.Character[i]["Rank"] = net.ReadUInt(5)
+        MRP.Character[i]["RPName"] = net.ReadString()
+        MRP.Character[i]["ModelIndex"] = net.ReadUInt(5)
+        MRP.Character[i]["Size"] = tostring(net.ReadUInt(8))
+        MRP.Character[i]["Skin"] = net.ReadUInt(5)
+        MRP.Character[i]["BodyGroups"] = net.ReadString()
+        MRP.Character[i]["BodyGroups"] = string.Split(MRP.Character[i]["BodyGroups"], ",")
+        MRP.Character[i]["NVGs"] = net.ReadUInt(7)
+        MRP.Character[i]["Helmet"] = net.ReadUInt(7)
+        MRP.Character[i]["Gasmask"] = net.ReadUInt(7)
+        MRP.Character[i]["Rucksack"] = net.ReadUInt(7)
+        MRP.Character[i]["Vest"] = net.ReadUInt(7)
+    end
+end
+
+net.Receive("mrp_characters_update", function(_, ply)
+    charactersUpdate()
 end)
+
+net.Receive("mrp_characters_selection", function(_, ply)
+    charactersUpdate()
+    characterSelection(ply)
+end)
+
+concommand.Add(
+    'mrp_characters',
+    function(ply)
+        characterSelection(ply)
+    end,
+    nil,
+    'Open the character management menu'
+)
