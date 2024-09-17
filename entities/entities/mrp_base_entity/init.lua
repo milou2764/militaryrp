@@ -8,7 +8,14 @@ function ENT:Initialize()
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
     self:PhysWake()
     self:SetUseType(SIMPLE_USE)
-    timer.Simple(30, function() self:Remove() end)
+    timer.Simple(
+        30,
+        function()
+            if self.Remove then
+                self:Remove()
+            end
+        end
+    )
 end
 
 function ENT:drop(slotName, target, activator)
