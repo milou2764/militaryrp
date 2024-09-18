@@ -60,6 +60,11 @@ function PLAYER:Loadout()
 	self.Player:Give("re_hands")
 	self.Player:Give("wep_jack_job_drpradio")
     self.Player:Give("weapon_physgun")
+    self.Player:Give("cross_arms_swep")
+    self.Player:Give("cross_arms_infront_swep")
+    self.Player:Give("surrender_animation_swep")
+    self.Player:Give("french_salute")
+    self.Player:Give("raise_your_hand")
 end
 
 function PLAYER:ViewModelChanged() end
