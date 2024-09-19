@@ -180,7 +180,8 @@ hook.Add("ShutDown", "ServerShuttingDown", function()
     end
 end)
 
-function GM:PlayerSpawn()
+function GM:PlayerSpawn(ply)
+    ply:SetWalkSpeed(90)
 end
 
 function GM:InitPostEntity()
