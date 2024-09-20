@@ -182,6 +182,7 @@ end)
 
 function GM:PlayerSpawn(ply)
     ply:SetWalkSpeed(120)
+    ply:SetRunSpeed(240)
 end
 
 function GM:InitPostEntity()
