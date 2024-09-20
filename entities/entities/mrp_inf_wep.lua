@@ -37,9 +37,11 @@ if SERVER then
 
     function ENT:Use(ply)
         --spawn the item
+        ply:ChatPrint("press use button")
         local item = ents.Create(self:GetItemClass())
+        ply:ChatPrint(self:GetItemClass())
+        item:SetPos(ply:GetPos())
         item:Spawn()
-        item:Use(ply)
     end
 else
     function ENT:Initialize()
