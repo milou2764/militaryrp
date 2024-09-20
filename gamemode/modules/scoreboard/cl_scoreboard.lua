@@ -131,7 +131,6 @@ local PLAYER_LINE = {
 
         self.Player = pl
 
-        self.Name:SetText( self.Player:RPName() )
 
         self.Avatar:SetPlayer( pl )
 
@@ -153,6 +152,7 @@ local PLAYER_LINE = {
             return
         end
 
+        self.Name:SetText( self.Player:RPName() )
         if player_manager.GetPlayerClass(self.Player) ~= "spectator" then
             self.faction = self.Player:GetNWInt("Faction")
             self.regiment = self.Player:GetNWInt("Regiment")
