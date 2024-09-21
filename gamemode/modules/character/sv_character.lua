@@ -81,13 +81,14 @@ hook.Add("PlayerSpawn", "MRP::character::PlayerSpawn", function( ply )
 
 end )
 
-local function EquipPlayer(ply)
+local function equipPlayer(ply)
+    ply:StripWeapons()
     for _, cat in pairs(MRP.WeaponCat) do
         if ply:MRPHas(cat) then
             local entTable = ply:MRPEntityTable(cat)
             local ent = ply:Give(entTable.WeaponClass)
             local rounds = ply[cat .. "Rounds"]
-            Log.d("EquipPlayer", cat .. " " .. rounds)
+            Log.d("equipPlayer", cat .. " " .. rounds)
             ent:SetClip1(ply[cat .. "Rounds"])
         end
     end
@@ -102,6 +103,17 @@ local function EquipPlayer(ply)
             ply:Give(entityTable.WeaponClass)
         end
     end
+	ply:Give("weapon_fists")
+	ply:Give("gmod_tool")
+	ply:Give("re_hands")
+	ply:Give("wep_jack_job_drpradio")
+    ply:Give("weapon_physgun")
+    ply:Give("cross_arms_swep")
+    ply:Give("cross_arms_infront_swep")
+    ply:Give("surrender_animation_swep")
+    ply:Give("french_salute")
+    ply:Give("raise_your_hand")
+
 end
 
 net.Receive("CharacterInformation", function(_, ply)
@@ -156,7 +168,6 @@ net.Receive("CharacterInformation", function(_, ply)
             ply:GetNWInt("Size") .. ", " ..
             ply:GetNWInt("Skin") .. ", " ..
             SQLStr(ply.BodyGroups) .. ");"
-    print(request)
     local sqlret = sql.Query(request)
     if sqlret == false then
         print("### MRP error in character insertion")
@@ -185,7 +196,7 @@ net.Receive("CharacterInformation", function(_, ply)
         ply.BodyGroups = string.Split(ply.BodyGroups, ",")
 
         MRP.SpawnPlayer(ply)
-        EquipPlayer(ply)
+        equipPlayer(ply)
     end
     local data = getPlayerData(ply)
     handlePlayerData(ply, data)
@@ -221,5 +232,5 @@ net.Receive("CharacterSelected", function(_, ply)
     ply:SetNWBool("GasmaskOn", false)
 
     MRP.SpawnPlayer(ply)
-    EquipPlayer(ply)
+    equipPlayer(ply)
 end)

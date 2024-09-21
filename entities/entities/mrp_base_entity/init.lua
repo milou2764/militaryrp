@@ -11,7 +11,7 @@ function ENT:Initialize()
     timer.Simple(
         30,
         function()
-            if self.Remove then
+            if self:IsValid() then
                 self:Remove()
             end
         end
