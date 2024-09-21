@@ -1,50 +1,4 @@
-local function TableToLua(tbl, indent)
-    indent = indent or 4
-    local str = "{\n"
-
-    for k, v in pairs(tbl) do
-        if type(v) == "table" then
-            str =
-                str ..
-                string.rep(" ", indent) .. k .. " = " .. TableToLua(v, indent + 4) .. ",\n"
-        else
-            str = str .. string.rep(" ", indent) .. k .. " = " .. v .. ",\n"
-        end
-    end
-
-    str = str .. string.rep(" ", indent - 4) .. "}"
-
-    return str
-end
-
-local datafile = file.Open("mrp_holsters.json", "r", "DATA")
-local function SaveData()
-    datafile = file.Open("mrp_holsters.json", "w", "DATA")
-    datafile:Write(util.TableToJSON(MRP.Holsters, true))
-    datafile:Close()
-end
-
-
-if datafile then
-    MRP.Holsters = util.JSONToTable(datafile:Read(datafile:Size()))
-else
-    MRP.Holsters = {
-        m9k_m4a1 = {
-            OffsetVec = Vector(-13.054831, 13.577024, 5.744125),
-            boneID = 4,
-            Model = "models/weapons/w_m4a1_iron.mdl",
-            OffsetAng = Angle(47.937, -12.219, 3.760),
-            mrpcategory = "PrimaryWep",
-        },
-        m9k_m92beretta = {
-            OffsetVec = Vector(1.562500, 2.593750, -5.218750),
-            mrpcategory = "SecondaryWep",
-            OffsetAng = Angle(-86.469, -14.094, 96.812),
-            Model = "models/weapons/w_beretta_m92.mdl",
-            boneID = 18,
-        },
-    }
-end
+MRP.Holsters={cw_kk_squad_giat_famas_f1={OffsetAng=Angle(-38.523986816406,150.11070251465,13.284132957458),OffsetVec=Vector(-5.9040589332581,11.070110321045,-1.4759999513626),boneID=4,Model="models/tom/weapons/famas/w_ins2_squad_giat_famas_f1.mdl",mrpcategory="PrimaryWep",},cw_kk_squad_fn_scarh_pr={OffsetAng=Angle(-30.553504943848,160.7380065918,0),OffsetVec=Vector(-3.6900370121002,10.332103729248,-5.9040589332581),boneID=4,Model="models/tom/weapons/scar_hpr/w_ins2_squad_fn_scarh_pr.mdl",mrpcategory="PrimaryWep",},cw_kk_squad_giat_famas_felin={OffsetAng=Angle(-39.852397918701,158.08117675781,0),OffsetVec=Vector(-7.3800740242004,14.02214050293,0),boneID=4,Model="models/tom/weapons/famas/w_ins2_squad_giat_famas_felin.mdl",mrpcategory="PrimaryWep",},cw_kk_ins2_at4={OffsetAng=Angle(-1.328400015831,7.9704999923706,0),OffsetVec=Vector(18.4375,-2.9519999027252,2.9519999027252),boneID=1,Model="models/weapons/w_at4.mdl",mrpcategory="RocketLauncher",},cw_kk_squad_fn_minimi_mk1={OffsetAng=Angle(-39.852397918701,154.09594726563,0),OffsetVec=Vector(-6.6420664787292,14.02214050293,-2.952029466629),mrpcategory="PrimaryWep",Model="models/tom/weapons/minimi/w_ins2_squad_fn_minimi_mk1.mdl",boneID=4,},cw_kk_squad_giat_famas_inf={OffsetAng=Angle(-33.210330963135,155.42434692383,2.6568264961243),OffsetVec=Vector(-7.3800740242004,13.284132957458,-1.4760147333145),boneID=4,Model="models/tom/weapons/famas/w_ins2_squad_giat_famas_inf.mdl",mrpcategory="PrimaryWep",},cw_kk_squad_fn_minimi_mk3={OffsetAng=Angle(-33.210330963135,162.06642150879,0),OffsetVec=Vector(-4.4280443191528,12.546125411987,-3.6900370121002),boneID=4,Model="models/tom/weapons/minimi/w_ins2_squad_fn_minimi_mk3.mdl",mrpcategory="PrimaryWep",},cw_kk_squad_fn_maximi_mk1={OffsetAng=Angle(-27.896678924561,155.42434692383,0),OffsetVec=Vector(-3.6900370121002,12.546125411987,-4.4280443191528),boneID=4,Model="models/tom/weapons/minimi/w_ins2_squad_fn_maximi_mk1.mdl",mrpcategory="PrimaryWep",},m9k_m92beretta={offsetvec=Vector(1.5625,2.5938000679016,-5.2188000679016),boneID=18,offsetang=Angle(-86.468803405762,-14.093799591064,96.781196594238),Model="models/weapons/w_beretta_m92.mdl",mrpcategory="SecondaryWep",},}
 
 local boneNames = {
     [0] = "ValveBiped.Bip01_Pelvis",
@@ -99,11 +53,13 @@ local function updateModelPos(model, ply, wepClass)
 end
 
 hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
+    local uid = ply:UserID()
     if IsValid(ply) and ply:Alive() then
-        for k, model in pairs(MRP.MountedWeps[ply:UserID()] or {}) do
-            local wepClass = wepClass or model.wepClass
+        for k, model in pairs(MRP.MountedWeps[uid] or {}) do
+            local wepClass = model.wepClass
             if not MRP.Holsters[wepClass] then
-                table.remove(MRP.MountedWeps, k)
+                print(model)
+                MRP.MountedWeps[uid][k] = nil
                 return
             end
 
@@ -123,7 +79,7 @@ hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
     end
 end)
 
-net.Receive("MRPRequestHolsters", function()
+net.Receive("mrp_request_holsters", function()
     local ply = net.ReadEntity()
     local old = net.ReadEntity()
     local new = net.ReadEntity()
@@ -298,10 +254,9 @@ local function setupEditor(ply, wepClass)
             MRP.MountedWeps[uid][MRP.Holsters[wepClass].mrpcategory].WeaponClass = wepClass
         end
 
-        datafile = file.Open("mrp_holsters.json", "w", "DATA")
-        datafile:Write(util.TableToJSON(MRP.Holsters, true))
-        datafile:Close()
-        net.Start("MRPSaveHolster")
+        print(table.ToString(MRP.Holsters, "MRP.Holsters", false))
+
+        net.Start("mrp_save_holsters")
         net.WriteString(wepClass)
         net.WriteTable(MRP.Holsters[wepClass])
         net.SendToServer()
@@ -320,10 +275,11 @@ local function editHolsters(ply)
     local cbox = vgui.Create("DComboBox", wepClassSelect)
     cbox:SetPos(5, 30)
     cbox:SetSize(ScrW() * 0.4 - 10, 20)
-    cbox:SetValue(MRP.WeaponClasses[1])
 
     for _, v in pairs(MRP.WeaponClasses) do
-        cbox:AddChoice(v)
+        if not MRP.Holsters[v] then
+            cbox:AddChoice(v)
+        end
     end
 
     local newWepMRPCategory = vgui.Create("DComboBox", wepClassSelect)
@@ -445,7 +401,7 @@ local function editHolsters(ply)
         d:DockMargin( 0, 0, 0, 5 )
         d.DoClick = function()
             table.RemoveByValue(MRP.Holsters, MRP.Holsters[class])
-            SaveData()
+            print(table.ToString(MRP.Holsters, "MRP.Holsters", false))
             p:Remove()
         end
 
@@ -454,7 +410,7 @@ end
 
 concommand.Add("mrp_editholster", editHolsters)
 
-net.Receive("MRPUpdateHolsters", function()
+net.Receive("mmrp_request_holsters", function()
     local wepClass = net.ReadString()
     local data = net.ReadTable()
     MRP.Holsters[wepClass] = data
