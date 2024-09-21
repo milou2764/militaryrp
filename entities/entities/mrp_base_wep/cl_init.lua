@@ -9,10 +9,10 @@ function ENT:unmount(target)
     else
         userid = target:EntIndex()
     end
-    MRP.mountedWeps[userid] = MRP.mountedWeps[userid] or {}
-    local model = MRP.mountedWeps[userid][self.MRPCategory]
+    MRP.MountedWeps[userid] = MRP.MountedWeps[userid] or {}
+    local model = MRP.MountedWeps[userid][self.MRPCategory]
     if IsValid(model) and model.Remove then
-        table.RemoveByValue(MRP.mountedWeps[userid], model)
+        table.RemoveByValue(MRP.MountedWeps[userid], model)
         model:Remove()
     end
 end

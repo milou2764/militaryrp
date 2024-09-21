@@ -1,4 +1,5 @@
 local keyData = file.Open("mrp/keybinds.txt", "r", "DATA")
+MRP.MountedWeps = MRP.MountedWeps or {}
 
 if keyData then
     MRP.keybinds = util.JSONToTable(keyData:Read(keyData:Size()))

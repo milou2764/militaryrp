@@ -17,10 +17,10 @@ local function TableToLua(tbl, indent)
     return str
 end
 
-local datafile = file.Open("mrp_holsters.txt", "r", "DATA")
+local datafile = file.Open("mrp_holsters.json", "r", "DATA")
 local function SaveData()
-    datafile = file.Open("mrp_holsters.txt", "w", "DATA")
-    datafile:Write(util.TableToJSON(MRP.Holsters))
+    datafile = file.Open("mrp_holsters.json", "w", "DATA")
+    datafile:Write(util.TableToJSON(MRP.Holsters, true))
     datafile:Close()
 end
 
@@ -100,8 +100,13 @@ end
 
 hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
     if IsValid(ply) and ply:Alive() then
-        for _, model in pairs(MRP.mountedWeps[ply:UserID()] or {}) do
+        for k, model in pairs(MRP.MountedWeps[ply:UserID()] or {}) do
             local wepClass = wepClass or model.wepClass
+            if not MRP.Holsters[wepClass] then
+                table.remove(MRP.MountedWeps, k)
+                return
+            end
+
             local boneID = MRP.Holsters[wepClass].boneID
             local matrix = ply:GetBoneMatrix(boneID)
             if not matrix then return end
@@ -122,11 +127,11 @@ net.Receive("MRPRequestHolsters", function()
     local ply = net.ReadEntity()
     local old = net.ReadEntity()
     local new = net.ReadEntity()
-    MRP.mountedWeps[ply:UserID()] = MRP.mountedWeps[ply:UserID()] or {}
+    MRP.MountedWeps[ply:UserID()] = MRP.MountedWeps[ply:UserID()] or {}
 
     if MRP.Holsters[old.ClassName] then
         local oldMRPCategory = MRP.Holsters[old.ClassName].mrpcategory
-        local oldModel = MRP.mountedWeps[ply:UserID()][oldMRPCategory]
+        local oldModel = MRP.MountedWeps[ply:UserID()][oldMRPCategory]
 
         if oldModel and oldModel.SetNoDraw and IsValid(oldModel) then
             -- si le holster est valide, on le montre
@@ -138,7 +143,7 @@ net.Receive("MRPRequestHolsters", function()
                     MRP.Holsters[old.ClassName].Model,
                     RENDERGROUP_OPAQUE
                 )
-            MRP.mountedWeps[ply:UserID()][oldMRPCategory] = model
+            MRP.MountedWeps[ply:UserID()][oldMRPCategory] = model
             model.wepClass = old.ClassName
             updateModelPos(model, ply, old.ClassName)
             model:SetNoDraw(false)
@@ -147,7 +152,7 @@ net.Receive("MRPRequestHolsters", function()
 
     if MRP.Holsters[new.ClassName] then
         local newMRPCategory = MRP.Holsters[new.ClassName].mrpcategory
-        local model = MRP.mountedWeps[ply:UserID()][newMRPCategory]
+        local model = MRP.MountedWeps[ply:UserID()][newMRPCategory]
 
         if model and model.SetNoDraw and IsValid(model) then
             -- si le joueur a un holster pour cette catégorie, on le cache
@@ -284,35 +289,17 @@ local function setupEditor(ply, wepClass)
         MRP.Holsters[wepClass].mrpcategory = mrpcategory:GetValue()
         local uid = LocalPlayer():UserID()
         local wepCat = MRP.Holsters[wepClass].mrpcategory
-        local currentModel = MRP.mountedWeps[uid][wepCat]
+        local currentModel = MRP.MountedWeps[uid][wepCat]
 
         if currentModel then
             currentModel:Remove()
-            MRP.mountedWeps[uid][MRP.Holsters[wepClass].mrpcategory] =
+            MRP.MountedWeps[uid][MRP.Holsters[wepClass].mrpcategory] =
                 ClientsideModel(MRP.Holsters[wepClass].Model, RENDERGROUP_OPAQUE)
-            MRP.mountedWeps[uid][MRP.Holsters[wepClass].mrpcategory].WeaponClass = wepClass
+            MRP.MountedWeps[uid][MRP.Holsters[wepClass].mrpcategory].WeaponClass = wepClass
         end
 
-        print("[\"" .. wepClass .. "\"] = {")
-        print(
-            "    OffsetVec = Vector(" ..
-            MRP.Holsters[wepClass].OffsetVec.x .. ", " ..
-            MRP.Holsters[wepClass].OffsetVec.y .. ", " ..
-            MRP.Holsters[wepClass].OffsetVec.z .. "),"
-        )
-        print(
-            "    OffsetAng = Angle(" ..
-            MRP.Holsters[wepClass].OffsetAng.x .. ", " ..
-            MRP.Holsters[wepClass].OffsetAng.y .. ", " ..
-            MRP.Holsters[wepClass].OffsetAng.z .. "),"
-        )
-        print("    boneID = " .. MRP.Holsters[wepClass].boneID)
-        print("},")
-        datafile = file.Open("mrp_holsters.txt", "w", "DATA")
-        datafile:Write(util.TableToJSON(MRP.Holsters))
-        datafile:Close()
-        datafile = file.Open("mrp_holsters_lua.txt", "w", "DATA")
-        datafile:Write(util.TableToJSON(MRP.Holsters))
+        datafile = file.Open("mrp_holsters.json", "w", "DATA")
+        datafile:Write(util.TableToJSON(MRP.Holsters, true))
         datafile:Close()
         net.Start("MRPSaveHolster")
         net.WriteString(wepClass)
@@ -322,7 +309,8 @@ local function setupEditor(ply, wepClass)
     end
 end
 
-concommand.Add("mrp_editholster", function(ply, _, _)
+
+local function editHolsters(ply)
     if not ply:IsAdmin() then return end
     local wepClass = ""
     local wepClassSelect = vgui.Create("DFrame")
@@ -362,7 +350,6 @@ concommand.Add("mrp_editholster", function(ply, _, _)
         local modelList = vgui.Create("DListView", browser)
         modelList:SetPos(5, 50)
         modelList:SetSize(ScrW() * 0.4 - 10, ScrH() * 0.4 - 35)
-        modelList:AddColumn("Model")
         modelList:AddColumn("Path")
 
         modelList.OnRowSelected = function(_, _, line)
@@ -377,13 +364,32 @@ concommand.Add("mrp_editholster", function(ply, _, _)
         modelSearch.OnEnter = function()
             local search = modelSearch:GetValue()
             modelList:Clear()
+            local modelTab = {}
+            local paths = {
+                "models/weapons/",
+                "models/tom/weapons/famas/",
+                "models/tom/weapons/frf2/",
+                "models/tom/weapons/glock/",
+                "models/tom/weapons/hecate/",
+                "models/tom/weapons/hk416/",
+                "models/tom/weapons/hk417/",
+                "models/tom/weapons/minimi/",
+                "models/tom/weapons/scar_hpr/",
+            }
+            for _, p in pairs(paths) do
+                local tmp = file.Find(p.."w_*.mdl", "GAME")
+                for k, v in pairs(tmp) do
+                    tmp[k] = p..v
+                end
+                table.Add(modelTab, tmp)
+            end
 
-            for _, v in pairs(file.Find("models/weapons/w_*.mdl", "GAME")) do
+            for _, v in pairs(modelTab) do
                 if string.find(v, search) then
-                    local line = modelList:AddLine(v, "models/weapons/" .. v)
+                    local line = modelList:AddLine(v)
 
-                    line.OnRowSelected = function(_, _, row)
-                        newWepModel:SetText(row:GetValue(2))
+                    line.OnMousePressed = function(code)
+                        newWepModel:SetText(v)
                     end
                 end
             end
@@ -428,8 +434,7 @@ concommand.Add("mrp_editholster", function(ply, _, _)
         p:Dock(TOP)
         local b = vgui.Create("DButton",p)
         b:SetText(class)
-        b:Dock(LEFT)
-        b:DockMargin( 0, 0, 0, 5 )
+        b:SetWidth(200)
         b.DoClick = function()
             wepClassSelect:Close()
             setupEditor(ply, class)
@@ -445,8 +450,9 @@ concommand.Add("mrp_editholster", function(ply, _, _)
         end
 
     end
+end
 
-end)
+concommand.Add("mrp_editholster", editHolsters)
 
 net.Receive("MRPUpdateHolsters", function()
     local wepClass = net.ReadString()

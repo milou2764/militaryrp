@@ -25,6 +25,7 @@ MRP.Commands.players = {
         ply:ChatPrint(class .. " spawn set")
     end
 }
+MRP.Commands.reload_modules = MRP.ReloadModules
 
 concommand.Add("spawn", function( ply, _, args )
     if ply:GetUserGroup() ==  "admin" or "superadmin" then

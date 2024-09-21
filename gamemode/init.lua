@@ -3,20 +3,6 @@ GM.Author = "N/A"
 GM.Email = "N/A"
 GM.Website = "N/A"
 DeriveGamemode("sandbox")
-include("player_class/player.lua")
-include("player_class/spectator.lua")
-include("config/config.lua")
-include("config/sv_config.lua")
-include("config/ammotypes.lua")
-include("modules/log/log.lua")
-AddCSLuaFile("player_class/player.lua")
-AddCSLuaFile("player_class/spectator.lua")
-AddCSLuaFile("modules/log/log.lua")
-AddCSLuaFile("cl_init.lua")
-AddCSLuaFile("config/config.lua")
-AddCSLuaFile("config/cl_config.lua")
-AddCSLuaFile("config/ammotypes.lua")
-AddCSLuaFile("vgui/misc.lua")
 util.AddNetworkString("mrp_characters_update")
 util.AddNetworkString("mrp_characters_creation")
 util.AddNetworkString("mrp_characters_selection")
@@ -57,6 +43,54 @@ util.AddNetworkString("MRPPlayerTakeOffGasmask")
 util.AddNetworkString("MRPPlayerDeath")
 util.AddNetworkString("MRPCreateRagdollCS")
 util.AddNetworkString("MRPPlayerSpawn")
+
+include("player_class/player.lua")
+include("player_class/spectator.lua")
+include("config/config.lua")
+include("config/sv_config.lua")
+include("config/ammotypes.lua")
+include("modules/log/log.lua")
+AddCSLuaFile("player_class/player.lua")
+AddCSLuaFile("player_class/spectator.lua")
+AddCSLuaFile("modules/log/log.lua")
+AddCSLuaFile("cl_init.lua")
+AddCSLuaFile("config/config.lua")
+AddCSLuaFile("config/cl_config.lua")
+AddCSLuaFile("config/ammotypes.lua")
+AddCSLuaFile("vgui/misc.lua")
+
+local fol = GM.FolderName .. "/gamemode/modules/"
+local files, folders = file.Find(fol .. "*", "LUA")
+function MRP.ReloadModules()
+    local SortedPairs = SortedPairs
+
+    for _, v in ipairs(files) do
+        isDisabled = MRP.disabledDefaults["modules"][v:Left(-5)]
+        isLuaFile = string.GetExtensionFromFilename(v) == "lua"
+        if not isDisabled and isLuaFile then
+            include(fol .. v)
+        end
+    end
+
+    for _, folder in SortedPairs(folders, true) do
+        isDisabled = MRP.disabledDefaults["modules"][folder]
+        if folder ~= "." and folder ~= ".." and not isDisabled then
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
+                AddCSLuaFile(fol .. folder .. "/" .. File)
+                include(fol .. folder .. "/" .. File)
+            end
+
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
+                include(fol .. folder .. "/" .. File)
+            end
+
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
+                AddCSLuaFile(fol .. folder .. "/" .. File)
+            end
+        end
+    end
+end
+MRP.ReloadModules()
 
 local TAG = "mrpinit"
 
@@ -100,36 +134,6 @@ MRP.SQLRequest = function(request)
         print("### MRP error in SQL request")
         print(request)
         print(sql.LastError())
-    end
-end
-
-local fol = GM.FolderName .. "/gamemode/modules/"
-local files, folders = file.Find(fol .. "*", "LUA")
-local SortedPairs = SortedPairs
-
-for _, v in ipairs(files) do
-    isDisabled = MRP.disabledDefaults["modules"][v:Left(-5)]
-    isLuaFile = string.GetExtensionFromFilename(v) == "lua"
-    if not isDisabled and isLuaFile then
-        include(fol .. v)
-    end
-end
-
-for _, folder in SortedPairs(folders, true) do
-    isDisabled = MRP.disabledDefaults["modules"][folder]
-    if folder ~= "." and folder ~= ".." and not isDisabled then
-        for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
-            AddCSLuaFile(fol .. folder .. "/" .. File)
-            include(fol .. folder .. "/" .. File)
-        end
-
-        for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
-            include(fol .. folder .. "/" .. File)
-        end
-
-        for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
-            AddCSLuaFile(fol .. folder .. "/" .. File)
-        end
     end
 end
 
