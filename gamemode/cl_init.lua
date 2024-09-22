@@ -18,7 +18,7 @@ local function LoadModules()
     local activatedMods = {}
 
     for k, folder in pairs(folders) do
-        if not MRP.disabledDefaults.modules[folder] then
+        if not MRP.DisabledModules[folder] then
             activatedMods[k] = folder
         end
     end

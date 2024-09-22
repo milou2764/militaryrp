@@ -59,39 +59,6 @@ AddCSLuaFile("config/cl_config.lua")
 AddCSLuaFile("config/ammotypes.lua")
 AddCSLuaFile("vgui/misc.lua")
 
-local fol = GM.FolderName .. "/gamemode/modules/"
-local files, folders = file.Find(fol .. "*", "LUA")
-function MRP.ReloadModules()
-    local SortedPairs = SortedPairs
-
-    for _, v in ipairs(files) do
-        isDisabled = MRP.disabledDefaults["modules"][v:Left(-5)]
-        isLuaFile = string.GetExtensionFromFilename(v) == "lua"
-        if not isDisabled and isLuaFile then
-            include(fol .. v)
-        end
-    end
-
-    for _, folder in SortedPairs(folders, true) do
-        isDisabled = MRP.disabledDefaults["modules"][folder]
-        if folder ~= "." and folder ~= ".." and not isDisabled then
-            for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
-                AddCSLuaFile(fol .. folder .. "/" .. File)
-                include(fol .. folder .. "/" .. File)
-            end
-
-            for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
-                include(fol .. folder .. "/" .. File)
-            end
-
-            for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
-                AddCSLuaFile(fol .. folder .. "/" .. File)
-            end
-        end
-    end
-end
-MRP.ReloadModules()
-
 local TAG = "mrpinit"
 
 local tbName = MRP.TABLE_CHAR
@@ -136,6 +103,39 @@ MRP.SQLRequest = function(request)
         print(sql.LastError())
     end
 end
+
+local fol = GM.FolderName .. "/gamemode/modules/"
+local files, folders = file.Find(fol .. "*", "LUA")
+function MRP.ReloadModules()
+    local SortedPairs = SortedPairs
+
+    for _, v in ipairs(files) do
+        isDisabled = MRP.DisabledModules[v:Left(-5)]
+        isLuaFile = string.GetExtensionFromFilename(v) == "lua"
+        if not isDisabled and isLuaFile then
+            include(fol .. v)
+        end
+    end
+
+    for _, folder in SortedPairs(folders, true) do
+        isDisabled = MRP.DisabledModules[folder]
+        if folder ~= "." and folder ~= ".." and not isDisabled then
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/sh_*.lua", "LUA"), true) do
+                AddCSLuaFile(fol .. folder .. "/" .. File)
+                include(fol .. folder .. "/" .. File)
+            end
+
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/sv_*.lua", "LUA"), true) do
+                include(fol .. folder .. "/" .. File)
+            end
+
+            for _, File in SortedPairs(file.Find(fol .. folder .. "/cl_*.lua", "LUA"), true) do
+                AddCSLuaFile(fol .. folder .. "/" .. File)
+            end
+        end
+    end
+end
+MRP.ReloadModules()
 
 function MRP.SpawnPlayer(ply)
     player_manager.SetPlayerClass(ply, "player")
@@ -208,7 +208,6 @@ function GM:InitPostEntity()
             MRP.SpawnEnts[faction] = {}
             local factionTab = MRP.Spawns[map][faction]
             if factionTab ~=nil then
-                MRP.Spawns[map][faction]["ents"] = {}
                 for k = 1, #factionTab do
                     spawn = ents.Create("info_player_start")
                     spawn:SetPos(MRP.Spawns[map][faction][k].pos)

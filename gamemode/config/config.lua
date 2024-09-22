@@ -155,11 +155,10 @@ MRP.CategoryID = {
     RocketLauncher = 7
 }
 
-MRP.disabledDefaults = {}
-MRP.disabledDefaults.modules = {
+MRP.DisabledModules = {
     gaszone = true,
     loot = true,
-    npcspawn = false,
+    npcspawn = true,
     interactivemap = true,
 }
 

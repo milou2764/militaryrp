@@ -61,7 +61,8 @@ end
 
 hook.Add("Initialize", "InitvehicleSpawn", function()
     local map = game.GetMap()
-    if MRP.Spawns and MRP.Spawns[map].vehicles and #MRP.Spawns[map].vehicles > 0 then
+    if not MRP.Spawns[map] then return end
+    if MRP.Spawns[map].vehicles and #MRP.Spawns[map].vehicles > 0 then
         hook.Add("Think", "vehicleSpawn", vehicleSpawnSystem)
     end
 end)
