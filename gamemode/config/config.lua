@@ -1,4 +1,5 @@
 file.CreateDir("mrp") -- garrysmod/data/mrp
+DarkRP = {}
 
 local TAG = "mrpinit"
 

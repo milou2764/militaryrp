@@ -17,6 +17,10 @@ function meta:RPName()
     return self:GetNWString('RPName')
 end
 
+function meta:MRPName()
+    return self:GetNWString('RPName')
+end
+
 function meta:MRPRank()
     return self:GetNWInt('Rank')
 end

@@ -295,17 +295,6 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
     end
 end
 
--- Allow executing commands with the chat
-function GM:PlayerSay(sender, text, _)
-    if string.sub(text, 1, 1) == "/" then
-        sender:ConCommand(string.sub(text, 2, #text))
-
-        return ""
-    end
-
-    return text
-end
-
 function GM:PlayerNoClip(ply, _)
     if ply:IsAdmin() then
         return true
