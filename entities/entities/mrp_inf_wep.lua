@@ -7,14 +7,11 @@ ENT.Spawnable = true
 ENT.Editable = true
 
 local itemClasses = {
-    "cw_kk_ins2_makarov",
-    "cw_kk_ins2_nade_molotov",
-    "cw_kk_ins2_mosin",
-    "cw_kk_ins2_rpg",
-    "cw_kk_ins2_nade_ied",
-    "cw_kk_ins2_ak74",
-    "cw_kk_ins2_nade_m18",
-    "cw_kk_ins2_rpk"
+    "arc9_myt_ins1_mosin",
+    "arc9_myt_ins1_makarov",
+    "arc9_myt_ins1_rpg",
+    "arc9_myt_ins1_pkm",
+    "arc9_myt_ins1_fal"
 }
 
 function ENT:SetupDataTables()
