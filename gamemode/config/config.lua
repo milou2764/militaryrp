@@ -28,25 +28,6 @@ local function MRPInitEntities()
         MRP.idClass[id] = class
     end
     MRP.entityModels = {}
-    MRP.WeaponClasses = {
-        "cw_kk_ins2_at4",
-        "cw_kk_squad_fn_maximi_mk1",
-        "cw_kk_squad_fn_minimi_mk1",
-        "cw_kk_squad_fn_minimi_mk3",
-        "cw_kk_squad_fn_scarh_pr",
-        "cw_kk_squad_giat_famas_f1",
-        "cw_kk_squad_giat_famas_felin",
-        "cw_kk_squad_giat_famas_inf",
-        "cw_kk_squad_giat_famas_valorise",
-        "cw_kk_squad_giat_frf2",
-        "cw_kk_squad_giat_pamas_g1",
-        "cw_kk_squad_glock17_gen5",
-        "cw_kk_squad_hk416_fc",
-        "cw_kk_squad_hk416_fs",
-        "cw_kk_squad_hk417_dmr",
-        "cw_kk_squad_pgm_hecate_2",
-    }
-
 
     MRPRegisterEntity("mrp_nvgs")
     hook.Call("MRPInitEntities")

@@ -25,13 +25,15 @@ local spawnFuncs = {
 	wac = function(platform)
         local className = platform.class
         local vehicle = ents.Create(className)
-        vehicle:SetPos(platform.pos+Vector(0,0,100))
-        vehicle:SetAngles(platform.ang)
-        vehicle:Spawn()
-        vehicle:Activate()
-        platform.vehicle = vehicle
-        platform.vehicle.isMRPVehicle = true
-        vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
+        if IsValid(vehicle) then
+            vehicle:SetPos(platform.pos+Vector(0,0,100))
+            vehicle:SetAngles(platform.ang)
+            vehicle:Spawn()
+            vehicle:Activate()
+            platform.vehicle = vehicle
+            platform.vehicle.isMRPVehicle = true
+            vehiclespawn.vehicleCount = vehiclespawn.vehicleCount + 1
+        end
 	end
 }
 
