@@ -159,12 +159,6 @@ MRP.Regiments = {
    -- France
     [1] = {    
         {
-           name = "2REI",
-           insignia = "materials/gui/regiment/2rei.png",
-           -- width/height ratio of the insignia
-           whratio = 219 / 295
-        },
-        {
             name = "2REP",
             insignia = "materials/gui/regiment/2rep.png",
             whratio = 500/500,

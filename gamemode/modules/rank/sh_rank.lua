@@ -1,6 +1,6 @@
 MRP.Ranks = {
     [1] = { --Armée Française
-        [1] = { --2REI
+        [1] = { --2REP
             [1] = {
                 name = "Recrue légionnaire",
                 short = "",
