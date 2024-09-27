@@ -70,6 +70,7 @@ local itemClasses = {
 
     "mrp_ammobox_762x51mm",
     "mrp_ammobox_556x45mm",
+    "mrp_ammobox_556x45mm_nato",
     "mrp_ammobox_9x19mm",
     "mrp_ammobox_127x99mm",
 }

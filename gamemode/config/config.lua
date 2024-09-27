@@ -123,6 +123,7 @@ MRP.classId = {
     ["mrp_ammobox_556x45mm"] = 58,
     ["mrp_ammobox_9x19mm"] = 59,
     ["mrp_ammobox_127x99mm"] = 60,
+    ["mrp_ammobox_556x45mm_nato"] = 61,
 }
 
 MRP.CategoryID = {
@@ -141,6 +142,7 @@ MRP.DisabledModules = {
     loot = true,
     npcspawn = true,
     interactivemap = true,
+    holster = true,
 }
 
 MRP.Factions = {
