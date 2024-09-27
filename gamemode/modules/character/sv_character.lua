@@ -55,6 +55,40 @@ local function handlePlayerData(ply, data, spawn)
     end
 end
 
+local function equipPlayer(ply)
+    ply:StripWeapons()
+    for _, cat in pairs(MRP.WeaponCat) do
+        if ply:MRPHas(cat) then
+            local entTable = ply:MRPEntityTable(cat)
+            local ent = ply:Give(entTable.WeaponClass)
+            local rounds = ply[cat .. "Rounds"]
+            Log.d("equipPlayer", cat .. " " .. rounds)
+            ent:SetClip1(ply[cat .. "Rounds"])
+        end
+    end
+
+    for k = 1, 20 do
+        local entityTable = ply:MRPEntityTable("Inventory" .. k)
+        if entityTable.Ammo then
+            local ammo = ply:GetNWInt("Inventory" .. k .. "Rounds")
+            local ammoType = entityTable.Ammo
+            ply:GiveAmmo(ammo, ammoType, true)
+        elseif entityTable.WeaponClass then
+            ply:Give(entityTable.WeaponClass)
+        end
+    end
+    ply:Give("weapon_fists")
+    ply:Give("gmod_tool")
+    ply:Give("re_hands")
+    ply:Give("wep_jack_job_drpradio")
+    ply:Give("weapon_physgun")
+    ply:Give("cross_arms_swep")
+    ply:Give("cross_arms_infront_swep")
+    ply:Give("surrender_animation_swep")
+    ply:Give("french_salute")
+    ply:Give("raise_your_hand")
+end
+
 hook.Add("PlayerSpawn", "MRP::character::PlayerSpawn", function( ply )
     Log.d("character", "PlayerSpawn hook")
     if player_manager.GetPlayerClass(ply) == "spectator" then
@@ -77,45 +111,10 @@ hook.Add("PlayerSpawn", "MRP::character::PlayerSpawn", function( ply )
             net.WriteEntity(ply)
             net.Broadcast()
         end)
+        equipPlayer(ply)
     end
 
 end )
-
-local function equipPlayer(ply)
-    ply:StripWeapons()
-    timer.Simple(1, function()
-        for _, cat in pairs(MRP.WeaponCat) do
-            if ply:MRPHas(cat) then
-                local entTable = ply:MRPEntityTable(cat)
-                local ent = ply:Give(entTable.WeaponClass)
-                local rounds = ply[cat .. "Rounds"]
-                Log.d("equipPlayer", cat .. " " .. rounds)
-                ent:SetClip1(ply[cat .. "Rounds"])
-            end
-        end
-
-        for k = 1, 20 do
-            local entityTable = ply:MRPEntityTable("Inventory" .. k)
-            if entityTable.Ammo then
-                local ammo = ply:GetNWInt("Inventory" .. k .. "Rounds")
-                local ammoType = entityTable.Ammo
-                ply:GiveAmmo(ammo, ammoType, true)
-            elseif entityTable.WeaponClass then
-                ply:Give(entityTable.WeaponClass)
-            end
-        end
-        ply:Give("weapon_fists")
-        ply:Give("gmod_tool")
-        ply:Give("re_hands")
-        ply:Give("wep_jack_job_drpradio")
-        ply:Give("weapon_physgun")
-        ply:Give("cross_arms_swep")
-        ply:Give("cross_arms_infront_swep")
-        ply:Give("surrender_animation_swep")
-        ply:Give("french_salute")
-        ply:Give("raise_your_hand")
-    end)
-end
 
 net.Receive("CharacterInformation", function(_, ply)
     ply:SetNWInt("Faction", net.ReadUInt(2))
@@ -197,7 +196,6 @@ net.Receive("CharacterInformation", function(_, ply)
         ply.BodyGroups = string.Split(ply.BodyGroups, ",")
 
         MRP.SpawnPlayer(ply)
-        equipPlayer(ply)
     end
     local data = getPlayerData(ply)
     handlePlayerData(ply, data)
@@ -233,5 +231,4 @@ net.Receive("CharacterSelected", function(_, ply)
     ply:SetNWBool("GasmaskOn", false)
 
     MRP.SpawnPlayer(ply)
-    equipPlayer(ply)
 end)
