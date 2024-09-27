@@ -4,6 +4,48 @@ npcspawn.MinSpawnDistance = 3000
 npcspawn.MaxSpawnDistance = 20000
 npcspawn.NPCCount = 0
 npcspawn.NPCLimit = 20
+local map
+
+local function initTable(map)
+    map = game.GetMap()
+    if not MRP.Spawns[map] then MRP.Spawns[map] = {} end
+    if not MRP.Spawns[map]["npcs"] then
+        MRP.Spawns[map]["npcs"] = {}
+    end
+end
+
+MRP.Commands.npcs = {
+    addspawn = function(ply, class, entClass, weapon)
+        initTable()
+        if not MRP.Spawns[map]["npcs"][class] then
+            MRP.Spawns[map]["npcs"][class] = {}
+        end
+        table.insert(
+            MRP.Spawns[map]["npcs"][class],
+            {
+                pos = ply:GetPos(),
+                ang = ply:GetAngles(),
+                class = entClass,
+                weapon = weapon
+            }
+        )
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.Spawns))
+        ply:ChatPrint(class .. " spawn added")
+    end,
+    setspawn = function(ply, class, entClass, weapon)
+        initTable()
+        MRP.Spawns[map]["npcs"][class] = {
+            [1] = {
+                pos = ply:GetPos(),
+                ang = ply:GetAngles(),
+                class = entClass,
+                weapon = weapon,
+            }
+        }
+        file.Write("mrp/spawns.txt", util.TableToJSON(MRP.Spawns, true))
+        ply:ChatPrint(class .. " spawn set")
+    end
+}
 
 local npcWep =
     {

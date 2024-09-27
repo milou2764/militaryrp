@@ -12,14 +12,15 @@ MRP.Commands.players = {
     end,
     setspawn = function(ply, class, entClass, weapon)
         local map = game.GetMap()
-        if not MRP.Spawns then MRP.Spawns = {} end
         if not MRP.Spawns[map] then MRP.Spawns[map] = {} end
         if not MRP.Spawns[map][class] then MRP.Spawns[map][class] = {} end
         MRP.Spawns[map][class] = {
-            [1] = { pos = ply:GetPos(),
-                    ang = ply:GetAngles(),
-                    class = entClass,
-                    weapon = weapon }
+            [1] = {
+                pos = ply:GetPos(),
+                ang = ply:GetAngles(),
+                class = entClass,
+                weapon = weapon,
+            }
         }
         file.Write("mrp/spawns.txt", util.TableToJSON(MRP.Spawns, true))
         ply:ChatPrint(class .. " spawn set")
