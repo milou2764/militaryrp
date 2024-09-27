@@ -53,7 +53,7 @@ end
 
 hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
     local uid = ply:UserID()
-    if IsValid(ply) and ply:Alive() then
+    if IsValid(ply) and ply:Alive() and ply ~= LocalPlayer() then
         for k, model in pairs(MRP.MountedWeps[uid] or {}) do
             local wepClass = model.wepClass
             if not MRP.Holsters[wepClass] then
@@ -330,6 +330,9 @@ local function editHolsters(ply)
                 "models/tom/weapons/hk417/",
                 "models/tom/weapons/minimi/",
                 "models/tom/weapons/scar_hpr/",
+                "models/bs/weapons/rif/",
+                "models/bs/weapons/snip/",
+                "models/bs/weapons/mg/",
             }
             for _, p in pairs(paths) do
                 local tmp = file.Find(p.."w_*.mdl", "GAME")
