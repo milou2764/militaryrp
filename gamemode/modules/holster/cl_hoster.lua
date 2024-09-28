@@ -30,7 +30,6 @@ local boneNames = {
 
 local function updateModelPos(model, ply, wepClass)
     wepClass = wepClass or model.wepClass
-    --print("triggered for " .. tostring(ply))
     local boneID = MRP.Holsters[wepClass].boneID
     -- Set position
     local matrix = ply:GetBoneMatrix(boneID)
@@ -57,7 +56,6 @@ hook.Add("PostPlayerDraw", "MRPPostPlayerDraw", function(ply)
         for k, model in pairs(MRP.MountedWeps[uid] or {}) do
             local wepClass = model.wepClass
             if not MRP.Holsters[wepClass] then
-                print(model)
                 MRP.MountedWeps[uid][k] = nil
                 return
             end
@@ -253,7 +251,6 @@ local function setupEditor(ply, wepClass)
             MRP.MountedWeps[uid][MRP.Holsters[wepClass].mrpcategory].WeaponClass = wepClass
         end
 
-        print(table.ToString(MRP.Holsters, "MRP.Holsters", false))
 
         net.Start("mrp_save_holsters")
         net.WriteString(wepClass)
@@ -403,7 +400,6 @@ local function editHolsters(ply)
         d:DockMargin( 0, 0, 0, 5 )
         d.DoClick = function()
             table.RemoveByValue(MRP.Holsters, MRP.Holsters[class])
-            print(table.ToString(MRP.Holsters, "MRP.Holsters", false))
             p:Remove()
         end
 

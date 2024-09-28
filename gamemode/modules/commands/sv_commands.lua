@@ -44,7 +44,7 @@ end)
 
 concommand.Add("getposeye", function(ply)
     local pos = ply:GetEyeTrace().HitPos
-    print("Vector(" .. tostring(pos.x) .. ", "
+    Log.d("getposeye", "Vector(" .. tostring(pos.x) .. ", "
                     .. tostring(pos.y) .. ", "
                     .. tostring(pos.z) .. ")")
 end)
@@ -58,7 +58,7 @@ concommand.Add("cleanup", function(ply)
 end)
 
 concommand.Add("get_ent", function(ply)
-    print( ply:GetEyeTrace().Entity )
+    Log.d("get_ent", tostring(ply:GetEyeTrace().Entity))
 end)
 
 concommand.Add("removedecals", function(ply)

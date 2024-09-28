@@ -8,6 +8,7 @@ include("player_class/spectator.lua")
 include("lib/sh_log.lua")
 include("config/config.lua")
 include("config/cl_config.lua")
+include("config/sh_debug_state.lua")
 include("config/ammotypes.lua")
 include("vgui/misc.lua")
 

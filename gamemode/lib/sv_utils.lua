@@ -39,7 +39,7 @@ MRP.UpdateTable = function(name, schema)
         MRP.CreateTable(schema)
     elseif existingTable ~= schema then
         Log.d(TAG, name .. " TABLE CHANGED SINCE LAST TIME")
-        print(existingTable)
+        Log.d(TAG, existingTable)
         Log.d(TAG, "DELETING ...")
         sql.Query("DROP TABLE " .. SQLStr(name))
         sql.Query(schema)

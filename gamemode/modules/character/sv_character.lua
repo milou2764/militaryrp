@@ -170,10 +170,10 @@ net.Receive("CharacterInformation", function(_, ply)
             SQLStr(ply.BodyGroups) .. ");"
     local sqlret = sql.Query(request)
     if sqlret == false then
-        print("### MRP error in character insertion")
-        print(sql.LastError())
+        Log.d("SVCharacters", "error in character insertion")
+        Log.d("SVCharacters", sql.LastError())
     else
-        print("### MRP character insertion succeed")
+        Log.d("SVCharacters", "### MRP character insertion succeed")
     end
     sqlret =
         sql.Query(
@@ -183,12 +183,12 @@ net.Receive("CharacterInformation", function(_, ply)
             "AND RPName = " .. SQLStr(ply:GetNWString("RPName"))
         )
     if sqlret == false then
-        print("### MRP SQL error could not get character CharacterID")
-        print(sql.LastError())
+        Log.d("SVCharacters", "error could not get character CharacterID")
+        Log.d("SVCharacters", sql.LastError())
     elseif sqlret == nil then
-        print("### MRP could not get character CharacterID")
+        Log.d("SVCharacters", "could not get character CharacterID")
     else
-        print("### MRP successfully got the character CharacterID")
+        Log.d("SVCharacters", "successfully got the character CharacterID")
         local cid = tonumber(sqlret[#sqlret]["CharacterID"])
         ply:SetNWInt("CharacterID", cid)
 

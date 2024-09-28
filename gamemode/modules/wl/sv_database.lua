@@ -40,11 +40,8 @@ MRP.GetWL = function(ply)
         Log.d("WL", "no data when selecting wl")
         return insertPlayer(ply)
     end
-    PrintTable(sqlRet)
-    print(sqlRet[1]["Whitelists"])
     local tblStr = sqlRet[1]["Whitelists"]
     local tbl = util.JSONToTable(tblStr)
-    PrintTable(tbl)
     return tbl
 end
 

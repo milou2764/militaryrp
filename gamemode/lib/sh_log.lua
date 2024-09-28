@@ -13,10 +13,12 @@ local function log(color, tag, m)
 end
 
 Log.d = function(tag, m)
+    if not MRP.Debug then return end
     log(white, tag, m)
 end
 
 Log.e = function(tag, m)
+    if not MRP.Debug then return end
     log(red, tag, m)
     error(m)
 end

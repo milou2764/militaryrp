@@ -15,6 +15,5 @@ end
 net.Receive("mrp_wl_update", wlUpdate)
 
 function meta:MRPIsRegWL(fac, reg)
-    PrintTable(MRP.WL)
     return MRP.WL[fac][reg]
 end

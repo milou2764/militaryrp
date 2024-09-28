@@ -48,6 +48,7 @@ include("player_class/player.lua")
 include("player_class/spectator.lua")
 include("config/config.lua")
 include("config/sv_config.lua")
+include("config/sh_debug_state.lua")
 include("config/ammotypes.lua")
 include("lib/sv_utils.lua")
 include("lib/sh_log.lua")
@@ -57,6 +58,7 @@ AddCSLuaFile("lib/sh_log.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("config/config.lua")
 AddCSLuaFile("config/cl_config.lua")
+AddCSLuaFile("config/sh_debug_state.lua")
 AddCSLuaFile("config/ammotypes.lua")
 AddCSLuaFile("vgui/misc.lua")
 
@@ -82,11 +84,12 @@ local schema =
 MRP.UpdateTable(MRP.TABLE_CHAR, schema)
 
 MRP.SQLRequest = function(request)
+    local TAG = "SQLReq"
     local sqlret = sql.Query(request)
     if sqlret == false then
-        print("### MRP error in SQL request")
-        print(request)
-        print(sql.LastError())
+        Log.d(TAG, "error in SQL request")
+        Log.d(TAG, request)
+        Log.d(TAG, sql.LastError())
     end
 end
 
@@ -207,7 +210,6 @@ function GM:InitPostEntity()
         function self:PlayerSelectSpawn(ply, _)
             local faction = factions[ply:GetNWInt("Faction")]
             local spawn_ents = MRP.SpawnEnts[faction]
-            PrintTable(spawn_ents)
             local random_entry = math.random(#spawn_ents)
             return spawn_ents[random_entry]
         end
