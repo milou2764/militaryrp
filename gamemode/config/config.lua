@@ -29,6 +29,11 @@ local function MRPInitEntities()
     end
     MRP.entityModels = {}
 
+    MRPRegisterEntity("mrp_ammobox_127x99mm")
+	MRPRegisterEntity("mrp_ammobox_556x45mm")
+	MRPRegisterEntity("mrp_ammobox_556x45mm_nato")
+	MRPRegisterEntity("mrp_ammobox_762x51mm")
+	MRPRegisterEntity("mrp_ammobox_9x19mm")
     MRPRegisterEntity("mrp_nvgs")
     hook.Call("MRPInitEntities")
     hook.Call("MRPEntitiesInitialized")
