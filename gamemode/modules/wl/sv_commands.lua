@@ -23,6 +23,10 @@ local function getCommandFn(ply, _, args)
 end
 
 local function setCommandFn(ply, _, args)
+    if not ply:IsAdmin() then
+        ply:ChatPrint("Il faut être admin pour cela")
+        return
+    end
     local target = MRP.FindPlayer(args[1])
     if target == nil then
         ply:ChatPrint("could not find target")
