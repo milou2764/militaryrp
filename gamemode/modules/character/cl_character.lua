@@ -3,6 +3,19 @@ local regiment = 1
 local CharacPanel
 local bdyGrpSlider
 
+local function drawWarning(msg)
+    local tmpLabel = vgui.Create("DLabel")
+    tmpLabel:SetFont("DermaLarge")
+    tmpLabel:SetText(msg)
+    tmpLabel:SizeToContents()
+    tmpLabel:Center()
+    tmpLabel:SetColor(Color(255,0,0))
+    tmpLabel:SetDrawOnTop(true)
+    timer.Simple(2, function()
+        tmpLabel:Remove()
+    end)
+end
+
 local function characterCreation(ply)
     local ply = ply or LocalPlayer()
     local specsScroll
@@ -242,16 +255,7 @@ local function characterCreation(ply)
                     chooseLbl:Remove()
                     drawCharac()
                 else
-                    local tmpLabel = vgui.Create("DLabel")
-                    tmpLabel:SetFont("DermaLarge")
-                    tmpLabel:SetText("Vous n'êtes pas inscrit")
-                    tmpLabel:SizeToContents()
-                    tmpLabel:Center()
-                    tmpLabel:SetColor(Color(255,0,0))
-                    tmpLabel:SetDrawOnTop(true)
-                    timer.Simple(2, function()
-                        tmpLabel:Remove()
-                    end)
+                    drawWarning("Vous n'êtes pas inscrit")
                 end
             end
             scrollPanel:AddPanel(reg)
@@ -259,6 +263,10 @@ local function characterCreation(ply)
     end
 
     local function facButton(fac)
+        if fac == 2 then
+            drawWarning("Faction temporairement inaccessible")
+            return
+        end
         faction = fac
         chooseLbl:SetText("Choisissez votre régiment")
         chooseLbl:SizeToContents()
