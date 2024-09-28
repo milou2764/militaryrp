@@ -249,7 +249,7 @@ local function characterCreation(ply)
             local ratio = reg:GetWide() / reg:GetTall()
             reg:SetWide(h * ratio)
             reg.DoClick = function()
-                if ply:MRPIsRegWL(faction, i) then
+                if MRP.IsRegWL(ply, faction, i) then
                     regiment = i
                     scrollPanel:Remove()
                     chooseLbl:Remove()

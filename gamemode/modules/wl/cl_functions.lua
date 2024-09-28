@@ -14,6 +14,6 @@ end
 
 net.Receive("mrp_wl_update", wlUpdate)
 
-function meta:MRPIsRegWL(fac, reg)
+MRP.IsRegWL = function(ply, fac, reg)
     return MRP.WL[fac][reg]
 end
