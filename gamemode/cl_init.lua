@@ -5,7 +5,7 @@ GM.Website = "N/A"
 DeriveGamemode("sandbox")
 include("player_class/player.lua")
 include("player_class/spectator.lua")
-include("modules/log/log.lua")
+include("lib/sh_log.lua")
 include("config/config.lua")
 include("config/cl_config.lua")
 include("config/ammotypes.lua")

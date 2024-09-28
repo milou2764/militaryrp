@@ -1,21 +1,3 @@
-local function findPlayer(info)
-    Log.d("findPlayer", "triggered")
-    if not info or info == "" then
-        Log.d("findPlayer", "no id provided")
-        return
-    end
-    for _, p in ipairs( player.GetAll() ) do
-        if p:SteamID() == info then
-            return p
-        end
-        local rpname = string.lower(p:RPName())
-        Log.d("findPlayer", rpname)
-        if string.find(rpname, string.lower(tostring(info)), 1, true) ~= nil then
-            return p
-        end
-    end
-end
-
 local function canPromote(ply, target)
     if ply:IsAdmin() then return true end
     if ply:GetNWInt("Rank") - target:GetNWInt("Rank") > 5 then return true end
@@ -31,7 +13,7 @@ local function rankChange(admin, targetId, inc)
         return
     else
         Log.d(TAG, "targetId ", targetId)
-        target = findPlayer(targetId)
+        target = MRP.FindPlayer(targetId)
         admin:ChatPrint("Found" .. tostring(target))
     end
     if canPromote(admin, target) then

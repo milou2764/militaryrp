@@ -49,10 +49,11 @@ include("player_class/spectator.lua")
 include("config/config.lua")
 include("config/sv_config.lua")
 include("config/ammotypes.lua")
-include("modules/log/log.lua")
+include("lib/sv_utils.lua")
+include("lib/sh_log.lua")
 AddCSLuaFile("player_class/player.lua")
 AddCSLuaFile("player_class/spectator.lua")
-AddCSLuaFile("modules/log/log.lua")
+AddCSLuaFile("lib/sh_log.lua")
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("config/config.lua")
 AddCSLuaFile("config/cl_config.lua")
@@ -77,21 +78,6 @@ local schema =
     "BodyGroups TEXT" ..
     ")"
 
-MRP.UpdateTable = function(name, schema)
-    local existingTable =
-        sql.QueryValue(
-            "SELECT sql FROM sqlite_master " ..
-            "WHERE name = " .. SQLStr(name)
-        )
-    if existingTable ~= schema then
-        Log.d(TAG, name .. " TABLE CHANGED SINCE LAST TIME")
-        Log.d(TAG, "DELETING ...")
-        sql.Query("DROP TABLE " .. SQLStr(name))
-        sql.Query(schema)
-    else
-        Log.d(TAG, "TABLE DID NOT CHANGED")
-    end
-end
 
 MRP.UpdateTable(MRP.TABLE_CHAR, schema)
 

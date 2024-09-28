@@ -1,9 +1,10 @@
 local faction = 1
-local Regiment = 1
+local regiment = 1
 local CharacPanel
 local bdyGrpSlider
 
 local function characterCreation(ply)
+    local ply = ply or LocalPlayer()
     local specsScroll
     local leftArrow
     CharacPanel = vgui.Create("MRPPanel")
@@ -205,7 +206,7 @@ local function characterCreation(ply)
         doneBtn.DoClick = function()
             net.Start("CharacterInformation")
             net.WriteUInt(faction, 2)
-            net.WriteUInt(Regiment, 4)
+            net.WriteUInt(regiment, 4)
             net.WriteString(RPName)
             net.WriteUInt(modelIdx, 5)
             net.WriteUInt(Size, 8)
@@ -222,25 +223,38 @@ local function characterCreation(ply)
     end
 
     local function chooseRegiment()
-        local h = 700
+        local h = 200
         local scrollPanel = vgui.Create("DHorizontalScroller", CharacPanel)
         scrollPanel:SetPos(0, 300)
         scrollPanel:SetSize(ScrW(), h)
         scrollPanel:SetOverlap( -40 )
 
         for i = 1, #MRP.Regiments[faction] do
-            local Reg = vgui.Create("DImageButton")
-            Reg:SetImage(MRP.Regiments[faction][i]["insignia"])
-            Reg:SizeToContents()
-            local ratio = Reg:GetWide() / Reg:GetTall()
-            Reg:SetWide(h * ratio)
-            Reg.DoClick = function()
-                Regiment = i
-                scrollPanel:Remove()
-                chooseLbl:Remove()
-                drawCharac()
+            local reg = vgui.Create("DImageButton")
+            reg:SetImage(MRP.Regiments[faction][i]["insignia"])
+            reg:SizeToContents()
+            local ratio = reg:GetWide() / reg:GetTall()
+            reg:SetWide(h * ratio)
+            reg.DoClick = function()
+                if ply:MRPIsRegWL(faction, i) then
+                    regiment = i
+                    scrollPanel:Remove()
+                    chooseLbl:Remove()
+                    drawCharac()
+                else
+                    local tmpLabel = vgui.Create("DLabel")
+                    tmpLabel:SetFont("DermaLarge")
+                    tmpLabel:SetText("Vous n'êtes pas inscrit")
+                    tmpLabel:SizeToContents()
+                    tmpLabel:Center()
+                    tmpLabel:SetColor(Color(255,0,0))
+                    tmpLabel:SetDrawOnTop(true)
+                    timer.Simple(2, function()
+                        tmpLabel:Remove()
+                    end)
+                end
             end
-            scrollPanel:AddPanel(Reg)
+            scrollPanel:AddPanel(reg)
         end
     end
 
