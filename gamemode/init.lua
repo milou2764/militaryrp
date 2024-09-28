@@ -346,6 +346,16 @@ function GM:PlayerSpawnSWEP(ply, _, _)
     end
 end
 
+function GM:PlayerGiveSWEP(ply, _, _)
+    if ply:IsAdmin() then
+        return true
+    else
+        return false
+    end
+end
+
+
+
 function GM:PlayerSpawnVehicle(ply, _, _, _)
     if IsValid(ply) then
         if ply:IsAdmin() then
